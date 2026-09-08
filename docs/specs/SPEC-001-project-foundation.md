@@ -246,7 +246,7 @@ Eloquent será utilizado directamente en casos simples. Actions y Services se in
 
 ### AD-005: Database queue
 
-La conexión inicial de cola será `database`. Foundation creará la infraestructura framework para `jobs` y `failed_jobs`, y dejará documentado el worker persistente de producción. No se crearán jobs de citas, WhatsApp ni recordatorios. Redis queda explícitamente fuera de SPEC-001 y solo podrá evaluarse mediante una SPEC y decisión posterior basadas en necesidad real.
+La conexión inicial de cola será `database` con `after_commit=true`. Foundation creará la infraestructura framework para `jobs` y `failed_jobs`, y dejará documentado el worker persistente de producción. No se crearán jobs de citas, WhatsApp ni recordatorios. Redis queda explícitamente fuera de SPEC-001 y solo podrá evaluarse mediante una SPEC y decisión posterior basadas en necesidad real.
 
 ### AD-006: Technical configuration versus business settings
 
@@ -436,7 +436,7 @@ Cada migración futura debe tener una justificación. Las migraciones de Foundat
 
 ### Configuration
 
-La configuración inicial usará `QUEUE_CONNECTION=database` o el equivalente de configuración de Laravel. La implementación creará las tablas framework de `jobs` y `failed_jobs`, sin crear jobs de dominio.
+La configuración inicial usará `QUEUE_CONNECTION=database` y `DB_QUEUE_AFTER_COMMIT=true` o el equivalente de configuración de Laravel. La implementación creará las tablas framework de `jobs` y `failed_jobs`, sin crear jobs de dominio.
 
 ### Retry baseline
 
@@ -475,7 +475,9 @@ La timezone empresarial concreta permanece como `PENDING BUSINESS DATA`, pero no
 
 ## Storage
 
-La implementación preparará Laravel Storage con el disco local público basado en `storage/app/public` y el enlace simbólico estándar a `public/storage`, si el flujo de archivos de Foundation lo requiere.
+El filesystem default será privado mediante el disk `local`, basado en `storage/app/private`. El disk `public`, basado en `storage/app/public`, se utilizará únicamente cuando el código seleccione explícitamente `Storage::disk('public')`.
+
+La implementación preparará el enlace simbólico estándar `public/storage` hacia `storage/app/public`.
 
 El código futuro debe usar la abstracción `Storage` y nombres de discos/configuración, nunca rutas físicas acopladas. Esto permite evaluar S3, R2 u otro storage compatible después sin reescribir dominios.
 

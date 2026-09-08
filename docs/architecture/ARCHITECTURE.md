@@ -35,7 +35,9 @@ MySQL 8.4 LTS será la base de datos inicial. Se usarán claves internas BIGINT 
 
 ## Jobs y notificaciones
 
-La cola inicial será database queue. Laravel Scheduler despachará notificaciones vencidas a jobs. La integración Meta queda detrás de `WhatsAppServiceInterface` y no forma parte de Foundation.
+La cola inicial será database queue con `after_commit=true`, para evitar procesar jobs antes de confirmar la transacción que los originó. Laravel Scheduler despachará notificaciones vencidas a jobs en una SPEC posterior. La integración Meta queda detrás de `WhatsAppServiceInterface` y no forma parte de Foundation.
+
+El filesystem default es privado. Los archivos públicos deben seleccionar explícitamente el disk `public`; ningún `Storage::put()` genérico debe publicar archivos por accidente.
 
 ## ADR
 
