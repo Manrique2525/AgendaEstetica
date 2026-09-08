@@ -602,4 +602,4 @@ Development-approval blockers: `NONE` from Technical Discovery. Human approval r
 
 ## 119. Recommended next action
 
-Review SPEC-004 Technical Discovery and ADR-003 draft. Request explicit authorization for development approval before creating Checkpoint A or application code.
+Review SPEC-004 Technical Discovery and accepted ADR-003. Request explicit authorization for development approval before creating Checkpoint A or application code.
