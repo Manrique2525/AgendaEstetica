@@ -10,9 +10,9 @@ Business Core
 
 ## Status
 
-`READY FOR HUMAN ACCEPTANCE`
+`CLOSED`
 
-Los Checkpoints A-D están técnicamente completados. La aceptación humana, el cierre, el merge y cualquier SPEC posterior requieren autorización separada.
+Los Checkpoints A-D están completados. La aceptación humana fue aprobada; el cierre y merge de SPEC-003 están autorizados, pero cualquier SPEC posterior requiere autorización separada.
 
 ## Objective
 
@@ -611,7 +611,7 @@ The following criteria are the full SPEC implementation criteria. Checkpoint A e
 15. Existing Foundation/SPEC-002 frontend and backend gates remain green.
 16. No generic repository pattern, UI framework, unrelated dependency or business seed data is introduced.
 17. Documentation, implementation report and remote CI evidence are complete.
-18. Human acceptance is recorded before SPEC-003 changes from an in-progress status to closed.
+18. Human acceptance is recorded before SPEC-003 changes from an in-progress status to closed. `PASS - HUMAN ACCEPTED`.
 
 ## Definition of Done
 
@@ -713,7 +713,7 @@ It becomes too large if it includes appointment availability, public booking, ad
 ## Definition State
 
 ```text
-SPEC-003: READY FOR HUMAN ACCEPTANCE
+SPEC-003: CLOSED
 Discovery: COMPLETED
 Checkpoint A: COMPLETED
 Checkpoint B: COMPLETED

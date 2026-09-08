@@ -45,7 +45,7 @@ AC-01 through AC-17 are technically PASS.
 
 ## 10. Acceptance Criteria human-acceptance pending
 
-AC-18 is `PASS WITH HUMAN ACCEPTANCE PENDING`: technical readiness is complete, but the user has not yet recorded final acceptance/closure.
+AC-18 is `PASS - HUMAN ACCEPTED`: the user explicitly approved SPEC-003 closure and merge.
 
 ## 11. Acceptance Criteria FAIL
 
@@ -57,7 +57,7 @@ The consolidated matrix is in `docs/reports/SPEC-003-IMPLEMENTATION-REPORT.md`, 
 
 ## 13. Definition of Done audit
 
-All technical DoD items pass. Human acceptance remains pending by policy.
+All technical DoD items pass, including recorded human acceptance.
 
 ## 14. DoD PASS items
 
@@ -65,7 +65,7 @@ Scope, model, integrity, tests, security, privacy, documentation, CI, isolation 
 
 ## 15. DoD pending items
 
-Human acceptance and any separate merge authorization remain pending.
+Human acceptance and merge authorization are approved for SPEC-003 only.
 
 ## 16. DoD FAIL items
 
@@ -293,7 +293,7 @@ Official timezone, initial profile, real professionals, categories, services, du
 
 ## 72. Documentation changes
 
-Added the consolidated implementation report and D audit report. Updated SPEC/roadmap to `READY FOR HUMAN ACCEPTANCE` after the technical evidence passed.
+Added the consolidated implementation report and D audit report. Updated SPEC/roadmap to `CLOSED` after technical evidence and human acceptance passed.
 
 ## 73. Commits created
 
@@ -357,15 +357,15 @@ Initial state was synchronized at `5d1c81c`; the feature branch is synchronized 
 
 ## 88. New SPEC status
 
-`READY FOR HUMAN ACCEPTANCE`.
+`CLOSED`.
 
 ## 89. Human acceptance status
 
-`PENDING`.
+`APPROVED`.
 
 ## 90. Merge status
 
-`NOT AUTHORIZED`.
+`AUTHORIZED FOR SPEC-003 MERGE ONLY`.
 
 ## 91. SPEC-004 status
 

@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-SPEC-003 implements the approved single-business Core persistence and domain-invariant foundation through Checkpoints A-C. Checkpoint D completes the final technical audit without adding product functionality. The result is ready for human acceptance, but is not closed and has not been merged.
+SPEC-003 implements the approved single-business Core persistence and domain-invariant foundation through Checkpoints A-D. The final technical audit passed, human acceptance was approved, and the SPEC is formally closed. Merge is authorized only for this SPEC.
 
 ## Scope
 
@@ -126,14 +126,14 @@ Migration lifecycle:
 | AC-15 Foundation/frontend gates remain green | PASS | Backend and frontend gates |
 | AC-16 no generic repository/dependency/business seed | PASS | Scope, dependency and seeder audits |
 | AC-17 documentation, reports and remote CI | PASS | A/B/C/D reports and Quality CI |
-| AC-18 human acceptance before close | PASS WITH HUMAN ACCEPTANCE PENDING | Technical readiness complete; user acceptance not yet recorded |
+| AC-18 human acceptance before close | PASS - HUMAN ACCEPTED | Explicit human acceptance and merge authorization recorded |
 
 ## Definition of Done Matrix
 
 | Item | Result | Evidence |
 | --- | --- | --- |
 | Approved scope only | PASS | Scope audit |
-| ACs satisfied or exception documented | PASS | Matrix above; AC-18 pending human acceptance |
+| ACs satisfied or exception documented | PASS | Matrix above; AC-18 human accepted |
 | Domain model/invariants documented | PASS | SPEC and reports |
 | MySQL integrity tested | PASS | Direct DB tests and metadata |
 | Auth/API contracts intact | PASS | Foundation regressions |
@@ -144,8 +144,8 @@ Migration lifecycle:
 | Reports complete | PASS | Discovery, A, B, C and D reports |
 | Remote CI green | PASS | Final Quality run |
 | Working tree clean | PASS | Final Git audit |
-| Human acceptance recorded | PENDING | Requires user decision |
+| Human acceptance recorded | PASS | Explicit human acceptance recorded |
 
 ## Final Technical Status
 
-SPEC-003 is technically ready for human acceptance. It remains open by policy and is not merged. Checkpoint D does not authorize main-branch merge or SPEC-004.
+SPEC-003 is formally closed after technical completion and explicit human acceptance. Merge is authorized for this SPEC only; SPEC-004 remains not started.
