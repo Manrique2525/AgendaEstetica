@@ -19,7 +19,7 @@
 ```text
 php artisan test
 vendor/bin/pint --test
-phpstan / larastan
+vendor/bin/phpstan analyse (Larastan)
 npm run typecheck
 npm run lint
 npm run test

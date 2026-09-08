@@ -39,7 +39,7 @@ Para cambios de pruebas, leer también `docs/testing/TEST_PLAN.md`.
 
 ## Arquitectura y código
 
-- Stack aprobado: Laravel 12, PHP 8.3+, MySQL 8, Vue 3, TypeScript, Tailwind CSS, Vite, Sanctum y Pest.
+- Stack aprobado: Laravel 13, PHP 8.3+, MySQL 8, Vue 3, TypeScript, Tailwind CSS, Vite, Sanctum y Pest.
 - Arquitectura: modular monolith en un solo repositorio.
 - Flujo backend preferido: Route -> Controller -> Form Request -> Action/Service -> Domain/Model -> Database.
 - Controllers coordinan; no contienen reglas complejas de negocio.

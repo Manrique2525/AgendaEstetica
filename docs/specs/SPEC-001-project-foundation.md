@@ -16,7 +16,7 @@ Esta especificación está preparada para aprobación de desarrollo. No autoriza
 
 ## Objective
 
-Definir una base técnica reproducible para un modular monolith Laravel 12 con una SPA Vue 3, API versionada, autenticación administrativa, persistencia MySQL, colas database, scheduler, almacenamiento, pruebas y quality gates.
+Definir una base técnica reproducible para un modular monolith Laravel 13 con una SPA Vue 3, API versionada, autenticación administrativa, persistencia MySQL, colas database, scheduler, almacenamiento, pruebas y quality gates.
 
 La Foundation debe dejar preparado el sistema sin implementar dominios funcionales del salón, agenda, ecommerce, CMS o WhatsApp.
 
@@ -39,7 +39,7 @@ La Foundation debe resolver primero las decisiones de ejecución, configuración
 
 ### Approved stack
 
-- Laravel 12.
+- Laravel 13.
 - PHP 8.3+.
 - MySQL 8.
 - Vue 3.
@@ -53,13 +53,43 @@ La Foundation debe resolver primero las decisiones de ejecución, configuración
 
 - `vue-router`: necesario para separar rutas públicas y administrativas en la SPA.
 - `vitest` y `@vue/test-utils`: aprobados para pruebas unitarias y de componentes frontend de Foundation.
-- `larastan`: aprobado como integración Laravel sobre PHPStan. La implementación seleccionará una versión estable compatible con Laravel 12 y PHP 8.3+.
+- `pestphp/pest-plugin-laravel`: integración Pest aprobada para Laravel.
+- `larastan/larastan`: aprobado como integración Laravel sobre PHPStan. La implementación seleccionará una versión 3.x compatible con Laravel 13 y PHP 8.3+.
+- `vue-tsc`: necesario para typecheck de archivos Vue SFC.
+- `vite`, `laravel-vite-plugin` y `@vitejs/plugin-vue`: líneas aprobadas para Vite 8 y Vue 3.
+- `tailwindcss` y `@tailwindcss/vite`: línea 4.3 aprobada para la integración moderna con Vite.
 
 No se incorpora Axios, Pinia, Vuex, un cliente de estado global, una librería UI, moment.js, Lodash, paquetes de repositories, paquetes de permisos, dashboards de queues, clientes Redis ni SDKs de WhatsApp. El cliente HTTP inicial usará `fetch` encapsulado en un servicio pequeño y testeable.
 
+### Approved dependency plan
+
+```text
+laravel/framework ^13
+laravel/sanctum ^4
+pestphp/pest ^4
+pestphp/pest-plugin-laravel ^4
+laravel/pint ^1
+larastan/larastan ^3
+
+vue ^3.5
+vue-router ^4.6
+vite ^8
+laravel-vite-plugin ^3
+@vitejs/plugin-vue ^6
+typescript ^5.9
+vue-tsc ^3
+tailwindcss ^4.3
+@tailwindcss/vite ^4.3
+vitest ^4
+@vue/test-utils ^2
+jsdom
+```
+
+ESLint y sus dependencias directas de configuración se resolverán en líneas estables compatibles con TypeScript 5.9, Vue 3 y el parser flat utilizado. No se fijan patch versions aquí; los lockfiles registrarán las versiones exactas.
+
 ## In Scope
 
-- Crear la aplicación base Laravel 12.
+- Crear la aplicación base Laravel 13.
 - Definir configuración de entorno y `.env.example` sin secretos.
 - Configurar MySQL, locale y timezone técnica configurable.
 - Integrar Vue 3, TypeScript, Vite y Tailwind CSS.
@@ -234,12 +264,14 @@ Los estados y otros vocabularios cerrados futuros usarán PHP Backed Enums y per
 
 La implementación posterior deberá:
 
-- usar Laravel 12 con PHP mínimo 8.3;
+- usar Laravel 13 con PHP mínimo 8.3;
 - configurar `APP_ENV`, `APP_DEBUG`, `APP_URL`, `APP_KEY` y logging por entorno;
 - configurar la conexión MySQL mediante variables de entorno;
 - conservar configuración cacheable en entornos de despliegue;
 - mantener las rutas y responsabilidades separadas entre web, API, Sanctum y consola;
 - no agregar modelos, migraciones o servicios funcionales de dominios futuros.
+
+La aplicación Laravel 13 se creará primero en una ubicación temporal fuera del repositorio y se copiará selectivamente al root. Deben preservarse `.git/`, `AGENTS.md` y `docs/`. No deben copiarse automáticamente `.env`, `vendor/`, `node_modules/` ni una base SQLite temporal. `.gitignore`, `README`, manifests y configuraciones root deben inspeccionarse antes de sobrescribirse.
 
 ### Proposed backend structure
 
@@ -267,7 +299,7 @@ Los módulos de negocio posteriores podrán organizarse dentro de esta arquitect
 
 ### Toolchain
 
-La implementación futura integrará Vue 3 con TypeScript, Vite y Tailwind CSS. Vite será el único bundler frontend y el entry point se ubicará en `resources/js`.
+La implementación futura integrará Vue 3.5 con TypeScript 5.9, Vite 8 y Tailwind CSS 4.3. Vite será el único bundler frontend y el entry point se ubicará en `resources/js`.
 
 ### Proposed structure
 
@@ -293,7 +325,7 @@ No se crearán cientos de carpetas vacías ni páginas funcionales. Los primeros
 
 ### Routing
 
-`vue-router` será el router frontend. Las rutas se separarán por superficies pública y administrativa, aunque Foundation solo necesita registrar shells/layouts o rutas técnicas mínimas.
+`vue-router` 4.x será el router frontend. Las rutas se separarán por superficies pública y administrativa, aunque Foundation solo necesita registrar shells/layouts o rutas técnicas mínimas.
 
 El guard de rutas no sustituye la autorización backend. Puede consultar el usuario autenticado para navegación, pero cada endpoint administrativo seguirá protegido en Laravel.
 
@@ -345,6 +377,10 @@ Inicialmente solo se requiere autenticación administrativa básica. No se imple
 
 Las rutas administrativas se protegen con middleware de autenticación. El endpoint `me` y cualquier endpoint administrativo futuro deben devolver `401` sin sesión válida. El backend nunca confía en guards, estados o permisos enviados por Vue.
 
+### Sanctum token scope
+
+La SPA first-party utiliza sesiones/cookies y CSRF. `personal_access_tokens` no es necesaria para Foundation y no se habilitará autenticación por tokens API. La implementación no debe ejecutar ciegamente un comando que publique migraciones de tokens sin inspeccionar sus artefactos; si un comando oficial genera archivos adicionales, deberán revisarse antes de aceptarlos.
+
 ## API Foundation
 
 ### Health check
@@ -376,15 +412,15 @@ Su comportamiento debe quedar cubierto por una prueba Feature. No será un siste
 
 ### Included framework persistence
 
-Solo se incluirán tablas y migraciones framework necesarias para Foundation, según la instalación concreta de Laravel 12 y el modo de autenticación elegido:
+Solo se incluirán tablas y migraciones técnicas estándar de Laravel 13 razonables para Foundation, según el skeleton seleccionado y el modo de autenticación elegido:
 
 - `users` y requisitos estándar de autenticación administrativa;
 - `password_reset_tokens` si el flujo estándar de recuperación se conserva;
 - `sessions` si se usa driver de sesión database;
-- `jobs` y `failed_jobs` para database queue;
-- tablas de cache únicamente si se elige explícitamente driver database.
+- `cache` y `cache_locks` si se usa driver de cache database;
+- `jobs`, `job_batches` y `failed_jobs` si forman parte del skeleton o de la infraestructura queue seleccionada.
 
-La migración de `users` no debe agregar campos de clientes, profesionales ni perfiles de negocio. La recuperación de contraseña no implica implementar una pantalla o flujo público completo si no forma parte del plan aprobado; solo se incluirán tablas que la arquitectura necesite.
+La migración de `users` no debe agregar campos de clientes, profesionales ni perfiles de negocio. `password_reset_tokens`, `job_batches` y otras tablas framework pueden conservarse como infraestructura estándar aunque sus flujos funcionales no se implementen en Foundation. `personal_access_tokens` no es necesaria para la SPA first-party basada en cookies y no debe agregarse para habilitar tokens API.
 
 ### Excluded tables
 
@@ -414,7 +450,7 @@ Producción requiere un worker persistente equivalente a `php artisan queue:work
 
 ## Scheduler
 
-La implementación debe registrar el punto de extensión de tareas programadas en la convención vigente de Laravel 12, preferentemente en `routes/console.php` o el lugar equivalente generado por el framework. Producción ejecutará conceptualmente `php artisan schedule:run` mediante cron cada minuto.
+La implementación debe registrar el punto de extensión de tareas programadas en la convención vigente de Laravel 13, preferentemente en `routes/console.php` o el lugar equivalente generado por el framework. Producción ejecutará conceptualmente `php artisan schedule:run` mediante cron cada minuto.
 
 No se registran recordatorios, notificaciones ni tareas de negocio. Puede incluirse una tarea técnica no invasiva solo si sirve para demostrar la configuración y está cubierta por una prueba o verificación documentada.
 
@@ -476,14 +512,14 @@ El futuro `audit_logs` es un requisito de dominio administrativo y no se crea aq
 
 Pest será la herramienta principal. Foundation debe preparar suites `Feature` y `Unit`:
 
-- Feature: aplicación, health check si existe, contrato de error básico, autenticación login/logout/me y protección administrativa.
+- Feature: aplicación, health check, contrato de error básico, autenticación login/logout/me y protección administrativa.
 - Unit: serialización o utilidades transversales de Foundation que tengan lógica aislada y justifiquen una prueba.
 
 No se agregan pruebas de clientes, citas, inventario, ecommerce, CMS o WhatsApp.
 
 ### Frontend
 
-`Vitest` y `Vue Test Utils` están aprobados para Foundation. La implementación debe incluir una suite pequeña para verificar bootstrap, cliente HTTP, router y los componentes técnicos mínimos que realmente se creen. No se requiere una suite extensa de módulos funcionales.
+`Vitest` 4 y `Vue Test Utils` 2 están aprobados para Foundation. `vue-tsc` 3 será obligatorio para el typecheck de SFC Vue. La implementación debe incluir una suite pequeña para verificar bootstrap, cliente HTTP, router y los componentes técnicos mínimos que realmente se creen. No se requiere una suite extensa de módulos funcionales.
 
 ### E2E
 
@@ -513,7 +549,7 @@ vendor/bin/pint --test
 vendor/bin/phpstan analyse
 ```
 
-`vendor/bin/phpstan analyse` se ejecutará con Larastan configurado para Laravel. La implementación seleccionará una versión estable compatible con Laravel 12 y PHP 8.3+; no se instalará PHPStan directo como alternativa separada.
+`vendor/bin/phpstan analyse` se ejecutará con `larastan/larastan` configurado para Laravel. La implementación seleccionará una versión 3.x compatible con Laravel 13 y PHP 8.3+; no se instalará PHPStan directo como alternativa separada.
 
 ### Frontend gates
 
@@ -524,7 +560,8 @@ npm run test
 npm run build
 ```
 
-`npm run test` será obligatorio en Foundation y ejecutará Vitest con Vue Test Utils.
+`npm run test` será obligatorio en Foundation y ejecutará Vitest 4 con Vue Test Utils 2.
+`npm run typecheck` ejecutará `vue-tsc --noEmit`.
 
 ### Manual checks
 
@@ -548,11 +585,11 @@ La futura implementación debe crear un workflow inicial de GitHub Actions, sin 
 4. Preparación de MySQL 8 para tests de integración, si las pruebas lo requieren.
 5. Ejecución de Pint en modo verificación.
 6. Ejecución de Pest.
-7. Ejecución de Larastan mediante su integración PHPStan.
+7. Ejecución de `larastan/larastan` mediante su integración PHPStan.
 8. Configuración de Node.js compatible.
 9. Instalación reproducible de npm con lockfile cuando exista.
 10. ESLint.
-11. TypeScript typecheck.
+11. `vue-tsc --noEmit`.
 12. Vitest con Vue Test Utils.
 13. Build frontend de producción.
 
@@ -608,7 +645,7 @@ La implementación debe indicar comandos exactos cuando las herramientas y scrip
 
 La implementación futura debe ejecutarse en una rama propia de SPEC, no en `main`, y seguir este orden:
 
-1. Inicializar Laravel 12 y fijar requisitos de PHP.
+1. Inicializar Laravel 13 y fijar PHP 8.3 como mínimo.
 2. Configurar `.env.example`, entorno, MySQL, locale, logging y timezone técnica UTC.
 3. Configurar rutas API versionadas, contrato de respuestas y health check.
 4. Integrar Vue 3, TypeScript, Vite y Tailwind.
@@ -619,9 +656,9 @@ La implementación futura debe ejecutarse en una rama propia de SPEC, no en `mai
 9. Preparar migraciones framework estrictamente necesarias.
 10. Configurar database queue y scheduler sin jobs de dominio.
 11. Configurar Storage local y el enlace público si corresponde.
-12. Añadir Pest y pruebas Feature/Unit.
-13. Añadir Vitest y Vue Test Utils con pruebas frontend mínimas.
-14. Añadir Pint, Larastan, ESLint, typecheck, tests y build como scripts reproducibles.
+12. Añadir Pest 4 y `pestphp/pest-plugin-laravel` con pruebas Feature/Unit.
+13. Añadir Vitest 4, Vue Test Utils 2 y `vue-tsc` con pruebas frontend mínimas.
+14. Añadir Pint, `larastan/larastan`, ESLint, `vue-tsc`, tests y build como scripts reproducibles.
 15. Añadir GitHub Actions sin despliegue.
 16. Ejecutar instalación limpia, pruebas, quality gates y revisiones de alcance.
 17. Actualizar documentación y producir el reporte de SPEC-001.
@@ -632,7 +669,7 @@ Si durante la implementación aparece una decisión no resuelta sobre arquitectu
 
 La SPEC está en `READY`: preparada para aprobación de desarrollo, pero no equivale a `APPROVED FOR DEVELOPMENT`. Una futura implementación no se considerará aceptada hasta cumplir:
 
-1. Laravel 12 inicia correctamente con PHP 8.3+.
+1. Laravel 13 inicia correctamente con PHP 8.3+.
 2. MySQL 8 está configurado mediante entorno y las migraciones framework aprobadas ejecutan sobre una base nueva.
 3. `.env.example` existe y no contiene secretos, tokens reales ni credenciales reales.
 4. Locale y `APP_TIMEZONE=UTC` están configurados; `business_timezone` está preparada como identificador IANA configurable y permanece como dato empresarial pendiente.
@@ -652,8 +689,8 @@ La SPEC está en `READY`: preparada para aprobación de desarrollo, pero no equi
 18. Passwords, sesiones, CSRF, CORS, rate limiting, debug, HTTPS y secretos tienen configuración base documentada.
 19. Pest ejecuta pruebas Feature y Unit mínimas de Foundation.
 20. Las pruebas mínimas cubren arranque, autenticación, protección administrativa y formato de error cuando esos endpoints existan.
-21. Vitest y Vue Test Utils están instalados y cubren la infraestructura frontend mínima.
-22. Pint, Larastan, ESLint, TypeScript typecheck y build se ejecutan mediante scripts reales y pasan.
+21. Vitest, Vue Test Utils y `vue-tsc` están instalados y cubren la infraestructura frontend mínima.
+22. Pint, `larastan/larastan`, ESLint, `vue-tsc` y build se ejecutan mediante scripts reales y pasan.
 23. CI ejecuta dependencias, lint, análisis estático, tests y build sin despliegue.
 24. La documentación de instalación, workers, scheduler y quality gates está disponible.
 25. No se han creado funcionalidades, tablas, endpoints, datos ni dependencias de dominios fuera de SPEC-001.
@@ -672,7 +709,7 @@ La autenticación SPA con cookies depende de host, dominios stateful, HTTPS, `Sa
 
 ### R-003: Framework version compatibility
 
-Laravel 12, PHP, Vite, Tailwind, Node, Pest y herramientas estáticas deben ser compatibles. Mitigación: fijar versiones durante implementación con lockfiles y ejecutar CI limpio.
+Laravel 13, PHP 8.3+, Vite 8, Tailwind, Node, Pest y herramientas estáticas deben ser compatibles. Mitigación: fijar versiones durante implementación con lockfiles y ejecutar CI limpio.
 
 ### R-004: Queue operational dependency
 
@@ -714,13 +751,14 @@ No se requieren Meta, gateways de pago, S3, R2, Cloudinary ni otros proveedores 
 
 ## Proposed ADRs
 
-No se propone crear un ADR nuevo en esta etapa. La integración Laravel + Vue SPA, el modular monolith, Sanctum y database queue ya están establecidos en la documentación base y esta SPEC los concreta para Foundation sin cambiar la decisión arquitectónica.
+La adopción de Laravel 13 está registrada y aceptada en `docs/architecture/adr/ADR-001-adopt-laravel-13.md`. No se propone ningún ADR adicional. La integración Laravel + Vue SPA, el modular monolith, Sanctum y database queue permanecen sin cambios.
 
-Si la revisión humana decide separar orígenes de SPA/API, cambiar autenticación, introducir un proveedor de infraestructura obligatorio o cambiar la cola, deberá crearse un ADR antes de implementar ese cambio.
+Si una decisión posterior separa orígenes de SPA/API, cambia autenticación, introduce un proveedor obligatorio o cambia la cola, deberá crearse otro ADR antes de implementar ese cambio.
 
 ## Required Documentation Updates
 
 - Mantener esta SPEC en estado `READY`; `READY` significa preparada para aprobación de desarrollo y no equivale a `APPROVED FOR DEVELOPMENT`.
+- Mantener la decisión de Laravel 13 respaldada por `ADR-001-adopt-laravel-13.md`.
 - Si se aprueba para desarrollo, registrar el plan aprobado sin modificar el alcance silenciosamente.
 - Durante implementación, actualizar `ARCHITECTURE.md` solo si una decisión aprobada cambia la arquitectura.
 - Completar convenciones detalladas de API, seguridad y desarrollo cuando existan archivos dedicados o como parte del reporte de SPEC.

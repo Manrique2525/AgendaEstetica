@@ -6,7 +6,7 @@ El sistema será un modular monolith en un solo repositorio. Laravel y Vue se de
 
 ## Stack
 
-Laravel 12, PHP 8.3+, MySQL 8, Vue 3, TypeScript, Tailwind CSS, Vite, Sanctum y Pest.
+Laravel 13, PHP 8.3+, MySQL 8, Vue 3, TypeScript, Tailwind CSS, Vite, Sanctum y Pest.
 
 ## Capas backend
 
