@@ -15,6 +15,13 @@
 - Frontend: componentes y flujos donde aporten valor.
 - E2E: flujos críticos de booking, reprogramación, notificaciones, ecommerce y administración.
 
+## Foundation tooling
+
+- Backend: Pest 4, Pest Laravel Plugin 4, PHPUnit, Pint y Larastan 3.
+- Persistencia de tests: MySQL 8.4 LTS en una base y usuario dedicados.
+- Frontend: Vitest 4, Vue Test Utils 2, jsdom, ESLint flat y TypeScript ESLint.
+- Playwright, browser testing, coverage enforcement y mutation testing permanecen fuera de SPEC-001.
+
 ## Comandos previstos
 
 ```text
