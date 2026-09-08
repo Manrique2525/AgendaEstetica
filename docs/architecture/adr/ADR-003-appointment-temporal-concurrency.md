@@ -8,7 +8,7 @@
 
 SPEC-004 Technical Discovery requires a stable temporal and concurrency direction before appointment migrations or Actions are implemented. SPEC-003 stores recurring business rules as local `TIME` values and keeps the technical application timezone at UTC. Appointment Engine introduces concrete dated events, professional overlap and global capacity races.
 
-## Decision Proposed
+## Decision
 
 1. Persist concrete appointment and time-off instants as UTC MySQL `DATETIME` values. Do not use MySQL `TIMESTAMP` for domain instants because session timezone conversion changes returned values.
 2. Keep recurring BusinessHours and ProfessionalSchedule intervals as business-local `TIME` values interpreted through `BusinessProfile.timezone`.

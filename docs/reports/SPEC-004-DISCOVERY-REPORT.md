@@ -61,6 +61,7 @@ service_id
 professional_id
 starts_at DATETIME UTC
 ends_at DATETIME UTC
+duration_minutes positive snapshot
 status string
 created_at
 updated_at
