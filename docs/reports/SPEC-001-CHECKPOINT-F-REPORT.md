@@ -2,9 +2,9 @@
 
 ## Status
 
-`IN PROGRESS - REMOTE CI PENDING`
+`COMPLETE - READY FOR HUMAN REVIEW`
 
-Checkpoint F implementa el workflow de calidad y la auditoria final. La aceptación técnica permanece pendiente hasta verificar el run remoto del commit publicado.
+Checkpoint F implementa el workflow de calidad y la auditoria final. La aceptación técnica queda lista para revisión humana tras verificar el run remoto del commit publicado.
 
 ## Workflow
 
@@ -77,6 +77,20 @@ npm run build                    PASS
 npm audit                        PASS
 ```
 
-## Remaining verification
+## Remote CI Verification
 
-El workflow debe ejecutarse remotamente después del push del commit que lo contiene. No se declarará CI remoto como verde antes de inspeccionar ambos jobs.
+Run exitoso:
+
+```text
+34184249360
+```
+
+- Backend quality: PASS.
+- Frontend quality: PASS.
+- Commit verificado: `d9ae557`.
+
+El workflow genera un `APP_KEY` efímero mediante `php artisan key:generate`; no usa claves de aplicación hardcodeadas.
+
+## Result
+
+La verificación remota de ambos jobs terminó correctamente. Checkpoint F queda completo y listo para aceptación humana; no se realiza merge a `main` ni se inicia SPEC-002.
