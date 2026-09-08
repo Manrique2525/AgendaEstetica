@@ -193,6 +193,7 @@ El symlink está ignorado por Git.
 
 Probe temporal creado con el disk público:
 
+```text
 storage/app/public/foundation-public-probe.txt
 ```
 
@@ -206,6 +207,7 @@ Resultado:
 
 Probe temporal creado con el disk default privado:
 
+```text
 storage/app/private/foundation-private-probe.txt
 ```
 
@@ -226,6 +228,7 @@ private probe: removed
 
 Se mantiene:
 
+```text
 SESSION_DRIVER=database
 ```
 
@@ -233,6 +236,7 @@ SESSION_DRIVER=database
 
 Se mantiene:
 
+```text
 CACHE_STORE=database
 ```
 
