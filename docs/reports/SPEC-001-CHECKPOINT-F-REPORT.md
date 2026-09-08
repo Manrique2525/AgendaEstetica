@@ -4,7 +4,7 @@
 
 `CLOSED`
 
-Checkpoint F implementa el workflow de calidad y la auditoria final. La aceptación técnica queda lista para revisión humana tras verificar el run remoto del commit publicado.
+Checkpoint F implementa el workflow de calidad y la auditoria final. La aceptación técnica fue completada tras verificar el run remoto del commit publicado.
 
 ## Workflow
 
