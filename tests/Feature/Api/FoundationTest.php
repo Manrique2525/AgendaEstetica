@@ -9,7 +9,13 @@ it('returns the health payload', function (): void {
 });
 
 it('returns a JSON 404 for an unknown API route', function (): void {
-    $this->getJson('/api/v1/non-existent')
+    $this->get('/api/v1/non-existent')
+        ->assertNotFound()
+        ->assertJsonStructure(['message'])
+        ->assertHeader('content-type', 'application/json');
+
+    $this->withHeaders(['Accept' => 'application/json'])
+        ->get('/api/v1/non-existent')
         ->assertNotFound()
         ->assertJsonStructure(['message'])
         ->assertHeader('content-type', 'application/json');

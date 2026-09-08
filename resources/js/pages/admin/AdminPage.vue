@@ -2,6 +2,8 @@
 import { useRouter } from 'vue-router';
 import AdminLayout from '../../layouts/AdminLayout.vue';
 import { useAuth } from '../../composables/useAuth';
+import UiButton from '../../components/ui/UiButton.vue';
+import UiCard from '../../components/ui/UiCard.vue';
 
 const router = useRouter();
 const auth = useAuth();
@@ -14,13 +16,13 @@ async function logout(): Promise<void> {
 
 <template>
     <AdminLayout>
-        <section class="rounded-xl border border-slate-200 bg-white p-8 shadow-sm" aria-labelledby="admin-title">
-            <p class="text-sm font-medium uppercase tracking-wide text-slate-500">Admin surface</p>
-            <h1 id="admin-title" class="mt-3 text-3xl font-semibold tracking-tight">Sesión administrativa activa</h1>
-            <p class="mt-4 text-slate-600">{{ auth.user.value?.name }} · {{ auth.user.value?.email }}</p>
-            <button class="mt-6 rounded-md border border-slate-300 px-4 py-2 text-sm font-medium" type="button" @click="logout">
+        <UiCard>
+            <p class="font-ui text-sm font-semibold uppercase tracking-[0.16em] text-text-secondary">Administración técnica</p>
+            <h1 id="admin-title" class="mt-4 font-display text-4xl leading-none text-text-primary">Sesión activa</h1>
+            <p class="mt-6 break-words font-body text-base text-text-secondary">{{ auth.user.value?.name }} · {{ auth.user.value?.email }}</p>
+            <UiButton class="mt-8" variant="secondary" type="button" @click="logout">
                 Cerrar sesión
-            </button>
-        </section>
+            </UiButton>
+        </UiCard>
     </AdminLayout>
 </template>
