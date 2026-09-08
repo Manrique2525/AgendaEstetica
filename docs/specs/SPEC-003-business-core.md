@@ -100,15 +100,16 @@ SPEC-003 is proposed as a shared business-domain foundation with these boundarie
 
 Purpose: represent confirmed business identity and operational contact values that are business data rather than deployment secrets.
 
-Candidate attributes to validate during Discovery:
+Approved conceptual fields for implementation planning:
 
+- standard `id`;
+- singleton guard;
 - business name;
-- slogan;
-- confirmed location text and postal code;
-- confirmed phone/WhatsApp number;
-- active/public visibility only if a consumer requires it.
+- phone;
+- IANA timezone;
+- maximum simultaneous clients.
 
-No legal entity, tax data, email or street address may be invented.
+The slogan and presentation-only location information are confirmed business data but are not required operational invariants for this Core persistence model. No legal entity, tax data, email or incomplete street address may be invented.
 
 BusinessProfile is operational identity/configuration only. It must not become CMS storage for hero content, marketing sections, promotions, gallery, testimonials, FAQ, social presentation, landing SEO copy or arbitrary page content. Those concepts belong to CMS/Landing.
 
@@ -116,7 +117,7 @@ BusinessProfile is operational identity/configuration only. It must not become C
 
 Purpose: represent recurring business wall-clock availability as typed business data.
 
-Scope includes only the conceptual recurring weekly hours needed by later scheduling modules, but not availability calculation, appointments or booking.
+Approved conceptual model: recurring weekly interval rows owned by the business profile, with weekday, interval order, opening time and closing time. It does not include availability calculation, appointments or booking.
 
 The confirmed reference `10:00-20:00 every day` is input data, not permission to seed production records automatically.
 
@@ -148,7 +149,7 @@ Conceptual attributes to validate:
 - professional compatibility relation;
 - pricing behavior without inventing actual prices.
 
-The exact money/pricing model is an open decision. A service may need a starting price rather than one fixed price because the business explicitly allows variable pricing.
+The approved pricing model is a PHP backed `ServicePricingType` persisted as a string with `fixed`, `starting_from` and `variable` values plus a nullable `DECIMAL(10,2)` amount. Fixed and starting-from require a non-negative amount; variable requires a null amount. No currency column is needed for the single-business MXN context.
 
 ### Professional - IN
 
@@ -158,8 +159,7 @@ Conceptual attributes to validate:
 
 - display name;
 - active status;
-- display order;
-- assignability state.
+- timestamps only if implementation conventions require them.
 
 Professionals are not authenticated users and receive no credentials, permissions or login flow in SPEC-003.
 
@@ -169,15 +169,18 @@ Purpose: express which professionals can perform which services.
 
 The relationship is shared domain data. Professional shifts, blocks, duration overrides and availability calculations remain deferred.
 
+The approved persistence direction is a minimal pivot with `professional_id` and `service_id`, no relationship timestamps and no custom pricing/duration/commission/priority fields. Exact index/FK syntax remains an implementation concern after Discovery.
+
 ### Customer - IN as identity foundation
 
 Purpose: represent a client who requests appointments or may later interact with commerce, without requiring an application account in V1.
 
-Conceptual data should remain minimal and privacy-conscious:
+Approved conceptual data should remain minimal and privacy-conscious:
 
 - name;
-- normalized phone/WhatsApp contact;
-- consent/contact metadata only if a concrete future consumer requires it.
+- phone display/original representation;
+- canonical normalized phone representation;
+- no marketing profile or generic consent collection.
 
 Customer authentication, passwords, roles and login are explicitly out of scope.
 
@@ -185,11 +188,13 @@ Customer authentication, passwords, roles and login are explicitly out of scope.
 
 Marketing consent, WhatsApp promotional opt-in, notification preferences, campaign consent and opt-out workflows are deferred to Notification/Meta WhatsApp scopes. Core may retain only strictly necessary operational contact/consent metadata after a concrete consumer and privacy decision exist.
 
+The approved customer contact direction is a display/input phone value plus a canonical normalized phone value for lookup. Normalization must trim, remove presentation separators, preserve an explicit `+`, convert an explicit `00` prefix, and normalize unprefixed 10-digit Mexican numbers to `+52` plus the digits. This is a conservative operational strategy, not full international numbering-plan validation; no phone library is added.
+
 ### CapacityConfiguration - IN as configuration concept
 
 Purpose: hold the general capacity reference needed by later appointment rules.
 
-The current business reference is up to 8 simultaneous clients. The concept is approved, but its persistence model is `DISCOVERY REQUIRED`; the Appointment Engine owns enforcement, conflict resolution and recalculation.
+The current business reference is up to 8 simultaneous clients. Its persistence representation is approved as a typed field on `business_profiles`; the Appointment Engine owns enforcement, conflict resolution and recalculation.
 
 ## Concepts Explicitly Deferred
 
@@ -314,13 +319,13 @@ No relationship is implemented or migrated by this definition task.
 
 ## Business-profile/settings assessment
 
-`BusinessProfile` is proposed `IN` because confirmed identity/contact values are shared by future public/admin consumers and are distinct from `.env` infrastructure. A generic key/value `settings(key, value)` table is not approved by this draft.
+`BusinessProfile` is approved as a typed singleton operational root because identity/contact/configuration values are business data distinct from `.env`. It is not a tenant, CMS container or generic settings table. A database-visible singleton guard is required; do not rely on `id = 1`.
 
 Typed configuration concepts are preferred where semantics are known: profile, hours, timezone and capacity. Remaining settings require Discovery evidence before inclusion.
 
 ## Business-hours assessment
 
-`BusinessHours` is proposed `IN` as a typed shared configuration concept for recurring weekly hours only. Exception ownership must be deferred; availability computation, shifts, blocks and enforcement belong to Appointment Engine.
+`BusinessHours` is approved as typed recurring weekly interval rows owned by `business_profiles`. Exception ownership is deferred; availability computation, shifts, blocks and enforcement belong to Appointment Engine.
 
 The confirmed reference `10:00-20:00 every day` must not become an automatic production seed without explicit business-data confirmation.
 
@@ -332,19 +337,19 @@ Technical instants remain UTC. Local recurring rules are interpreted later at do
 
 ## Professionals assessment
 
-`Professional` and `ProfessionalService` are proposed `IN` as base resources/relationships. Names are data supplied by the business, so no real professionals are seeded or invented. Shifts, blocks, schedules, permissions and login are deferred.
+`Professional` and `ProfessionalService` are approved as base resources/relationships. The minimal Professional model is identity, active state and timestamps; names are business data supplied later. Shifts, blocks, schedules, permissions and login are deferred.
 
 ## Services assessment
 
-`ServiceCategory` and `Service` are proposed `IN` as base operational catalog concepts. Duration, active state, category and professional compatibility must be modeled conceptually. Pricing behavior requires Discovery; actual service names/prices remain pending business data.
+`ServiceCategory` and `Service` are approved as base operational catalog concepts. Service duration, active state, category and professional compatibility are in scope. Pricing is `pricing_type` plus nullable amount with the approved modes `fixed`, `starting_from` and `variable`; actual service names/prices remain pending business data.
 
 ## Customers assessment
 
-`Customer` is proposed `IN` as a minimal identity foundation because later appointment and commerce modules need a shared client reference. Customer accounts, authentication, passwords and roles remain out of scope. The exact consent/contact fields require Discovery and privacy review.
+`Customer` is approved as a minimal identity foundation with name, display phone and canonical normalized phone. Customer accounts, authentication, passwords, roles and marketing consent remain out of scope.
 
 ## Capacity-settings assessment
 
-`CapacityConfiguration` is proposed `IN` as a concept. Persistence is `DISCOVERY REQUIRED`: Discovery must compare a typed field on business operational configuration with a dedicated typed entity/table using ownership and lifecycle evidence. Enforcement and conflict resolution belong to Appointment Engine. No production setting is seeded by this draft.
+`CapacityConfiguration` is approved as the typed `max_simultaneous_clients` field on `business_profiles`. No dedicated table or generic settings record is needed by default. Enforcement and conflict resolution belong to Appointment Engine. No production setting is seeded by this draft.
 
 ## Deposit-policy assessment
 
@@ -356,11 +361,35 @@ One domain concept does not necessarily equal one database table. Discovery must
 
 ## Soft-delete Status
 
-`DISCOVERY REQUIRED` per entity. No global `SoftDeletes` policy is approved. Discovery must evaluate historical references, restoration value, uniqueness implications and whether active/inactive state is sufficient.
+The approved matrix is:
+
+| Concept | SoftDeletes | Reason |
+| --- | --- | --- |
+| BusinessProfile | NO | Protected singleton configuration. |
+| BusinessHours | NO | Replace current weekly rules; exceptions are deferred. |
+| ServiceCategory | NO | Preserve references and deactivate. |
+| Service | NO | Preserve future references and deactivate. |
+| Professional | NO | Preserve future references and deactivate. |
+| ProfessionalService | NO | Minimal compatibility pivot. |
+| Customer | NO for this SPEC | Retention/anonymization requires a future privacy decision. |
+
+No global soft-delete architecture is approved.
 
 ## Active / Inactive Strategy Status
 
-`DISCOVERY REQUIRED` for ServiceCategory, Service and Professional. Discovery must compare explicit active/inactive state with deletion semantics and future historical references.
+ServiceCategory, Service and Professional use an active/inactive lifecycle. BusinessProfile, BusinessHours, ProfessionalService and Customer do not receive an active flag by default.
+
+## Persistence Recommendations
+
+- Standard Laravel BIGINT-style IDs.
+- `business_profiles` has a database-visible singleton guard with a constant unique scope value; no implicit `id = 1` rule.
+- `business_hours` owns `business_profile_id`, ISO weekday 1-7, interval order, `opens_at` and `closes_at`.
+- `business_hours` requires `opens_at < closes_at` and unique profile/weekday/open/close identity.
+- `services` uses `DECIMAL(10,2)` amount and a string-backed pricing enum concept.
+- `professional_service` has no timestamps or extra business fields by default.
+- `customers.phone_normalized` is indexed but not unique.
+- `ProfessionalService` pairs are unique and indexed in both useful lookup directions.
+- No migration, model or enum is created by this definition.
 
 ## Database Impact
 
@@ -368,20 +397,21 @@ No database changes are authorized by this definition.
 
 Future Discovery must evaluate conceptual tables/entities for:
 
-- business profile/configuration;
-- business hours and timezone;
-- capacity configuration;
-- service categories and services;
-- professionals and professional-service relationship;
-- customers.
+- `business_profiles`;
+- `business_hours`;
+- `service_categories`;
+- `services`;
+- `professionals`;
+- `professional_service`;
+- `customers`.
 
-Discovery must verify current Laravel migration/model naming, BIGINT conventions, foreign-key direction, indexes, uniqueness, timestamps and soft-delete implications. No migration is designed or created here.
+These are the recommended conceptual table set, not implementation approval. Discovery already verified current Laravel migration/model naming, BIGINT conventions, foreign-key direction, indexes, uniqueness, timestamps and soft-delete implications at the recommendation level. No migration is designed or created here.
 
 ## API Impact
 
 No API endpoints are authorized by this definition.
 
-Future implementation may need authenticated admin API boundaries under `/api/v1/admin/*`, but exact resources, actions, contracts and pagination require Discovery. Public exposure of services/professionals/customers is deferred to later modules.
+No API is required for SPEC-003 by default. Any future authenticated admin API under `/api/v1/admin/*` must be justified by a consumer SPEC or an approved scope amendment. Public exposure of services/professionals/customers is deferred to later modules.
 
 Existing JSON error conventions, Sanctum sessions and backend authority remain unchanged.
 
@@ -389,7 +419,7 @@ Existing JSON error conventions, Sanctum sessions and backend authority remain u
 
 `NONE for this definition`.
 
-Future implementation classification: likely `DOMAIN/API FOUNDATION` first, with admin CRUD consumers only if the approved implementation plan requires them. No business page, dashboard, navigation or public consumer is authorized in this draft.
+Future implementation classification: `DOMAIN/PERSISTENCE FOUNDATION` first. No frontend, admin CRUD consumer, dashboard, navigation or public consumer is approved by default.
 
 ## Admin UI Boundary
 
@@ -509,23 +539,22 @@ Mitigation: decide per entity after relationship/history analysis; do not apply 
 
 Mitigation: classify admin-only/future-public/internal representations before endpoints.
 
-## Open Decisions
+## Resolved Discovery Decisions
 
-### Discovery Required
-
-- Exact entity/table boundaries for BusinessProfile, BusinessHours, BusinessTimezone and CapacityConfiguration.
-- Typed settings persistence strategy versus dedicated domain models.
-- Service pricing representation for variable/starting prices.
-- Customer phone normalization, consent fields and privacy retention.
-- Soft-delete policy per entity.
-- Whether Business Core owns weekly hours or only shared configuration consumed by Appointment Engine.
-- Exact admin API resource/action boundaries.
-- Required indexes and uniqueness constraints.
+- Single-business typed `business_profiles` root; no multitenancy.
+- Seven-table conceptual set: `business_profiles`, `business_hours`, `service_categories`, `services`, `professionals`, `professional_service` and `customers`.
+- Weekly interval rows for BusinessHours with ISO weekday and no exception calendar.
+- Typed capacity field on `business_profiles`; no capacity table by default.
+- `fixed`, `starting_from` and `variable` pricing modes with nullable `DECIMAL(10,2)` amount.
+- Canonical normalized customer phone indexed but not unique; no phone dependency.
+- Active/inactive lifecycle for categories, services and professionals; no global soft deletes.
+- No mandatory SPEC-003 API or frontend consumer.
+- No generic settings table, generic repositories, UI framework or new dependency.
 
 ### Development-Approval Blockers
 
-- None at definition stage; the scope must still be reviewed and Discovery authorized before implementation.
-- A persistence strategy that changes architecture or introduces a generic cross-domain settings system would require review and potentially an ADR before development approval.
+- None.
+- Discovery recommendations are ready for review; implementation remains unauthorized until explicit approval.
 
 ### Business-Data Pending
 
@@ -536,11 +565,16 @@ Mitigation: classify admin-only/future-public/internal representations before en
 - Deposit/cancellation/no-show policies.
 - Final contact/policy data beyond the confirmed values.
 
+### Deferred to Later SPECs
+
+- Appointment states, availability, overlap, capacity enforcement, schedules, blocks and rescheduling.
+- Deposit, cancellation, no-show and notification consent policies.
+- Public APIs, Admin Agenda UI, CMS and ecommerce consumers.
+
 ### Non-Blocking
 
 - Exact namespaces/folder names after Discovery verifies current conventions.
 - Exact action/class names.
-- Whether admin CRUD consumers are implemented in a later checkpoint or a separate admin-focused SPEC.
 - Exact ordering field semantics where no consumer requires it yet.
 
 ## ADR Assessment
@@ -577,7 +611,7 @@ The following criteria are future implementation criteria and are not passed by 
 15. Existing Foundation/SPEC-002 frontend and backend gates remain green.
 16. No generic repository pattern, UI framework, unrelated dependency or business seed data is introduced.
 17. Documentation, implementation report and remote CI evidence are complete.
-18. Human acceptance is recorded before SPEC-003 changes from `DRAFT` to a development status.
+18. Human acceptance is recorded before SPEC-003 changes from `READY FOR DEVELOPMENT APPROVAL` to a development status.
 
 ## Definition of Done
 
@@ -597,7 +631,7 @@ The following criteria are future implementation criteria and are not passed by 
 
 ## Discovery Requirements
 
-Future Technical Discovery must inspect:
+Technical Discovery was completed in `docs/reports/SPEC-003-DISCOVERY-REPORT.md`. The resulting evidence and recommendations are:
 
 - Existing users model/migration and auth boundaries.
 - Existing technical migrations and naming/ID conventions.
@@ -613,10 +647,10 @@ Future Technical Discovery must inspect:
 - Appointment Engine, Admin Agenda, Public Booking and ecommerce dependency graph.
 - MySQL 8.4 migrations and dedicated test database isolation.
 - Potential authorization/audit implications.
-- Whether a minimal admin API is required now or should be deferred to an admin-focused consumer SPEC.
-- Whether any frontend consumer is needed at all for Business Core.
+- No mandatory admin API is required for SPEC-003 by default.
+- No frontend consumer is required for SPEC-003 by default.
 
-Discovery must produce evidence and recommendations only. It must not implement models, migrations, endpoints, services or UI.
+No Discovery implementation, migration, model, endpoint, service or UI was performed.
 
 ## Implementation Boundaries
 
@@ -651,23 +685,15 @@ These are proposals for later review, not authorization:
 - Acceptance evidence: Feature/Unit tests, safe errors and authorization coverage.
 - Stop condition: stop if a rule belongs to Appointment Engine or another deferred module.
 
-### Checkpoint C - Approved admin API foundation
+### Checkpoint C - Integrity and lifecycle hardening
 
-- Objective: expose only approved authenticated admin resources/actions if the plan requires them.
-- Scope: `/api/v1/admin/*` contracts, Form Requests, Resources and authorization.
-- Dependencies: Checkpoints A-B and API contract review.
-- Acceptance evidence: contract tests, JSON errors, permissions and no public leakage.
-- Stop condition: stop before adding public booking or customer-facing endpoints.
+- Objective: verify constraints, FK delete behavior, active/inactive lifecycle, phone/privacy and race/integrity cases.
+- Scope: domain/database integrity only; no API or UI.
+- Dependencies: Checkpoints A-B and approved business rules.
+- Acceptance evidence: constraint, relationship, normalization and privacy tests.
+- Stop condition: stop before adding appointment, public booking, CMS or ecommerce behavior.
 
-### Checkpoint D - Approved admin/API boundary, if required
-
-- Objective: expose only an approved admin/API boundary if Discovery proves it belongs to Core.
-- Scope: domain/API only by default; no dashboard or broad CRUD UI.
-- Dependencies: approved API necessity and Design System review if a consumer is later authorized.
-- Acceptance evidence: contract tests and no public leakage or module navigation speculation.
-- Stop condition: defer UI to Admin Agenda and public behavior to Public Booking when the consumer becomes a separate module.
-
-### Checkpoint E - Tests, documentation and final audit
+### Checkpoint D - Final tests and audit
 
 - Objective: verify scope, security, privacy, quality, CI and documentation.
 - Scope: all approved Core behavior only.
@@ -684,7 +710,7 @@ It becomes too large if it includes appointment availability, public booking, ad
 ## Definition State
 
 ```text
-SPEC-003: DRAFT
-Discovery: NOT AUTHORIZED
+SPEC-003: READY FOR DEVELOPMENT APPROVAL
+Discovery: COMPLETED
 Implementation: NOT AUTHORIZED
 ```
