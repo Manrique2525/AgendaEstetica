@@ -12,7 +12,7 @@ Business Core
 
 `APPROVED FOR DEVELOPMENT / IN PROGRESS`
 
-Esta SPEC tiene aprobación de desarrollo para los Checkpoints A y B. El Checkpoint C y cualquier SPEC posterior no están autorizados.
+Esta SPEC tiene aprobación de desarrollo para los Checkpoints A, B y C. El Checkpoint D y cualquier SPEC posterior no están autorizados.
 
 ## Objective
 
@@ -716,6 +716,6 @@ SPEC-003: APPROVED FOR DEVELOPMENT / IN PROGRESS
 Discovery: COMPLETED
 Checkpoint A: COMPLETED
 Checkpoint B: COMPLETED
-Checkpoint C: NOT AUTHORIZED
+Checkpoint C: IN PROGRESS
 Checkpoint D: NOT AUTHORIZED
 ```
