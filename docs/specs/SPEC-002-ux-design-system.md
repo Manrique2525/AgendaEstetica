@@ -10,15 +10,22 @@ UX and Design System Foundation
 
 ## Status
 
-`READY FOR DISCOVERY`
+`READY FOR DEVELOPMENT APPROVAL`
 
-Esta SPEC tiene el alcance aprobado para Discovery. No autoriza implementación, instalación de dependencias ni cambios en la aplicación.
+Esta SPEC tiene el alcance y las decisiones técnicas principales definidos después de Discovery. Queda pendiente de aprobación humana explícita para iniciar desarrollo; este estado no autoriza implementación, instalación de dependencias ni cambios en la aplicación.
 
 ## Owner / Approval Model
 
 - Owner: pendiente de asignación formal; la definición queda bajo revisión del proyecto.
 - Approval model: aceptación explícita del responsable del proyecto después de revisar alcance, decisiones abiertas, riesgos y Acceptance Criteria.
-- El estado `READY FOR DISCOVERY` permite únicamente Discovery autorizado explícitamente; no equivale a `APPROVED FOR DEVELOPMENT`.
+- El estado `READY FOR DEVELOPMENT APPROVAL` significa que la definición y Discovery están completos y que se espera autorización humana explícita; no equivale a `APPROVED FOR DEVELOPMENT`.
+
+## Discovery Assessment
+
+- SPEC-002 Technical Discovery: `COMPLETED`.
+- Technical assessment: `PASS`.
+- Implementation readiness: `READY FOR HUMAN DEVELOPMENT APPROVAL`.
+- Application implementation: `NOT AUTHORIZED`.
 
 ## Objective
 
@@ -77,10 +84,10 @@ SPEC-002 consumes, but does not reimplement, the following baseline:
 
 ### External dependencies
 
-- No new runtime or UI package is approved by this draft.
+- No new runtime or UI package is required by the Discovery result.
 - Existing browser and CSS capabilities are preferred.
-- Brand font files, licenses and logo assets are not confirmed in the repository and must be investigated before implementation.
-- No image provider, CDN, font provider or design asset vendor is required by this SPEC.
+- Font binaries are not yet in the repository; implementation must obtain only approved files from the official upstream project or authoritative Google Fonts distribution and preserve license notices.
+- No remote font provider, image provider, CDN, font provider or design asset vendor is required or approved as a runtime dependency.
 
 ### Technical placeholder rule
 
@@ -107,21 +114,17 @@ Mientras el logo oficial no esté disponible, Discovery y cualquier trabajo téc
 - Define mobile-first behavior for small phone, large phone, tablet and desktop ranges without hardcoding commercial device names.
 - Define semantic and keyboard-accessible interaction requirements.
 - Define presentation-only treatment for the existing technical pages.
-- Define a technical showcase or equivalent verification surface only if it is needed to prove variants; it must not become a business page.
+- Use the existing technical pages as consumers; no dedicated showcase route is required by default.
 - Define testing, review, documentation and CI expectations for a future implementation.
 
 ### Required component candidates
 
-The following components are required for implementation only when their variants are proven useful by the technical pages or showcase:
+The following components are required only when their variants are proven useful by the existing technical pages:
 
-- `Container`.
-- `Section`.
 - `Button` with default, secondary, quiet, disabled and loading states.
-- `FormField`.
-- `Input`.
-- `Textarea` only if the showcase or existing technical flows need it.
-- `Card`.
-- `Badge` only if a meaningful technical state needs it.
+- `FormField` and `Input` for `/admin/login`.
+- `Container` or an equivalent shared layout convention.
+- One surface primitive, `Section` or `Card`, selected from actual duplication evidence rather than implementing both speculatively.
 - Loading, empty and error states where the existing technical flows can demonstrate them.
 
 ### Deferred component candidates
@@ -129,13 +132,15 @@ The following components are required for implementation only when their variant
 The following remain deferred until a real flow requires them:
 
 - `Select`.
+- `Textarea`.
 - `Checkbox`.
 - `Radio`.
+- `Badge`.
 - `Modal`/`Dialog`.
 - `Spinner` as a standalone component if an inline loading treatment is sufficient.
 - Navigation menus, tables, date pickers, calendars, tabs, drawers and data visualization.
 
-No deferred component is to be created speculatively.
+No deferred component is to be created speculatively. The governing principle is `abstract after evidence, not before evidence`.
 
 ## Out of Scope
 
@@ -179,6 +184,13 @@ Only confirmed brand information may be used:
 
 The implementation must expose these through semantic tokens rather than scattering raw brand hex values across components. Additional neutral or state colors must be classified as technical tokens and must not be presented as confirmed brand colors.
 
+The approved token model has two conceptual layers:
+
+1. Brand primitives: only the confirmed values above.
+2. Semantic UI tokens: roles equivalent to `surface`, `surface-elevated`, `text-primary`, `text-secondary`, `border`, `action-primary`, `action-secondary`, `focus`, `error` and `success`.
+
+Final token names may be adjusted during the first implementation checkpoint, but components must consume semantic roles rather than repeated brand hex values.
+
 ## Typography
 
 Confirmed type direction:
@@ -188,15 +200,25 @@ Confirmed type direction:
 - `Poppins Regular` for body text.
 - `Montserrat Bold` for buttons, prices and promotions.
 
-The implementation must decide the loading strategy before coding:
+Discovery resolved the font distribution strategy as follows:
 
-- Prefer self-hosted, licensed font files if the project actually possesses the assets and licenses.
-- Do not add remote font loading by assumption.
-- If the assets or licensing are unavailable, use documented fallback stacks while the decision remains open.
-- Use `font-display` appropriate to the selected strategy and avoid blocking first render.
-- Keep privacy and network behavior explicit if a provider is ever proposed.
+- Hosting: `SELF-HOSTED`.
+- Runtime provider: Google Fonts CDN is rejected for the current architecture.
+- Source policy: obtain binaries only from the official upstream project or authoritative Google Fonts distribution.
+- Format preference: WOFF2 when the authoritative distribution provides it.
+- Do not silently convert TTF/OTF to WOFF2; stop and document the decision if conversion becomes necessary.
+- Preserve the corresponding SIL Open Font License 1.1 copyright/license notices and reserved font names.
+- No font npm package or loader package is required.
 
-Fallback stacks must preserve readable contrast, wrapping and hierarchy. No font package is installed as part of SPEC definition.
+Initial implementation weights are limited to:
+
+- Cormorant Garamond: `700` Bold.
+- Montserrat: `600` SemiBold and `700` Bold.
+- Poppins: `400` Regular.
+
+Do not load all weights, all italics or complete families unnecessarily. Use a non-blocking `font-display` strategy after implementation testing and retain documented fallback stacks.
+
+Fallback stacks must preserve readable contrast, wrapping and hierarchy. Font binaries are not added during definition finalization.
 
 ## Visual Direction
 
@@ -221,9 +243,11 @@ Guidance:
 
 ## Design Token Strategy
 
-The proposed token strategy is CSS-first and compatible with Tailwind CSS 4:
+The approved token strategy is CSS-first and compatible with Tailwind CSS 4:
 
-- Define semantic custom properties in the CSS integration point.
+- Use `@theme` for brand primitives and other tokens that should participate directly in Tailwind utilities.
+- Use CSS custom properties and `:root` for semantic/runtime variables that do not need to generate utilities directly.
+- Use an explicit `@theme inline` mapping only when a semantic role must be exposed as a utility.
 - Expose color roles such as background, surface, foreground, muted, primary, accent, success, warning, danger and focus.
 - Map confirmed brand values to roles without making every brand color a component-specific utility.
 - Define only spacing, radii and shadows that demonstrate repeated use; do not build a speculative scale.
@@ -231,7 +255,7 @@ The proposed token strategy is CSS-first and compatible with Tailwind CSS 4:
 - Prefer default Tailwind breakpoints unless a concrete layout requirement proves a custom breakpoint necessary.
 - Document any token that is technical-neutral rather than confirmed brand identity.
 
-The implementation must not revert to a Tailwind CSS 3 configuration model or create a second token source.
+The implementation must not create `tailwind.config.js`, revert to a Tailwind CSS 3 configuration model or create a second token source unless extraordinary future evidence is documented and reviewed.
 
 ## UX Requirements
 
@@ -264,7 +288,7 @@ The implementation must not revert to a Tailwind CSS 3 configuration model or cr
 | `/admin` | Restyle the authenticated technical state | No dashboard modules, metrics or business actions |
 | NotFound | Restyle the existing technical error surface | Preserve router behavior and accessible error communication |
 
-The exact showcase composition is an implementation decision within this scope, not authorization to add business pages.
+No dedicated showcase route is required by default. The existing `/` route remains a technical consumer and must not become a commercial landing page. Any later showcase exception must remain technical, removable and separately justified.
 
 ## Backend Requirements
 
@@ -369,7 +393,7 @@ npm audit
 GitHub Actions backend and frontend jobs
 ```
 
-PHP gates must remain green even if the implementation changes only frontend presentation. No CI workflow changes are authorized by this draft.
+PHP gates must remain green even if the implementation changes only frontend presentation. Discovery found the current `quality.yml` sufficient; no CI workflow changes are required by SPEC-002 unless implementation evidence proves otherwise.
 
 ## Edge Cases
 
@@ -387,11 +411,11 @@ PHP gates must remain green even if the implementation changes only frontend pre
 
 ### R-201: Brand assets are incomplete
 
-The confirmed color and font direction exists, but logo files, font files, licenses and approved photography are not confirmed. Mitigation: keep assets as explicit discovery inputs and use technical placeholders only.
+The official logo is not available in the repository and approved photography remains absent. Mitigation: keep logo-dependent acceptance asset-specific and use only text or neutral technical placeholders. Font licensing and hosting strategy were resolved by Discovery.
 
 ### R-202: Font loading choice affects privacy and performance
 
-Self-hosting, provider loading and system fallback have different licensing, privacy and rendering consequences. Mitigation: Discovery must produce evidence and a recommendation; the decision blocks development approval, not Discovery.
+Self-hosting still requires the approved files, limited weights and preserved OFL notices. Mitigation: use the resolved self-hosted policy and stop before adding binaries if authoritative assets or licensing evidence are unavailable.
 
 ### R-203: Design-system scope grows into business UI
 
@@ -405,54 +429,82 @@ Different surface needs may cause duplicated colors and spacing. Mitigation: sha
 
 Aesthetic changes can regress labels, focus, status semantics or reduced motion. Mitigation: include accessibility review and targeted tests in Acceptance Criteria and Definition of Done.
 
-## Open Decisions
+## Resolved Decisions
 
-### A. Discovery decisions
+### Tailwind and token architecture
 
-1. **Font availability and loading strategy**
-   - Status: `OPEN — DISCOVERY REQUIRED`.
-   - Blocking stage: `APPROVED FOR DEVELOPMENT`.
-   - Does not block: `DISCOVERY`.
-   - Discovery must determine confirmed license, approved distribution source, self-hosting feasibility, external-provider implications, privacy, performance, `font-display` behavior, fallback stack, required weights and bundle/network impact for Cormorant Garamond, Montserrat and Poppins.
-   - Discovery must not choose Google Fonts CDN, Fontsource or manual font binaries without evidence and approval.
+- `Tailwind CSS 4` with a CSS-first architecture is approved.
+- Use `@theme` for brand primitives and tokens that must generate Tailwind utilities.
+- Use CSS custom properties and `:root` for semantic/runtime values that do not need direct utility generation.
+- Use `@theme inline` only for explicit semantic-to-utility mappings.
+- Do not create `tailwind.config.js` unless extraordinary future evidence is documented and reviewed.
 
-2. **Official logo availability**
-   - Status: `OPEN — ASSET VERIFICATION REQUIRED`.
-   - Does not block: `DISCOVERY`.
-   - May block: implementation and acceptance criteria that specifically require the official logo.
-   - Discovery must verify whether an approved original logo exists, available formats, SVG/vector availability, PNG/raster availability, supplied light/dark variants, minimum usable resolution and brand-color fidelity.
-   - Discovery must not redraw, generate, trace or modify a logo asset without authorization.
+### Font hosting and loading
 
-3. Confirm whether the technical showcase should be the `/` page or a non-public development-only route, without exposing a business page.
-4. Confirm whether the admin surface should use the same dark-first treatment as the public surface or a quieter light operational variant.
-5. Confirm whether a custom breakpoint is actually needed after layout prototypes; default Tailwind breakpoints are preferred.
-6. Confirm exact Spanish copy for technical empty/error/loading examples; this does not block Discovery if placeholders remain clearly technical.
+- Status: `RESOLVED`.
+- Strategy: `SELF-HOSTED`.
+- Google Fonts CDN is rejected as a runtime provider for this architecture.
+- Approved source: official upstream project or authoritative Google Fonts distribution.
+- Preferred format: WOFF2 when officially available.
+- Initial weights: Cormorant Garamond 700; Montserrat 600 and 700; Poppins 400.
+- Do not silently convert TTF/OTF to WOFF2; stop and document any required conversion.
+- Preserve SIL Open Font License 1.1 notices and reserved names.
+- No font npm package or loader package is approved by default.
 
-### B. Development-approval blockers
+### Logo availability and fallback
 
-1. Resolve the font strategy with Discovery evidence before changing this SPEC to `APPROVED FOR DEVELOPMENT` if typography implementation depends on supplied font assets or an external provider.
-2. Resolve whether the official logo is available before approving logo-dependent implementation or acceptance criteria. If it is unavailable, approve the text-only or neutral-placeholder boundary explicitly.
-3. Confirm that any durable provider, component-library or cross-application token decision is either rejected or documented through an approved ADR before implementation.
+- Official logo in repository: `NOT AVAILABLE`.
+- Status: `NON-BLOCKING FOR CORE IMPLEMENTATION`.
+- Until an approved asset is supplied, use only `Salón y Barbería Yaris` as a text wordmark or a neutral technical placeholder when strictly necessary.
+- Do not generate, draw, trace, recolor or use an AI replacement.
+- Logo-specific criteria are `ASSET-DEPENDENT` and may remain pending without blocking the core Design System.
 
-### C. Non-blocking implementation details
+### Dependency and framework policy
 
-1. Exact token names, component prop names and file organization may be selected during approved implementation within this scope.
-2. Exact neutral technical placeholder copy may be selected during implementation without inventing business claims.
-3. Default Tailwind breakpoints remain preferred unless implementation evidence justifies a scoped custom breakpoint.
+- New npm runtime dependencies: `NONE`.
+- New Composer dependencies: `NONE`.
+- External UI framework: `NONE`.
+- Animation library: `NONE`.
+- Icon library: `NONE` unless a later real consumer justifies one.
+- Axe-based accessibility checks: `RECOMMENDED` for later implementation review, `DEFERRED`, not required as a new dependency now.
+- Modal/Dialog, standalone spinner, toast system and other speculative components: `DEFERRED`.
+
+### Showcase and surface policy
+
+- No dedicated showcase route is required by default.
+- Existing `/` remains a technical surface and may be restyled without becoming a commercial landing page.
+- Public and admin share one design system; they may differ in layout, density, navigation and content hierarchy.
+
+## Pending Asset-Specific Items
+
+- Official logo asset and any logo-dependent acceptance evidence remain pending.
+- Exact font binaries and deployment asset path remain implementation inputs; the hosting, source, weight and licensing policy is resolved.
+- Exact token names, component prop names, file organization, neutral technical copy and any custom breakpoint remain non-blocking implementation details.
+
+## Implementation Readiness
+
+- Discovery: `COMPLETED`.
+- Architecture decisions: `SUFFICIENT`.
+- Entire-SPEC implementation blockers: `NONE`.
+- Official logo: pending, non-blocking for core implementation and asset-specific acceptance only.
+- Font strategy: `RESOLVED`.
+- New runtime dependencies: `NONE`.
+- Backend/API/database changes: `NONE`.
+- Readiness: `READY FOR HUMAN DEVELOPMENT APPROVAL`.
 
 ## External Dependencies
 
 - Existing browser CSS support for custom properties, `:focus-visible`, media queries and reduced-motion preferences.
-- Approved font assets and licenses, if self-hosting is selected.
-- No external UI framework, animation package, icon package, font package or image provider is required by this draft.
+- Approved font assets and licenses under the resolved self-hosting policy are implementation inputs.
+- No external font provider, UI framework, animation package, icon package, font package or image provider is required.
 
 ## ADR Assessment
 
-No ADR is created by this definition task.
+No ADR is created by this definition or Discovery finalization. The approved CSS-first token strategy and self-hosted font policy do not change application architecture.
 
 Potential ADR candidates only if a later approved implementation makes a durable architectural choice:
 
-- Mandatory external font provider or a project-wide self-hosting policy.
+- A materially different font hosting policy that introduces a mandatory external provider.
 - Adoption of a component library or UI framework.
 - A token architecture that must be shared across multiple applications or repositories.
 
@@ -484,12 +536,12 @@ The following criteria are written for the future implementation and are not yet
 9. Existing technical routes `/`, `/admin/login`, `/admin` and NotFound receive the approved presentation treatment without changing auth, router or API behavior.
 10. No business page, business endpoint, business model, migration or invented business data is introduced.
 11. Small-phone, large-phone, tablet and desktop layouts do not require horizontal scrolling for the scoped technical surfaces.
-12. Missing fonts and images degrade to documented fallbacks without breaking hierarchy or layout; unavailable official logos use only the approved neutral placeholder or plain-text rule, and logo-dependent acceptance waits for the original asset.
+12. Missing fonts and images degrade to documented fallbacks without breaking hierarchy or layout; unavailable official logos use only the approved neutral placeholder or plain-text rule, and any official-logo fidelity criterion is explicitly `ASSET-DEPENDENT` rather than blocking the core system.
 13. Component and layout tests cover useful variants and accessibility-related markup without a snapshot-heavy or pixel-diff strategy.
 14. Existing Foundation backend and frontend quality gates pass unchanged.
 15. Security review confirms no secrets, tracking code, unapproved remote assets or auth-storage changes were introduced.
 16. Documentation and implementation report are complete, and remote GitHub Actions CI is green.
-17. Human acceptance is recorded before changing this SPEC from `READY FOR DISCOVERY` to an implementation status.
+17. Human acceptance is recorded before changing this SPEC from `READY FOR DEVELOPMENT APPROVAL` to an implementation status.
 
 ## Definition of Done
 
@@ -501,11 +553,54 @@ The following criteria are written for the future implementation and are not yet
 - Accessibility review covers semantics, labels, keyboard focus, contrast, reduced motion and touch targets.
 - Responsive review covers the four conceptual viewport ranges.
 - Security review covers remote assets, secrets, tracking and auth storage.
+- Font assets, limited weights and OFL notices follow the approved self-hosting policy.
 - Implementation report is created and documentation is updated.
 - GitHub Actions backend and frontend jobs are green.
 - No business data, business module, SPEC-003 or unrelated dependency was introduced.
 - Working tree is clean after the approved implementation workflow.
-- Human acceptance is recorded, and all development-approval blockers are resolved or explicitly accepted.
+- Human acceptance is recorded; the official logo may remain pending as an asset-specific acceptance item without blocking the core Design System.
+
+## Proposed Implementation Checkpoints
+
+### Checkpoint A - Token and typography foundation
+
+- Objective: establish the CSS-first token layers and approved typography/fallback strategy.
+- Scope: brand primitives, semantic roles, type roles, focus/motion baseline and minimal global rules.
+- Dependencies: authoritative font assets under the resolved self-hosting policy, approved logo boundary and contrast review.
+- Acceptance evidence: compiled token utilities exist, semantic roles are used by a technical surface, required contrast pairs pass and fallback behavior is documented.
+- Stop condition: stop before adding components if font assets/license evidence or token-role contrast remains unresolved.
+
+### Checkpoint B - Core UI primitives
+
+- Objective: create only components with current consumers.
+- Scope: Button, FormField/Input, Container and one surface primitive (`Card` or `Section`) with tested states.
+- Dependencies: Checkpoint A and existing Vue/Test Utils conventions.
+- Acceptance evidence: focused tests cover variants, labels, states and semantic output; no speculative components are added.
+- Stop condition: stop if a component has no actual technical consumer or requires business semantics.
+
+### Checkpoint C - Technical layouts and pages
+
+- Objective: apply the approved system to existing technical surfaces.
+- Scope: public/admin layouts, `/`, `/admin/login`, `/admin` and NotFound presentation only.
+- Dependencies: Checkpoints A-B; existing auth/router behavior remains unchanged.
+- Acceptance evidence: routes still resolve and auth flows remain behaviorally equivalent; no business content appears.
+- Stop condition: stop before adding navigation, dashboard modules or business placeholders.
+
+### Checkpoint D - Accessibility and responsive hardening
+
+- Objective: verify keyboard, focus, semantics, contrast, reduced motion and responsive behavior.
+- Scope: targeted markup corrections, focus/error/loading states and manual viewport matrix.
+- Dependencies: Checkpoint C and approved semantic roles.
+- Acceptance evidence: accessibility review, contrast table, reduced-motion review and viewport matrix are documented.
+- Stop condition: stop if a required fix would alter auth/API behavior or introduce an unapproved dependency.
+
+### Checkpoint E - Tests, documentation and final audit
+
+- Objective: close the implementation with evidence and regression safety.
+- Scope: component tests, existing quality gates, security/performance review, report and CI verification.
+- Dependencies: Checkpoint D and explicit human approval for development.
+- Acceptance evidence: all SPEC criteria and DoD items audited, GitHub Actions green and human acceptance recorded.
+- Stop condition: do not mark SPEC-002 complete or start another SPEC without explicit acceptance.
 
 ## Implementation Boundaries
 
@@ -514,12 +609,13 @@ If this SPEC is approved for implementation later:
 - Work must occur on a dedicated implementation branch created from updated `main`, not on this documentation branch and not directly on `main`.
 - Allowed application changes are limited to the frontend styling, components, layouts and technical pages explicitly listed here.
 - Do not change `app/`, `bootstrap/`, `config/`, `database/`, API routes, authentication logic, package manifests, lockfiles or CI unless a separate approved decision proves it necessary and the work is stopped for review.
-- Do not install fonts, UI frameworks, animation libraries or icon packages without resolving the relevant open decision.
+- Add only the approved font weights from the official source policy, preserve OFL notices and stop if the authoritative files or licensing evidence are unavailable.
+- Do not use a remote font provider, install font packages, UI frameworks, animation libraries or icon packages by default.
 - Do not create future business routes, data or modules as showcase content.
 
 ## Discovery Requirements
 
-Discovery must remain analysis-only and must review:
+Discovery was completed as an analysis-only activity and produced `docs/reports/SPEC-002-DISCOVERY-REPORT.md`. Its requirements are retained as the audit record:
 
 - Current Vue component tree.
 - Existing Tailwind CSS 4 setup and `resources/css/app.css`.
@@ -535,8 +631,8 @@ Discovery must remain analysis-only and must review:
 - Any existing screenshots or references, if they are provided by the business.
 - Whether technical pages should be restyled in place or use a bounded showcase.
 
-Discovery must not implement code, install dependencies or create business content.
+No Discovery implementation, dependency installation or business content creation was authorized.
 
 ## Definition State
 
-This file has scope approval for Discovery only. Discovery is not yet started or authorized by this document alone; implementation remains unauthorized.
+This file incorporates the completed Discovery decisions and is ready for human development approval. Implementation remains unauthorized until that approval is explicit.

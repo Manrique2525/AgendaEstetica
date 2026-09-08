@@ -32,6 +32,6 @@ Cada etapa requiere SPEC, discovery, plan aprobado, implementación, pruebas, au
 
 `SPEC-001 - Project Foundation` está en estado `CLOSED` en `docs/specs/SPEC-001-project-foundation.md`. No se inicia automáticamente ninguna SPEC posterior.
 
-`SPEC-002 - UX and Design System Foundation` está en estado `READY FOR DISCOVERY` en `docs/specs/SPEC-002-ux-design-system.md`. Discovery e implementación requieren autorización explícita; este estado no autoriza implementación.
+`SPEC-002 - UX and Design System Foundation` está en estado `READY FOR DEVELOPMENT APPROVAL` en `docs/specs/SPEC-002-ux-design-system.md`. Discovery fue completado; la implementación requiere autorización humana explícita y este estado no autoriza desarrollo.
 
 Target de Foundation: Laravel 13, PHP 8.3+, MySQL 8.4 LTS, Vue 3, TypeScript, Vite, Tailwind CSS, Sanctum y Pest.
