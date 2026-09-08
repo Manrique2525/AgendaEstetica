@@ -65,7 +65,7 @@ async function submit(): Promise<void> {
                         />
                     </template>
                 </UiFormField>
-                <p v-if="error" class="font-body text-sm text-state-error" role="alert">{{ error }}</p>
+                <p v-if="error" class="break-words font-body text-sm text-state-error" role="alert">{{ error }}</p>
                 <UiButton type="submit" :loading="isSubmitting">
                     {{ isSubmitting ? 'Validando...' : 'Iniciar sesión' }}
                 </UiButton>

@@ -26,7 +26,7 @@
     --ui-action-secondary: var(--color-brand-white);
     --ui-action-secondary-foreground: var(--color-brand-black);
     --ui-action-secondary-hover: color-mix(in srgb, var(--color-brand-black) 7%, var(--color-brand-white));
-    --ui-focus-ring: var(--color-brand-turquoise);
+    --ui-focus-ring: var(--color-brand-fuchsia);
     --ui-state-error: var(--color-brand-fuchsia);
     --ui-state-success: color-mix(in srgb, var(--color-brand-turquoise) 65%, var(--color-brand-black));
     --ui-disabled-surface: color-mix(in srgb, var(--color-brand-black) 8%, var(--color-brand-white));
