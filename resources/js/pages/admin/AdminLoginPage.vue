@@ -4,6 +4,10 @@ import { useRouter } from 'vue-router';
 import AdminLayout from '../../layouts/AdminLayout.vue';
 import { useAuth } from '../../composables/useAuth';
 import { ApiError } from '../../services/http';
+import UiButton from '../../components/ui/UiButton.vue';
+import UiCard from '../../components/ui/UiCard.vue';
+import UiFormField from '../../components/ui/UiFormField.vue';
+import UiInput from '../../components/ui/UiInput.vue';
 
 const router = useRouter();
 const auth = useAuth();
@@ -31,23 +35,41 @@ async function submit(): Promise<void> {
 
 <template>
     <AdminLayout>
-        <section class="rounded-xl border border-slate-200 bg-white p-8 shadow-sm" aria-labelledby="admin-login-title">
-            <p class="text-sm font-medium uppercase tracking-wide text-slate-500">Admin surface</p>
-            <h1 id="admin-login-title" class="mt-3 text-3xl font-semibold tracking-tight">Acceso administrativo</h1>
-            <form class="mt-6 space-y-4" @submit.prevent="submit">
-                <div>
-                    <label class="block text-sm font-medium" for="email">Email</label>
-                    <input id="email" v-model="email" class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2" type="email" autocomplete="username" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium" for="password">Password</label>
-                    <input id="password" v-model="password" class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2" type="password" autocomplete="current-password" required>
-                </div>
-                <p v-if="error" class="text-sm text-red-700" role="alert">{{ error }}</p>
-                <button class="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50" type="submit" :disabled="isSubmitting">
+        <UiCard>
+            <p class="font-ui text-sm font-semibold uppercase tracking-[0.16em] text-text-secondary">Acceso administrativo</p>
+            <h1 id="admin-login-title" class="mt-4 font-display text-4xl leading-none text-text-primary">Iniciar sesión</h1>
+            <form class="mt-8 space-y-5" aria-labelledby="admin-login-title" @submit.prevent="submit">
+                <UiFormField id="email" label="Email" required>
+                    <template #default="{ inputId, describedBy, invalid }">
+                        <UiInput
+                            :id="inputId"
+                            v-model="email"
+                            type="email"
+                            autocomplete="username"
+                            required
+                            :aria-describedby="describedBy"
+                            :invalid="invalid"
+                        />
+                    </template>
+                </UiFormField>
+                <UiFormField id="password" label="Password" required>
+                    <template #default="{ inputId, describedBy, invalid }">
+                        <UiInput
+                            :id="inputId"
+                            v-model="password"
+                            type="password"
+                            autocomplete="current-password"
+                            required
+                            :aria-describedby="describedBy"
+                            :invalid="invalid"
+                        />
+                    </template>
+                </UiFormField>
+                <p v-if="error" class="font-body text-sm text-state-error" role="alert">{{ error }}</p>
+                <UiButton type="submit" :loading="isSubmitting">
                     {{ isSubmitting ? 'Validando...' : 'Iniciar sesión' }}
-                </button>
+                </UiButton>
             </form>
-        </section>
+        </UiCard>
     </AdminLayout>
 </template>

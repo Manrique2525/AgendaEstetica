@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import PublicLayout from '../layouts/PublicLayout.vue';
+import UiCard from '../components/ui/UiCard.vue';
 </script>
 
 <template>
     <PublicLayout>
-        <section class="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
-            <p class="text-sm font-medium uppercase tracking-wide text-slate-500">Frontend foundation</p>
-            <h1 class="mt-3 text-3xl font-semibold tracking-tight">Route not found</h1>
-            <p class="mt-4 text-slate-600">This technical route does not exist.</p>
-        </section>
+        <UiCard>
+            <p class="font-ui text-sm font-semibold uppercase tracking-[0.16em] text-text-secondary">Error técnico</p>
+            <p class="mt-4 font-display text-6xl leading-none text-text-primary" aria-hidden="true">404</p>
+            <h1 class="mt-4 font-ui text-xl font-bold text-text-primary">Página no encontrada</h1>
+            <p class="mt-3 font-body text-base text-text-secondary">Esta ruta técnica no existe.</p>
+        </UiCard>
     </PublicLayout>
 </template>
