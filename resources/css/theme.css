@@ -22,11 +22,15 @@
     --ui-border-strong: color-mix(in srgb, var(--color-brand-black) 32%, transparent);
     --ui-action-primary: var(--color-brand-fuchsia);
     --ui-action-primary-foreground: var(--color-brand-white);
+    --ui-action-primary-hover: color-mix(in srgb, var(--color-brand-fuchsia) 86%, var(--color-brand-black));
     --ui-action-secondary: var(--color-brand-white);
     --ui-action-secondary-foreground: var(--color-brand-black);
+    --ui-action-secondary-hover: color-mix(in srgb, var(--color-brand-black) 7%, var(--color-brand-white));
     --ui-focus-ring: var(--color-brand-turquoise);
     --ui-state-error: var(--color-brand-fuchsia);
     --ui-state-success: color-mix(in srgb, var(--color-brand-turquoise) 65%, var(--color-brand-black));
+    --ui-disabled-surface: color-mix(in srgb, var(--color-brand-black) 8%, var(--color-brand-white));
+    --ui-disabled-foreground: color-mix(in srgb, var(--color-brand-black) 52%, var(--color-brand-white));
 }
 
 @theme inline {
@@ -40,11 +44,15 @@
     --color-border-strong: var(--ui-border-strong);
     --color-action-primary: var(--ui-action-primary);
     --color-action-primary-foreground: var(--ui-action-primary-foreground);
+    --color-action-primary-hover: var(--ui-action-primary-hover);
     --color-action-secondary: var(--ui-action-secondary);
     --color-action-secondary-foreground: var(--ui-action-secondary-foreground);
+    --color-action-secondary-hover: var(--ui-action-secondary-hover);
     --color-focus-ring: var(--ui-focus-ring);
     --color-state-error: var(--ui-state-error);
     --color-state-success: var(--ui-state-success);
+    --color-disabled-surface: var(--ui-disabled-surface);
+    --color-disabled-foreground: var(--ui-disabled-foreground);
 }
 
 @layer base {
