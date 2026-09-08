@@ -2,7 +2,7 @@
 
 ## Status
 
-`PROPOSED / PENDING HUMAN APPROVAL`
+`ACCEPTED`
 
 ## Context
 
@@ -15,7 +15,7 @@ SPEC-004 Technical Discovery requires a stable temporal and concurrency directio
 3. Reject nonexistent local DST times and require explicit disambiguation for ambiguous local folds at a future input boundary.
 4. Protect capacity-affecting mutations with one transaction and a deterministic lock order: singleton BusinessProfile, affected Professional rows ascending by ID, then existing Appointment row.
 5. Re-read availability after locks and before writing appointment/history records.
-6. Do not add `schedule_version` unless later evidence shows the lock/revalidation protocol cannot solve stale writes.
+6. Do not add `schedule_version` in SPEC-004 V1; lock/revalidation is the accepted stale-write strategy.
 
 ## Rationale
 

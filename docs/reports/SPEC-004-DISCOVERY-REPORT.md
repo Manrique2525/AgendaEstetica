@@ -204,7 +204,6 @@ Recommended recurring table:
 id
 professional_id
 weekday 1..7
-interval_order
 starts_at TIME
 ends_at TIME
 timestamps
@@ -212,7 +211,7 @@ timestamps
 
 ## 33. ProfessionalSchedule constraints
 
-Require weekday `1-7`, `starts_at < ends_at`, exact duplicate protection and domain overlap rejection. Adjacent intervals are allowed.
+Require weekday `1-7`, `starts_at < ends_at`, and `UNIQUE(professional_id, weekday, starts_at, ends_at)`. Same-day overlap is domain validation. Adjacent intervals are allowed. No overnight row is allowed. Ordering is naturally `ORDER BY starts_at`; no persisted manual order is approved.
 
 ## 34. ProfessionalSchedule replacement strategy
 
@@ -479,7 +478,7 @@ Future implementation must validate fresh migration, rollback, re-migration and 
 
 ## 92. ADR assessment
 
-ADR-003 is added as `DRAFT - REQUIRES HUMAN APPROVAL BEFORE IMPLEMENTATION`, covering UTC `DATETIME` event persistence and lock ordering. It is not an accepted implementation authorization.
+ADR-003 is `ACCEPTED` and records the UTC `DATETIME` event model, local recurring schedules, DST rejection/disambiguation, deterministic lock ordering and `schedule_version` rejection. It does not authorize implementation by itself.
 
 ## 93. Scope-size assessment
 
@@ -511,7 +510,7 @@ Checkpoint E is stress/race/deadlock validation and hardening, not permission to
 
 ## 97. Technical blockers resolved
 
-Resolved by Discovery: temporal storage recommendation, status baseline, professional schedule scope, time-off scope, special-hours deferral, specific-professional scope, lock anchor/order, capacity algorithm direction and `schedule_version` default rejection.
+Resolved by Discovery: temporal storage recommendation, final V1 status baseline, professional schedule scope, time-off scope, special-hours deferral, specific-professional scope, lock anchor/order, capacity algorithm direction and `schedule_version` rejection.
 
 ## 98. Remaining business-rule questions
 
