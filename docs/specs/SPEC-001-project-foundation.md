@@ -10,9 +10,9 @@ Project Foundation
 
 ## Status
 
-`APPROVED FOR DEVELOPMENT`
+`CLOSED`
 
-Esta especificación fue aprobada explícitamente para desarrollo. La aprobación no autoriza funcionalidades fuera del checkpoint activo ni cambia el alcance de la SPEC.
+Esta especificación fue aprobada explícitamente, implementada, verificada y cerrada formalmente. El cierre no autoriza funcionalidades fuera de su alcance ni inicia SPEC-002.
 
 ## Objective
 

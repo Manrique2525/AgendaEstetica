@@ -2,7 +2,7 @@
 
 ## Status
 
-`REVIEW - READY FOR HUMAN ACCEPTANCE`
+`CLOSED`
 
 ## Objective
 

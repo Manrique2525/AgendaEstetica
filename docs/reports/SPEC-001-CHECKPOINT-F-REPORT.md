@@ -2,7 +2,7 @@
 
 ## Status
 
-`COMPLETE - READY FOR HUMAN REVIEW`
+`CLOSED`
 
 Checkpoint F implementa el workflow de calidad y la auditoria final. La aceptación técnica queda lista para revisión humana tras verificar el run remoto del commit publicado.
 
@@ -93,4 +93,4 @@ El workflow genera un `APP_KEY` efímero mediante `php artisan key:generate`; no
 
 ## Result
 
-La verificación remota de ambos jobs terminó correctamente. Checkpoint F queda completo y listo para aceptación humana; no se realiza merge a `main` ni se inicia SPEC-002.
+La verificación remota de ambos jobs terminó correctamente. Checkpoint F queda cerrado formalmente tras la aprobación del usuario; no se inicia SPEC-002.
