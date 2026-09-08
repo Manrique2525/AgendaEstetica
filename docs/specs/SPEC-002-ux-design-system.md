@@ -22,14 +22,16 @@ Esta SPEC fue aprobada explícitamente para desarrollo y se encuentra en impleme
 - Checkpoint B: `COMPLETED`.
 - Checkpoint C: `COMPLETED`.
 - Checkpoint C.1: `COMPLETED`.
-- Checkpoint D y posteriores: `NOT AUTHORIZED`.
+- Checkpoint D: `COMPLETED`.
+- Checkpoint E y posteriores: `NOT AUTHORIZED`.
 
 ## Discovery Assessment
 
 - SPEC-002 Technical Discovery: `COMPLETED`.
 - Technical assessment: `PASS`.
 - Implementation readiness: `CHECKPOINT C COMPLETED`.
-- Checkpoint D and later implementation: `NOT AUTHORIZED`.
+- Checkpoint D: `COMPLETED`.
+- Checkpoint E and later implementation: `NOT AUTHORIZED`.
 
 ## Checkpoint B Evidence
 
@@ -52,6 +54,14 @@ Esta SPEC fue aprobada explícitamente para desarrollo y se encuentra en impleme
 - All `/api/*` authentication/exception responses now remain JSON without requiring an `Accept` header.
 - Added explicit regressions for unauthenticated `/me`, logout and unknown API routes.
 - Report: `docs/reports/SPEC-002-CHECKPOINT-C1-API-JSON-REGRESSION-REPORT.md`.
+
+## Checkpoint D Evidence
+
+- Completed contrast, focus, semantic, target-size, responsive static and motion audits.
+- Corrected the demonstrated focus-ring contrast gap and long technical text wrapping.
+- Frontend/backend gates and C.1 API JSON regression remain green.
+- Browser viewport/200% zoom automation was unavailable and is documented as a manual-review limitation.
+- Report: `docs/reports/SPEC-002-CHECKPOINT-D-REPORT.md`.
 
 ## Objective
 
