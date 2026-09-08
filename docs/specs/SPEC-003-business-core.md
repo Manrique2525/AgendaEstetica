@@ -12,7 +12,7 @@ Business Core
 
 `APPROVED FOR DEVELOPMENT / IN PROGRESS`
 
-Esta SPEC tiene aprobación de desarrollo para el Checkpoint A. El Checkpoint B y cualquier SPEC posterior no están autorizados.
+Esta SPEC tiene aprobación de desarrollo para los Checkpoints A y B. El Checkpoint C y cualquier SPEC posterior no están autorizados.
 
 ## Objective
 
@@ -654,11 +654,11 @@ Discovery itself did not implement migrations, models, endpoints, services or UI
 
 ## Implementation Boundaries
 
-For the authorized Checkpoint A implementation:
+For the authorized Checkpoint B implementation:
 
 - Work must occur on a dedicated implementation branch from updated `main`.
-- Only approved Core migrations, models, factories and persistence tests are authorized.
-- No controller, action/service, API route, Vue page or package installation is authorized in Checkpoint A.
+- Only approved Core domain rules, focused support classes, the weekly replacement action and tests are authorized.
+- No migration, controller, Form Request, API route, Vue page or package installation is authorized in Checkpoint B.
 - Backend remains the authority for domain rules and validation.
 - Do not create Appointment Engine, CMS, ecommerce or public booking behavior as part of Core.
 - Do not seed invented production business data.
@@ -667,7 +667,7 @@ For the authorized Checkpoint A implementation:
 
 ## Implementation Checkpoints
 
-Checkpoint A is authorized and implemented on the dedicated branch. Later checkpoints remain proposals and are not authorized:
+Checkpoints A and B are authorized on the dedicated branch. Later checkpoints remain proposals and are not authorized:
 
 ### Checkpoint A - Approved domain model and persistence foundation
 
@@ -685,6 +685,7 @@ Checkpoint A is authorized and implemented on the dedicated branch. Later checkp
 - Dependencies: Checkpoint A and approved business rules.
 - Acceptance evidence: Feature/Unit tests, safe errors and authorization coverage.
 - Stop condition: stop if a rule belongs to Appointment Engine or another deferred module.
+- Status: `IN PROGRESS`.
 
 ### Checkpoint C - Integrity and lifecycle hardening
 
@@ -714,7 +715,7 @@ It becomes too large if it includes appointment availability, public booking, ad
 SPEC-003: APPROVED FOR DEVELOPMENT / IN PROGRESS
 Discovery: COMPLETED
 Checkpoint A: COMPLETED
-Checkpoint B: NOT AUTHORIZED
+Checkpoint B: IN PROGRESS
 Checkpoint C: NOT AUTHORIZED
 Checkpoint D: NOT AUTHORIZED
 ```
