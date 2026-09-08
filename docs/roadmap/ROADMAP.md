@@ -30,4 +30,4 @@ Cada etapa requiere SPEC, discovery, plan aprobado, implementación, pruebas, au
 
 ## Primera SPEC
 
-`SPEC-001 - Project Foundation` se definirá después de aceptar esta base documental. Su alcance no se asume en este archivo.
+`SPEC-001 - Project Foundation` está documentada en estado `READY` en `docs/specs/SPEC-001-project-foundation.md`. Está preparada para aprobación de desarrollo, pero no está marcada como `APPROVED FOR DEVELOPMENT`.
