@@ -10,9 +10,9 @@ Business Core
 
 ## Status
 
-`READY FOR DISCOVERY`
+`APPROVED FOR DEVELOPMENT / IN PROGRESS`
 
-Esta SPEC tiene el scope revisado y está lista para Discovery. No autoriza implementación, migraciones, modelos, endpoints, páginas, dependencias nuevas ni SPEC-004.
+Esta SPEC tiene aprobación de desarrollo para el Checkpoint A. El Checkpoint B y cualquier SPEC posterior no están autorizados.
 
 ## Objective
 
@@ -554,7 +554,7 @@ Mitigation: classify admin-only/future-public/internal representations before en
 ### Development-Approval Blockers
 
 - None.
-- Discovery recommendations are ready for review; implementation remains unauthorized until explicit approval.
+- Checkpoint A implementation is authorized. The remaining checkpoints require separate explicit authorization.
 
 ### Business-Data Pending
 
@@ -592,7 +592,7 @@ Typed domain entities within the existing Laravel/Eloquent architecture do not a
 
 ## Acceptance Criteria
 
-The following criteria are future implementation criteria and are not passed by this definition:
+The following criteria are the full SPEC implementation criteria. Checkpoint A evidence covers only the persistence-related subset; deferred criteria remain pending:
 
 1. SPEC-003 scope is implemented without Appointment Engine, Admin Agenda, Public Booking, CMS, ecommerce, WhatsApp or payments.
 2. `users`, `professionals` and `customers` remain separate concepts, with no customer/professional authentication.
@@ -611,7 +611,7 @@ The following criteria are future implementation criteria and are not passed by 
 15. Existing Foundation/SPEC-002 frontend and backend gates remain green.
 16. No generic repository pattern, UI framework, unrelated dependency or business seed data is introduced.
 17. Documentation, implementation report and remote CI evidence are complete.
-18. Human acceptance is recorded before SPEC-003 changes from `READY FOR DEVELOPMENT APPROVAL` to a development status.
+18. Human acceptance is recorded before SPEC-003 changes from an in-progress status to closed.
 
 ## Definition of Done
 
@@ -650,24 +650,24 @@ Technical Discovery was completed in `docs/reports/SPEC-003-DISCOVERY-REPORT.md`
 - No mandatory admin API is required for SPEC-003 by default.
 - No frontend consumer is required for SPEC-003 by default.
 
-No Discovery implementation, migration, model, endpoint, service or UI was performed.
+Discovery itself did not implement migrations, models, endpoints, services or UI. Checkpoint A implementation is documented in `docs/reports/SPEC-003-CHECKPOINT-A-REPORT.md`.
 
 ## Implementation Boundaries
 
-If SPEC-003 is later approved for development:
+For the authorized Checkpoint A implementation:
 
 - Work must occur on a dedicated implementation branch from updated `main`.
-- No application code is authorized by this definition task.
-- No migration, model, controller, action/service, API route, Vue page or package installation is authorized before Discovery and approval.
+- Only approved Core migrations, models, factories and persistence tests are authorized.
+- No controller, action/service, API route, Vue page or package installation is authorized in Checkpoint A.
 - Backend remains the authority for domain rules and validation.
 - Do not create Appointment Engine, CMS, ecommerce or public booking behavior as part of Core.
 - Do not seed invented production business data.
 - Do not add a generic repository or generic key/value settings system without approved evidence.
 - Do not start SPEC-004 or any later SPEC.
 
-## Proposed Implementation Checkpoints
+## Implementation Checkpoints
 
-These are proposals for later review, not authorization:
+Checkpoint A is authorized and implemented on the dedicated branch. Later checkpoints remain proposals and are not authorized:
 
 ### Checkpoint A - Approved domain model and persistence foundation
 
@@ -676,6 +676,7 @@ These are proposals for later review, not authorization:
 - Dependencies: Discovery, database model approval, privacy decisions and development authorization.
 - Acceptance evidence: migrations/models/relationships and integrity tests against MySQL 8.4.
 - Stop condition: stop if scope expands into appointment/CMS/ecommerce behavior.
+- Status: `COMPLETED`.
 
 ### Checkpoint B - Domain actions and validation
 
@@ -710,7 +711,10 @@ It becomes too large if it includes appointment availability, public booking, ad
 ## Definition State
 
 ```text
-SPEC-003: READY FOR DEVELOPMENT APPROVAL
+SPEC-003: APPROVED FOR DEVELOPMENT / IN PROGRESS
 Discovery: COMPLETED
-Implementation: NOT AUTHORIZED
+Checkpoint A: COMPLETED
+Checkpoint B: NOT AUTHORIZED
+Checkpoint C: NOT AUTHORIZED
+Checkpoint D: NOT AUTHORIZED
 ```
