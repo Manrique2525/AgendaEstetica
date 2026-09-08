@@ -180,4 +180,11 @@ Before corrective validation, migration CLI commands were attempted without the 
 - Checkpoint A: `COMPLETED`.
 - SPEC-003: remains `IN PROGRESS`; it is not closed.
 - Checkpoint B: `NOT AUTHORIZED`.
-- Remote CI evidence: pending push.
+- Implementation commit: `fcae13d` (`feat: add SPEC-003 core persistence`).
+- Documentation commit: `11df565` (`docs: report SPEC-003 checkpoint A`).
+- Workflow: `Quality`.
+- Remote CI run: `34253376016` for commit `11df565`.
+- Remote backend job: `PASS`.
+- Remote frontend job: `PASS`.
+- Recommended next action: stop and submit Checkpoint A for human review.
+- Blockers: `NONE`.
