@@ -82,12 +82,12 @@ npm audit                        PASS
 Run exitoso:
 
 ```text
-34184249360
+34184348011
 ```
 
 - Backend quality: PASS.
 - Frontend quality: PASS.
-- Commit verificado: `d9ae557`.
+- Commit verificado: `50c8df6`.
 
 El workflow genera un `APP_KEY` efímero mediante `php artisan key:generate`; no usa claves de aplicación hardcodeadas.
 

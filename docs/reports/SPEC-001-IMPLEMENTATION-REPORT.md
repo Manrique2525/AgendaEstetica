@@ -69,7 +69,7 @@ Establecer la base técnica Laravel/Vue del modular monolith AgendaEstetica sin 
 - MySQL 8.4 CI service.
 - Final quality/audit documentation.
 
-Remote CI verified successfully in run `34184249360`; backend and frontend jobs passed.
+Remote CI verified successfully in run `34184348011`; backend and frontend jobs passed.
 
 ## Architecture delivered
 
@@ -130,7 +130,7 @@ Frontend tests use Vitest, Vue Test Utils and jsdom.
 20. PASS - Foundation auth/API edge cases tested.
 21. PASS - Vitest/Vue Test Utils tests pass.
 22. PASS - Pint, Larastan, ESLint, vue-tsc and build pass.
-23. PASS - Remote CI backend and frontend jobs pass on GitHub Actions run `34184249360`.
+23. PASS - Remote CI backend and frontend jobs pass on GitHub Actions run `34184348011`.
 24. PASS - Installation/runtime/quality documentation available.
 25. PASS - No future domain implementation detected.
 26. PASS - Security audit completed.
