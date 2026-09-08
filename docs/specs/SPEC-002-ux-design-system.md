@@ -20,8 +20,6 @@ Esta SPEC fue aprobada explícitamente para desarrollo y se encuentra en impleme
 - Approval model: aceptación explícita del responsable del proyecto después de revisar alcance, decisiones abiertas, riesgos y Acceptance Criteria.
 - Checkpoint A: `COMPLETED`.
 - Checkpoint B: `COMPLETED`.
-- Checkpoint A: `COMPLETED`.
-- Checkpoint B: `COMPLETED`.
 - Checkpoint C: `COMPLETED`.
 - Checkpoint C.1: `COMPLETED`.
 - Checkpoint D y posteriores: `NOT AUTHORIZED`.
@@ -663,4 +661,4 @@ No Discovery implementation, dependency installation or business content creatio
 
 ## Definition State
 
-This file incorporates the completed Discovery decisions and is ready for human development approval. Implementation remains unauthorized until that approval is explicit.
+This file incorporates the completed Discovery decisions and records progress through Checkpoint C. Checkpoint D and later remain unauthorized until explicit approval.
