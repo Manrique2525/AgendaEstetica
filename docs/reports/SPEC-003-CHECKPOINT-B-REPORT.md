@@ -351,39 +351,40 @@ Not implemented. Availability, appointments, capacity enforcement and profession
 
 ## 72. Commits created
 
-Pending final local review and commit.
+Two Checkpoint B commits were created: implementation/tests and documentation.
 
 ## 73. Commit hashes
 
-Pending.
+- `1e06aa6 feat: add SPEC-003 core domain invariants`.
+- `0771145 docs: report SPEC-003 checkpoint B`.
 
 ## 74. Push result
 
-Pending.
+PASS: `git push origin feat/spec-003-business-core`.
 
 ## 75. Remote CI workflow
 
-Pending push.
+`Quality`.
 
 ## 76. Remote CI run ID
 
-Pending push.
+`34255373417` for commit `0771145`.
 
 ## 77. Remote backend result
 
-Pending push.
+PASS: `Backend quality`.
 
 ## 78. Remote frontend result
 
-Pending push.
+PASS: `Frontend quality`.
 
 ## 79. Working tree
 
-Pending final staging/commit review.
+Clean before the final report synchronization commit.
 
 ## 80. Local/remote synchronization
 
-Initial state was synchronized at `a2e0dba`; final synchronization is pending the Checkpoint B push.
+Initial state was synchronized at `a2e0dba`; the feature branch is synchronized through `0771145` before this report-only update.
 
 ## 81. Checkpoint A status
 
@@ -391,7 +392,7 @@ Initial state was synchronized at `a2e0dba`; final synchronization is pending th
 
 ## 82. Checkpoint B status
 
-`IN PROGRESS` until commit, push and remote CI complete.
+`COMPLETED`.
 
 ## 83. SPEC-003 status
 
@@ -411,4 +412,4 @@ None currently identified.
 
 ## 87. Recommended next action
 
-Complete final diff review, commit and push Checkpoint B, verify remote CI, then stop and submit Checkpoint B for human review. Do not start Checkpoint C.
+Stop and submit Checkpoint B for human review. Do not start Checkpoint C.
