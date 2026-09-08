@@ -67,7 +67,7 @@ NONE
 | 13 | PASS | 24 frontend tests, no full-page snapshots or pixel diff. |
 | 14 | PASS | Backend and frontend gates pass locally and remotely. |
 | 15 | PASS | Security audit passes. |
-| 16 | PASS | Reports complete and CI run `34242397697` green. |
+| 16 | PASS | Reports complete and CI run `34243452314` green on final E commit `66e41e9`. |
 | 17 | PENDING HUMAN ACCEPTANCE | Explicit user acceptance still required. |
 
 ## 10. Definition of Done matrix
@@ -333,7 +333,7 @@ Workflow: `Quality`.
 
 ## 60. Remote CI run ID
 
-Run `34242397697`, head `b0c3633`.
+Run `34243452314`, head `66e41e9`.
 
 ## 61. Remote backend result
 

@@ -38,7 +38,7 @@ La implementación y auditoría técnica fueron completadas. La SPEC queda pendi
 
 - All 17 Acceptance Criteria and the Definition of Done were audited.
 - Local frontend/backend gates passed.
-- Remote CI run `34242397697` passed both backend and frontend jobs on commit `b0c3633`.
+- Remote CI run `34243452314` passed both backend and frontend jobs on commit `66e41e9`.
 - Final implementation report: `docs/reports/SPEC-002-IMPLEMENTATION-REPORT.md`.
 - Final audit report: `docs/reports/SPEC-002-CHECKPOINT-E-REPORT.md`.
 - Human visual/responsive acceptance, merge and closure remain pending.
