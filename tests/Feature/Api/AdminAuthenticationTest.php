@@ -4,9 +4,23 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 it('rejects an unauthenticated current-user request', function (): void {
-    $this->getJson('/api/v1/admin/auth/me')
+    $this->get('/api/v1/admin/auth/me')
         ->assertUnauthorized()
-        ->assertJsonStructure(['message']);
+        ->assertJsonStructure(['message'])
+        ->assertHeader('content-type', 'application/json');
+
+    $this->withHeaders(['Accept' => 'application/json'])
+        ->get('/api/v1/admin/auth/me')
+        ->assertUnauthorized()
+        ->assertJsonStructure(['message'])
+        ->assertHeader('content-type', 'application/json');
+});
+
+it('rejects an unauthenticated logout request as JSON', function (): void {
+    $this->post('/api/v1/admin/auth/logout')
+        ->assertUnauthorized()
+        ->assertJsonStructure(['message'])
+        ->assertHeader('content-type', 'application/json');
 });
 
 it('validates login input without user enumeration', function (): void {
