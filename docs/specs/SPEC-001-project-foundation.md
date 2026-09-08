@@ -10,9 +10,9 @@ Project Foundation
 
 ## Status
 
-`READY`
+`APPROVED FOR DEVELOPMENT`
 
-Esta especificación está preparada para aprobación de desarrollo. No autoriza por sí sola la implementación, la instalación de dependencias ni la creación de código.
+Esta especificación fue aprobada explícitamente para desarrollo. La aprobación no autoriza funcionalidades fuera del checkpoint activo ni cambia el alcance de la SPEC.
 
 ## Objective
 
