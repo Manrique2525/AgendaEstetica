@@ -10,9 +10,9 @@ Appointment Engine
 
 ## Status
 
-`READY FOR DISCOVERY`
+`READY FOR DEVELOPMENT APPROVAL`
 
-This document defines a proposed scope only. Technical Discovery, implementation, migrations, models, enums, Actions, APIs, frontend work and SPEC-005 are not authorized by this draft.
+Technical Discovery is complete. This document defines the recommended development scope; implementation, migrations, models, enums, Actions, APIs, frontend work and SPEC-005 remain unauthorized until separate human approval.
 
 ## Objective
 
@@ -534,7 +534,7 @@ The following are draft implementation criteria and require Discovery decisions 
 
 ## ADR Assessment
 
-No ADR is created by this Definition task. A later ADR may be required if Discovery selects a durable cross-cutting temporal persistence, concurrency or scheduling architecture.
+ADR-003 is created as a `DRAFT` because temporal persistence and lock ordering are durable cross-cutting decisions. It requires human approval before implementation; it does not authorize code or migrations.
 
 ## Discovery Requirements
 
@@ -557,11 +557,119 @@ The final checkpoint count and boundaries require Discovery and human approval.
 
 Appointment Engine is appropriately sized only if limited to backend/domain appointment, schedule, availability, capacity, state and concurrency behavior. It becomes too large if it includes Admin Agenda, Public Booking, Notifications, Payments, CMS, ecommerce or broad UI. Scope reduction is required if Discovery confirms too many independent policy domains.
 
+## Technical Discovery Resolved Decisions
+
+### Final persistent concept set
+
+The recommended Appointment Engine concept/table set is:
+
+```text
+appointments
+appointment_histories
+professional_schedules
+professional_time_off
+```
+
+No business special-hours table is recommended for SPEC-004 V1.
+
+### Temporal persistence
+
+Concrete dated events are recommended as UTC `DATETIME` values for `starts_at` and `ends_at`. Recurring `BusinessHours` and `ProfessionalSchedule` values remain business-local `TIME` values interpreted with `BusinessProfile.timezone`. The UTC choice avoids MySQL `TIMESTAMP` session-timezone conversion and makes overlap/capacity queries predictable. Local input conversion must reject nonexistent DST times and require explicit disambiguation/offset for ambiguous folds.
+
+### Appointment fields
+
+The recommended minimum `appointments` shape is:
+
+```text
+id
+customer_id
+service_id
+professional_id
+starts_at              DATETIME UTC
+ends_at                DATETIME UTC
+duration_minutes       positive historical snapshot
+status                 string backed PHP enum value
+created_at
+updated_at
+```
+
+No `schedule_version`, source, notes, service-name snapshot, professional-name snapshot or appointment price is approved by default. Price remains a Discovery/business consumer question and does not turn Appointment into a sales record.
+
+### Appointment status recommendation
+
+The recommended operational baseline is:
+
+```text
+pending
+confirmed
+cancelled
+completed
+no_show
+```
+
+`REQUEST_RECEIVED`, `PENDING_APPROVAL`, `APPROVED` and `REJECTED` remain workflow-dependent. `DEPOSIT_PENDING` is out. `RESCHEDULED` is an operation/history event, not a persistent status.
+
+The recommended transition graph is:
+
+```text
+pending   -> confirmed, cancelled
+confirmed -> cancelled, completed, no_show
+cancelled -> terminal
+completed -> terminal
+no_show   -> terminal
+```
+
+Rescheduling preserves the current operational status and creates history. Whether `pending` blocks resources is a business decision; the conservative recommendation is that it blocks while awaiting approval, with an explicit future resolution/expiry policy.
+
+### Appointment history recommendation
+
+Use a focused `appointment_histories` record for creation/status/reschedule/cancellation/completion/no-show facts. The recommended fields are an appointment FK, event type, nullable from/to status, nullable previous/new UTC interval, nullable previous/new professional references and timestamp. This is not a generic audit log.
+
+### Professional schedule and time-off
+
+`professional_schedules` is in scope for recurring ISO weekday `TIME` intervals. `professional_time_off` is in scope for UTC dated intervals. Both require positive interval checks, exact uniqueness where applicable, overlap validation and replacement/transaction decisions. No recurrence engine, RRULE, HR leave model or generic calendar framework is recommended.
+
+### Availability and capacity
+
+SPEC-004 validates a requested interval for a specific Professional. Candidate-slot generation is deferred to a future consumer. Availability intersects BusinessHours, ProfessionalSchedule and ProfessionalTimeOff, then checks active states, compatibility, duration, professional overlap and global capacity. `ServiceCategory.active` should block new appointments when false, without mutating Service records; this remains a final development-rule confirmation.
+
+Global capacity uses an interval/event-sweep calculation over blocking appointments, not same-start counting. The recommended conservative default is that `pending` and `confirmed` block resources/capacity; this requires explicit business approval before development.
+
+### Concurrency recommendation
+
+For capacity-affecting operations, the recommended lock order is:
+
+```text
+1. BusinessProfile singleton row
+2. affected Professional rows in ascending ID order
+3. affected Appointment row, if existing
+4. re-read and validate
+5. write and history in one transaction
+```
+
+The singleton lock serializes global capacity writes for this single-business, small-volume system. Professional locks protect overlap. Rescheduling between professionals locks both in sorted order. `schedule_version` is rejected by default because the lock/revalidation protocol addresses the identified stale-write problem.
+
+### Idempotency/source/public identity
+
+HTTP request-token idempotency, appointment source and public identifiers are deferred to consumer specifications. This does not defer database race protection.
+
+### Discovery blockers before development
+
+The following require human/business approval before implementation:
+
+- final status/blocking semantics, especially whether `pending` consumes resources;
+- exact cancellation/no-show operational policy;
+- temporal/DST boundary contract for local input;
+- final appointment/history schema and FK deletion policy;
+- professional schedule/time-off schema and overlap rules;
+- concurrency lock order and retry policy;
+- whether appointment price is needed by an Engine consumer.
+
 ## Definition State
 
 ```text
-SPEC-004: READY FOR DISCOVERY
-Technical Discovery: NOT AUTHORIZED
+SPEC-004: READY FOR DEVELOPMENT APPROVAL
+Technical Discovery: COMPLETED
 Implementation: NOT AUTHORIZED
 SPEC-005: NOT STARTED
 ```
