@@ -23,6 +23,7 @@ Esta SPEC fue aprobada explícitamente para desarrollo y se encuentra en impleme
 - Checkpoint A: `COMPLETED`.
 - Checkpoint B: `COMPLETED`.
 - Checkpoint C: `COMPLETED`.
+- Checkpoint C.1: `COMPLETED`.
 - Checkpoint D y posteriores: `NOT AUTHORIZED`.
 
 ## Discovery Assessment
@@ -46,6 +47,13 @@ Esta SPEC fue aprobada explícitamente para desarrollo y se encuentra en impleme
 - Existing primitives are consumed without adding new components or business content.
 - Evidence: frontend/backend quality gates pass, technical route sanity checks pass and the unauthenticated API contract returns `401` with `Accept: application/json`.
 - Report: `docs/reports/SPEC-002-CHECKPOINT-C-REPORT.md`.
+
+## Checkpoint C.1 Evidence
+
+- Corrected the inherited API guest-redirect regression without changing auth business logic.
+- All `/api/*` authentication/exception responses now remain JSON without requiring an `Accept` header.
+- Added explicit regressions for unauthenticated `/me`, logout and unknown API routes.
+- Report: `docs/reports/SPEC-002-CHECKPOINT-C1-API-JSON-REGRESSION-REPORT.md`.
 
 ## Objective
 
