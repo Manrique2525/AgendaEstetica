@@ -10,9 +10,9 @@ Construir un sistema mantenible y documentado para Salón y Barbería Yaris, con
 
 ## Arquitectura aprobada
 
-- Laravel 12.
+- Laravel 13.
 - PHP 8.3+.
-- MySQL 8.
+- MySQL 8.4 LTS.
 - Vue 3, TypeScript, Tailwind CSS y Vite.
 - Sanctum para autenticación administrativa.
 - Pest para pruebas backend.
