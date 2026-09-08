@@ -20,14 +20,17 @@ Esta SPEC fue aprobada explícitamente para desarrollo y se encuentra en impleme
 - Approval model: aceptación explícita del responsable del proyecto después de revisar alcance, decisiones abiertas, riesgos y Acceptance Criteria.
 - Checkpoint A: `COMPLETED`.
 - Checkpoint B: `COMPLETED`.
-- Checkpoint C y posteriores: `NOT AUTHORIZED`.
+- Checkpoint A: `COMPLETED`.
+- Checkpoint B: `COMPLETED`.
+- Checkpoint C: `COMPLETED`.
+- Checkpoint D y posteriores: `NOT AUTHORIZED`.
 
 ## Discovery Assessment
 
 - SPEC-002 Technical Discovery: `COMPLETED`.
 - Technical assessment: `PASS`.
-- Implementation readiness: `CHECKPOINT B COMPLETED`.
-- Checkpoint C and later implementation: `NOT AUTHORIZED`.
+- Implementation readiness: `CHECKPOINT C COMPLETED`.
+- Checkpoint D and later implementation: `NOT AUTHORIZED`.
 
 ## Checkpoint B Evidence
 
@@ -35,6 +38,14 @@ Esta SPEC fue aprobada explícitamente para desarrollo y se encuentra en impleme
 - Deferred: `UiSection` and all speculative components.
 - Evidence: frontend and backend quality gates pass; no pages, layouts, routes, auth logic or business functionality changed.
 - Report: `docs/reports/SPEC-002-CHECKPOINT-B-REPORT.md`.
+
+## Checkpoint C Evidence
+
+- Delivered: presentation integration in `PublicLayout`, `AdminLayout`, `FoundationPage`, `AdminLoginPage`, `AdminPage` and `NotFoundPage`.
+- Auth, API, router guards, services and backend behavior were unchanged.
+- Existing primitives are consumed without adding new components or business content.
+- Evidence: frontend/backend quality gates pass, technical route sanity checks pass and the unauthenticated API contract returns `401` with `Accept: application/json`.
+- Report: `docs/reports/SPEC-002-CHECKPOINT-C-REPORT.md`.
 
 ## Objective
 
