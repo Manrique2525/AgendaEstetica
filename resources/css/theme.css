@@ -1,0 +1,54 @@
+@theme {
+    --color-brand-black: #050505;
+    --color-brand-fuchsia: #D01772;
+    --color-brand-pink: #CB6CA5;
+    --color-brand-turquoise: #3AC4D7;
+    --color-brand-gold: #F5CC7A;
+    --color-brand-white: #FFFFFF;
+
+    --font-display: 'Cormorant Garamond', Georgia, Cambria, 'Times New Roman', serif;
+    --font-ui: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
+    --font-body: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+    --ui-surface-page: var(--color-brand-white);
+    --ui-surface-elevated: var(--color-brand-white);
+    --ui-surface-inverse: var(--color-brand-black);
+    --ui-text-primary: var(--color-brand-black);
+    --ui-text-secondary: color-mix(in srgb, var(--color-brand-black) 68%, transparent);
+    --ui-text-inverse: var(--color-brand-white);
+    --ui-border-default: color-mix(in srgb, var(--color-brand-black) 16%, transparent);
+    --ui-border-strong: color-mix(in srgb, var(--color-brand-black) 32%, transparent);
+    --ui-action-primary: var(--color-brand-fuchsia);
+    --ui-action-primary-foreground: var(--color-brand-white);
+    --ui-action-secondary: var(--color-brand-white);
+    --ui-action-secondary-foreground: var(--color-brand-black);
+    --ui-focus-ring: var(--color-brand-turquoise);
+    --ui-state-error: var(--color-brand-fuchsia);
+    --ui-state-success: color-mix(in srgb, var(--color-brand-turquoise) 65%, var(--color-brand-black));
+}
+
+@theme inline {
+    --color-surface-page: var(--ui-surface-page);
+    --color-surface-elevated: var(--ui-surface-elevated);
+    --color-surface-inverse: var(--ui-surface-inverse);
+    --color-text-primary: var(--ui-text-primary);
+    --color-text-secondary: var(--ui-text-secondary);
+    --color-text-inverse: var(--ui-text-inverse);
+    --color-border-default: var(--ui-border-default);
+    --color-border-strong: var(--ui-border-strong);
+    --color-action-primary: var(--ui-action-primary);
+    --color-action-primary-foreground: var(--ui-action-primary-foreground);
+    --color-action-secondary: var(--ui-action-secondary);
+    --color-action-secondary-foreground: var(--ui-action-secondary-foreground);
+    --color-focus-ring: var(--ui-focus-ring);
+    --color-state-error: var(--ui-state-error);
+    --color-state-success: var(--ui-state-success);
+}
+
+@layer base {
+    body {
+        font-family: var(--font-body);
+    }
+}
