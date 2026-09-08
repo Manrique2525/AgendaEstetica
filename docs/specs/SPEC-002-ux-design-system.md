@@ -10,9 +10,9 @@ UX and Design System Foundation
 
 ## Status
 
-`READY FOR HUMAN ACCEPTANCE`
+`CLOSED`
 
-La implementación y auditoría técnica fueron completadas. La SPEC queda pendiente únicamente de aceptación humana visual/responsive; no autoriza merge a `main`, cierre automático ni el inicio de otra SPEC.
+La implementación, auditoría técnica y aceptación humana fueron completadas. SPEC-002 queda cerrada formalmente; el logo oficial continúa pendiente y no bloquea el core de la SPEC.
 
 ## Owner / Approval Model
 
@@ -24,13 +24,15 @@ La implementación y auditoría técnica fueron completadas. La SPEC queda pendi
 - Checkpoint C.1: `COMPLETED`.
 - Checkpoint D: `COMPLETED`.
 - Checkpoint E: `COMPLETED`.
-- SPEC acceptance/merge y posteriores: `PENDING HUMAN ACCEPTANCE`.
+- Human acceptance: `APPROVED`.
+- Merge authorization: `APPROVED`.
+- SPEC-003 y posteriores: `NOT STARTED`.
 
 ## Discovery Assessment
 
 - SPEC-002 Technical Discovery: `COMPLETED`.
 - Technical assessment: `PASS`.
-- Implementation readiness: `READY FOR HUMAN ACCEPTANCE`.
+- Implementation readiness: `CLOSED`.
 - Checkpoint D: `COMPLETED`.
 - Checkpoint E: `COMPLETED`.
 
@@ -681,4 +683,4 @@ No Discovery implementation, dependency installation or business content creatio
 
 ## Definition State
 
-This file incorporates the completed Discovery decisions and records all technical checkpoints as complete. Human acceptance, merge and formal closure remain pending.
+This file incorporates the completed Discovery decisions, all technical checkpoints, human acceptance and formal closure. Merge authorization is recorded separately by the project workflow.

@@ -6,6 +6,16 @@ SPEC-002 implemented the UX and Design System Foundation through Checkpoints A-E
 
 No business modules, business data, backend domain changes, new runtime dependencies or SPEC-003 work were introduced.
 
+## Human Acceptance
+
+- Human acceptance: `APPROVED`.
+- Visual direction: `APPROVED`.
+- Technical audit: `PASS`.
+- Technical blockers: `NONE`.
+- Merge authorization: `APPROVED`.
+- Final readiness: `ACCEPTED FOR MERGE`.
+- Official logo: `PENDING / NON-BLOCKING`.
+
 ## Original Objective
 
 Create a reusable visual foundation for the existing Vue SPA before business modules, using the confirmed Yaris identity, Tailwind CSS 4 CSS-first tokens, semantic HTML, accessible states and mobile-first technical surfaces.
@@ -164,29 +174,29 @@ Remote font requests: zero
 | AC-08 | PASS | No material motion introduced; reduced-motion policy remains documented. |
 | AC-09 | PASS | Four technical routes integrated without router/auth/API changes. |
 | AC-10 | PASS | No business pages, endpoints, models, migrations or invented data. |
-| AC-11 | PASS WITH HUMAN VERIFICATION PENDING | Static responsive audit passes; visual viewport review remains pending. |
-| AC-12 | PASS WITH HUMAN VERIFICATION PENDING | Font/logo fallback contracts pass; official logo remains asset-dependent. |
+| AC-11 | PASS — HUMAN ACCEPTED | Static responsive audit and approved visual review. |
+| AC-12 | PASS — HUMAN ACCEPTED | Font/logo fallback contracts accepted; official logo remains asset-dependent and non-blocking. |
 | AC-13 | PASS | 24 frontend tests cover primitives and technical-page integration without snapshots. |
 | AC-14 | PASS | Foundation backend/frontend gates pass. |
 | AC-15 | PASS | Security audit passes; no remote assets or auth storage changes. |
 | AC-16 | PASS | Documentation complete and remote CI green. |
-| AC-17 | PENDING HUMAN ACCEPTANCE | Human acceptance is intentionally not automated. |
+| AC-17 | PASS — HUMAN ACCEPTED | Explicit user acceptance granted. |
 
 ## Definition of Done Matrix
 
 - Scope implemented: `PASS`.
-- Acceptance Criteria: `PASS WITH HUMAN VERIFICATION PENDING` for responsive/logo-dependent items; AC-17 pending.
+- Acceptance Criteria: `PASS`, with official logo remaining asset-dependent/non-blocking.
 - Tokens, typography, components and layouts documented: `PASS`.
 - Auth/API unchanged except documented C.1 regression correction: `PASS`.
 - Backend/frontend tests, lint, typecheck, build and audits: `PASS`.
-- Accessibility review: `PASS WITH HUMAN VERIFICATION PENDING`.
-- Responsive review: `PASS WITH HUMAN VERIFICATION PENDING`.
+- Accessibility review: `PASS`.
+- Responsive review: `PASS` based on technical audit and accepted visual review.
 - Security review: `PASS`.
 - Documentation/report: `PASS`.
 - Remote CI: `PASS`.
 - No business data/module or SPEC-003: `PASS`.
 - Working tree clean: `PASS`.
-- Human acceptance: `PENDING`.
+- Human acceptance: `PASS`.
 
 ## Known Limitations
 
@@ -242,8 +252,8 @@ Key SPEC-002 commits:
 Technical implementation: COMPLETE
 Technical audit: COMPLETE
 Remote CI: PASS
-SPEC-002: READY FOR HUMAN ACCEPTANCE
-Human acceptance: PENDING
+SPEC-002: CLOSED
+Human acceptance: APPROVED
 Merge: NOT AUTHORIZED
 SPEC-003: NOT STARTED
 ```
