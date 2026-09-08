@@ -10,15 +10,16 @@ UX and Design System Foundation
 
 ## Status
 
-`READY FOR DEVELOPMENT APPROVAL`
+`APPROVED FOR DEVELOPMENT / IN PROGRESS`
 
-Esta SPEC tiene el alcance y las decisiones técnicas principales definidos después de Discovery. Queda pendiente de aprobación humana explícita para iniciar desarrollo; este estado no autoriza implementación, instalación de dependencias ni cambios en la aplicación.
+Esta SPEC fue aprobada explícitamente para desarrollo y se encuentra en implementación por checkpoints. Solo el checkpoint autorizado actualmente puede ejecutarse; no autoriza el avance automático a Checkpoint B ni a checkpoints posteriores.
 
 ## Owner / Approval Model
 
 - Owner: pendiente de asignación formal; la definición queda bajo revisión del proyecto.
 - Approval model: aceptación explícita del responsable del proyecto después de revisar alcance, decisiones abiertas, riesgos y Acceptance Criteria.
-- El estado `READY FOR DEVELOPMENT APPROVAL` significa que la definición y Discovery están completos y que se espera autorización humana explícita; no equivale a `APPROVED FOR DEVELOPMENT`.
+- Checkpoint autorizado: `A — Tokens + Typography Foundation`.
+- Checkpoint B y posteriores: `NOT AUTHORIZED`.
 
 ## Discovery Assessment
 
@@ -541,7 +542,7 @@ The following criteria are written for the future implementation and are not yet
 14. Existing Foundation backend and frontend quality gates pass unchanged.
 15. Security review confirms no secrets, tracking code, unapproved remote assets or auth-storage changes were introduced.
 16. Documentation and implementation report are complete, and remote GitHub Actions CI is green.
-17. Human acceptance is recorded before changing this SPEC from `READY FOR DEVELOPMENT APPROVAL` to an implementation status.
+17. Human acceptance is recorded before changing this SPEC from an implementation status to an accepted/closed status.
 
 ## Definition of Done
 
