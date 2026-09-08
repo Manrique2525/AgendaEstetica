@@ -163,12 +163,76 @@ php artisan about
 - Ecommerce: not implemented.
 - CI: not implemented.
 
+## Checkpoint A.1 - Database Environment Resolution
+
+### Previous blocker
+
+Checkpoint A initially could not validate migrations because no usable MySQL 8 credentials were available.
+
+### MySQL version selected
+
+MySQL 8.4 LTS was selected and documented in `ADR-002-adopt-mysql-8-4-lts.md`. The existing MySQL 9.2 installation was not modified or migrated.
+
+### Environment case
+
+Initial environment: `CASE C`.
+
+Another MySQL server/version existed, but MySQL 8.4 was not installed or usable.
+
+### Installation performed
+
+```text
+MySQL 8.4.11 installed through Homebrew as mysql@8.4.
+```
+
+It remains keg-only and was not force-linked. A separate datadir and local port `3307` were used to avoid the existing MySQL 9.2 datadir and port.
+
+### Service status
+
+MySQL 8.4 is running as a dedicated local process using:
+
+```text
+datadir: /opt/homebrew/var/mysql@8.4
+port: 3307
+socket: /tmp/mysql84.sock
+```
+
+The existing MySQL 9.2 service remains untouched.
+
+### Database configuration
+
+- Database: `agenda_estetica`
+- User: dedicated non-root project user
+- Credentials: configured only in local ignored `.env`
+- Charset: `utf8mb4`
+- MySQL server: `8.4.11`
+
+Passwords are intentionally not recorded in this report.
+
+### Migration result
+
+Laravel connected successfully using the dedicated project user and executed all Foundation migrations:
+
+```text
+0001_01_01_000000_create_users_table  [1] Ran
+0001_01_01_000001_create_cache_table  [1] Ran
+0001_01_01_000002_create_jobs_table   [1] Ran
+```
+
+No business tables or records were created.
+
+### Blocker resolution
+
+The MySQL environment blocker is resolved for local Checkpoint A validation.
+
 ## SPEC status
 
 SPEC-001 is `APPROVED FOR DEVELOPMENT`.
 
 The overall SPEC is not complete. The roadmap reflects `IN PROGRESS`.
 
+Checkpoint A is now `COMPLETED`.
+
 ## Next checkpoint
 
-Checkpoint B must not start until this checkpoint is reviewed and the MySQL 8 environment prerequisite is resolved or explicitly accepted as a separate environment task.
+Checkpoint B must not start until this checkpoint is reviewed explicitly.

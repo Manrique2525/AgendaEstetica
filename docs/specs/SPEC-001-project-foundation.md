@@ -34,14 +34,14 @@ La Foundation debe resolver primero las decisiones de ejecución, configuración
 - PHP 8.3 o superior.
 - Composer.
 - Node.js y npm en versiones compatibles con el toolchain elegido.
-- MySQL 8 para desarrollo y pruebas de integración que requieran persistencia.
+- MySQL 8.4 LTS para desarrollo y pruebas de integración que requieran persistencia.
 - Un entorno local que pueda ejecutar PHP, el servidor de desarrollo de Vite y, cuando corresponda, un worker y el scheduler.
 
 ### Approved stack
 
 - Laravel 13.
 - PHP 8.3+.
-- MySQL 8.
+- MySQL 8.4 LTS.
 - Vue 3.
 - TypeScript.
 - Vite.
@@ -582,7 +582,7 @@ La futura implementación debe crear un workflow inicial de GitHub Actions, sin 
 1. Checkout del repositorio.
 2. Configuración de PHP 8.3+ y extensiones necesarias.
 3. Instalación reproducible de Composer con lockfile cuando exista.
-4. Preparación de MySQL 8 para tests de integración, si las pruebas lo requieren.
+4. Preparación de MySQL 8.4 LTS para tests de integración, si las pruebas lo requieren.
 5. Ejecución de Pint en modo verificación.
 6. Ejecución de Pest.
 7. Ejecución de `larastan/larastan` mediante su integración PHPStan.
@@ -670,7 +670,7 @@ Si durante la implementación aparece una decisión no resuelta sobre arquitectu
 La SPEC está en `READY`: preparada para aprobación de desarrollo, pero no equivale a `APPROVED FOR DEVELOPMENT`. Una futura implementación no se considerará aceptada hasta cumplir:
 
 1. Laravel 13 inicia correctamente con PHP 8.3+.
-2. MySQL 8 está configurado mediante entorno y las migraciones framework aprobadas ejecutan sobre una base nueva.
+2. MySQL 8.4 LTS está configurado mediante entorno y las migraciones framework aprobadas ejecutan sobre una base nueva.
 3. `.env.example` existe y no contiene secretos, tokens reales ni credenciales reales.
 4. Locale y `APP_TIMEZONE=UTC` están configurados; `business_timezone` está preparada como identificador IANA configurable y permanece como dato empresarial pendiente.
 5. Vue 3, TypeScript, Vite y Tailwind están integrados y el build funciona.
@@ -709,7 +709,7 @@ La autenticación SPA con cookies depende de host, dominios stateful, HTTPS, `Sa
 
 ### R-003: Framework version compatibility
 
-Laravel 13, PHP 8.3+, Vite 8, Tailwind, Node, Pest y herramientas estáticas deben ser compatibles. Mitigación: fijar versiones durante implementación con lockfiles y ejecutar CI limpio.
+Laravel 13, PHP 8.3+, MySQL 8.4 LTS, Vite 8, Tailwind, Node, Pest y herramientas estáticas deben ser compatibles. Mitigación: fijar versiones durante implementación con lockfiles y ejecutar CI limpio.
 
 ### R-004: Queue operational dependency
 
@@ -751,14 +751,14 @@ No se requieren Meta, gateways de pago, S3, R2, Cloudinary ni otros proveedores 
 
 ## Proposed ADRs
 
-La adopción de Laravel 13 está registrada y aceptada en `docs/architecture/adr/ADR-001-adopt-laravel-13.md`. No se propone ningún ADR adicional. La integración Laravel + Vue SPA, el modular monolith, Sanctum y database queue permanecen sin cambios.
+La adopción de Laravel 13 está registrada y aceptada en `docs/architecture/adr/ADR-001-adopt-laravel-13.md`. La adopción de MySQL 8.4 LTS está registrada y aceptada en `docs/architecture/adr/ADR-002-adopt-mysql-8-4-lts.md`. No se propone ningún ADR adicional. La integración Laravel + Vue SPA, el modular monolith, Sanctum y database queue permanecen sin cambios.
 
 Si una decisión posterior separa orígenes de SPA/API, cambia autenticación, introduce un proveedor obligatorio o cambia la cola, deberá crearse otro ADR antes de implementar ese cambio.
 
 ## Required Documentation Updates
 
 - Mantener esta SPEC en estado `READY`; `READY` significa preparada para aprobación de desarrollo y no equivale a `APPROVED FOR DEVELOPMENT`.
-- Mantener la decisión de Laravel 13 respaldada por `ADR-001-adopt-laravel-13.md`.
+- Mantener las decisiones de Laravel 13 y MySQL 8.4 LTS respaldadas por sus ADR aceptados.
 - Si se aprueba para desarrollo, registrar el plan aprobado sin modificar el alcance silenciosamente.
 - Durante implementación, actualizar `ARCHITECTURE.md` solo si una decisión aprobada cambia la arquitectura.
 - Completar convenciones detalladas de API, seguridad y desarrollo cuando existan archivos dedicados o como parte del reporte de SPEC.

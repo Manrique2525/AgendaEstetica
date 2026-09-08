@@ -32,4 +32,4 @@ Cada etapa requiere SPEC, discovery, plan aprobado, implementación, pruebas, au
 
 `SPEC-001 - Project Foundation` está en estado `IN PROGRESS` en `docs/specs/SPEC-001-project-foundation.md`, con aprobación explícita para desarrollo. No está marcada como `IMPLEMENTED`, `ACCEPTED` ni `CLOSED`.
 
-Target de Foundation: Laravel 13, PHP 8.3+, MySQL 8, Vue 3, TypeScript, Vite, Tailwind CSS, Sanctum y Pest.
+Target de Foundation: Laravel 13, PHP 8.3+, MySQL 8.4 LTS, Vue 3, TypeScript, Vite, Tailwind CSS, Sanctum y Pest.

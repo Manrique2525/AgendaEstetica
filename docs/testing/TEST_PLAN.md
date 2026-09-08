@@ -3,6 +3,7 @@
 ## Principios
 
 - Toda regla crítica de negocio debe tener prueba automatizada.
+- Las pruebas con persistencia deben ejecutarse contra MySQL 8.4 LTS, igual que el target de producción.
 - Las pruebas deben cubrir casos válidos, inválidos, límites, duplicados y concurrencia relevante.
 - No se usan datos ficticios como datos reales de producción.
 - Los criterios de aceptación de cada SPEC son la fuente de verificación funcional.

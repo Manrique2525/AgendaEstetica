@@ -6,7 +6,7 @@ El sistema será un modular monolith en un solo repositorio. Laravel y Vue se de
 
 ## Stack
 
-Laravel 13, PHP 8.3+, MySQL 8, Vue 3, TypeScript, Tailwind CSS, Vite, Sanctum y Pest.
+Laravel 13, PHP 8.3+, MySQL 8.4 LTS, Vue 3, TypeScript, Tailwind CSS, Vite, Sanctum y Pest.
 
 ## Capas backend
 
@@ -31,7 +31,7 @@ La convención prevista es `/api/v1/public/`, `/api/v1/admin/` y `/api/v1/webhoo
 
 ## Persistencia
 
-MySQL 8 será la base de datos inicial. Se usarán claves internas BIGINT y códigos públicos seguros para citas y pedidos. Las migraciones deben ser reversibles o incluir una estrategia de despliegue documentada.
+MySQL 8.4 LTS será la base de datos inicial. Se usarán claves internas BIGINT y códigos públicos seguros para citas y pedidos. Las migraciones deben ser reversibles o incluir una estrategia de despliegue documentada.
 
 ## Jobs y notificaciones
 
