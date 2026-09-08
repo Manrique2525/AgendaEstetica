@@ -10,9 +10,9 @@ Business Core
 
 ## Status
 
-`APPROVED FOR DEVELOPMENT / IN PROGRESS`
+`READY FOR HUMAN ACCEPTANCE`
 
-Esta SPEC tiene aprobación de desarrollo para los Checkpoints A, B y C. El Checkpoint D y cualquier SPEC posterior no están autorizados.
+Los Checkpoints A-D están técnicamente completados. La aceptación humana, el cierre, el merge y cualquier SPEC posterior requieren autorización separada.
 
 ## Objective
 
@@ -702,6 +702,7 @@ Checkpoints A and B are authorized on the dedicated branch. Later checkpoints re
 - Dependencies: prior checkpoints and human approval.
 - Acceptance evidence: all AC/DoD items and remote CI pass.
 - Stop condition: do not close SPEC-003 without explicit human acceptance.
+- Status: `COMPLETED`.
 
 ## Scope-size Assessment
 
@@ -712,10 +713,10 @@ It becomes too large if it includes appointment availability, public booking, ad
 ## Definition State
 
 ```text
-SPEC-003: APPROVED FOR DEVELOPMENT / IN PROGRESS
+SPEC-003: READY FOR HUMAN ACCEPTANCE
 Discovery: COMPLETED
 Checkpoint A: COMPLETED
 Checkpoint B: COMPLETED
 Checkpoint C: COMPLETED
-Checkpoint D: NOT AUTHORIZED
+Checkpoint D: COMPLETED
 ```
