@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['singleton_key', 'name', 'phone', 'timezone', 'max_simultaneous_clients'])]
+#[Fillable(['name', 'phone', 'timezone', 'max_simultaneous_clients'])]
 class BusinessProfile extends Model
 {
     /** @use HasFactory<BusinessProfileFactory> */

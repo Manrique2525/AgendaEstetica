@@ -24,7 +24,6 @@ return new class extends Migration
                 'opens_at',
                 'closes_at',
             ], 'business_hours_exact_interval_unique');
-            $table->index(['business_profile_id', 'weekday']);
         });
 
         DB::statement('ALTER TABLE business_hours ADD CONSTRAINT business_hours_weekday_check CHECK (weekday BETWEEN 1 AND 7)');
