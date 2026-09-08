@@ -74,7 +74,7 @@ The project remains on PHP 8.3+ and does not adopt PHP 8.4-only features during 
 ## Compatibility
 
 - PHP: 8.3+ remains the project minimum.
-- MySQL: 8 remains the approved database.
+- MySQL: 8.4 LTS is the approved database target.
 - Sanctum: 4.x remains the approved SPA authentication package.
 - Pest: 4.x remains required because Pest 5 requires PHP 8.4.
 - Larastan: `larastan/larastan` 3.x is the approved package line, with the exact compatible version resolved during implementation.

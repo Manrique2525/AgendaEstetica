@@ -618,7 +618,7 @@ No se crean servicios, precios, clientes, profesionales, productos, citas ni otr
 - PHP 8.3+ con extensiones requeridas por Laravel y MySQL.
 - Composer.
 - Node.js y npm compatibles con Vite y Vue 3.
-- MySQL 8.
+- MySQL 8.4 LTS.
 - Git.
 
 Docker no es requisito. Puede documentarse como alternativa local futura, pero no debe convertirse en dependencia de Foundation sin una decisión aprobada.
@@ -667,7 +667,7 @@ Si durante la implementación aparece una decisión no resuelta sobre arquitectu
 
 ## Acceptance Criteria
 
-La SPEC está en `READY`: preparada para aprobación de desarrollo, pero no equivale a `APPROVED FOR DEVELOPMENT`. Una futura implementación no se considerará aceptada hasta cumplir:
+La SPEC está en `APPROVED FOR DEVELOPMENT` y permanece en progreso. Una futura implementación no se considerará aceptada hasta cumplir:
 
 1. Laravel 13 inicia correctamente con PHP 8.3+.
 2. MySQL 8.4 LTS está configurado mediante entorno y las migraciones framework aprobadas ejecutan sobre una base nueva.
@@ -743,7 +743,7 @@ Agregar Pinia, Axios, librerías UI o paquetes de seguridad sin necesidad aument
 - PHP runtime 8.3+.
 - Composer y Packagist para dependencias PHP aprobadas.
 - Node.js/npm y registry de paquetes frontend.
-- MySQL 8.
+- MySQL 8.4 LTS.
 - GitHub Actions para CI.
 - Hosting futuro con HTTPS, almacenamiento persistente, cron y worker.
 
@@ -757,7 +757,7 @@ Si una decisión posterior separa orígenes de SPA/API, cambia autenticación, i
 
 ## Required Documentation Updates
 
-- Mantener esta SPEC en estado `READY`; `READY` significa preparada para aprobación de desarrollo y no equivale a `APPROVED FOR DEVELOPMENT`.
+- Mantener esta SPEC en estado `APPROVED FOR DEVELOPMENT` mientras existan checkpoints pendientes; no marcarla `ACCEPTED` ni `CLOSED` sin completar el ciclo completo.
 - Mantener las decisiones de Laravel 13 y MySQL 8.4 LTS respaldadas por sus ADR aceptados.
 - Si se aprueba para desarrollo, registrar el plan aprobado sin modificar el alcance silenciosamente.
 - Durante implementación, actualizar `ARCHITECTURE.md` solo si una decisión aprobada cambia la arquitectura.

@@ -2,9 +2,9 @@
 
 ## Status
 
-`PARTIALLY IMPLEMENTED - BLOCKED ON MYSQL 8`
+`COMPLETED`
 
-Checkpoint A estableció el skeleton Laravel 13 y el boot básico. Las migrations no pudieron validarse contra un servidor MySQL 8 por falta de credenciales locales utilizables.
+Checkpoint A estableció el skeleton Laravel 13, el boot básico y la validación de migrations contra MySQL 8.4 LTS. El bloqueo inicial del entorno queda conservado en la sección histórica Checkpoint A.1.
 
 ## Repository
 
@@ -122,7 +122,7 @@ Required follow-up:
 DATABASE ENVIRONMENT BLOCKER
 ```
 
-A valid MySQL 8 server connection must be configured before declaring database migrations validated.
+A valid MySQL 8.4 LTS server connection must be configured before declaring database migrations validated.
 
 ## Boot verification
 
@@ -167,7 +167,7 @@ php artisan about
 
 ### Previous blocker
 
-Checkpoint A initially could not validate migrations because no usable MySQL 8 credentials were available.
+Checkpoint A initially could not validate migrations because no usable MySQL 8.4 LTS credentials were available.
 
 ### MySQL version selected
 
