@@ -685,7 +685,7 @@ Checkpoints A and B are authorized on the dedicated branch. Later checkpoints re
 - Dependencies: Checkpoint A and approved business rules.
 - Acceptance evidence: Feature/Unit tests, safe errors and authorization coverage.
 - Stop condition: stop if a rule belongs to Appointment Engine or another deferred module.
-- Status: `IN PROGRESS`.
+- Status: `COMPLETED`.
 
 ### Checkpoint C - Integrity and lifecycle hardening
 
@@ -715,7 +715,7 @@ It becomes too large if it includes appointment availability, public booking, ad
 SPEC-003: APPROVED FOR DEVELOPMENT / IN PROGRESS
 Discovery: COMPLETED
 Checkpoint A: COMPLETED
-Checkpoint B: IN PROGRESS
+Checkpoint B: COMPLETED
 Checkpoint C: NOT AUTHORIZED
 Checkpoint D: NOT AUTHORIZED
 ```
