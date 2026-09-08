@@ -164,29 +164,28 @@ An appointment must not silently change duration when `Service.duration_minutes`
 
 ## Pricing Snapshot Assessment
 
-Appointment price is `DISCOVERY REQUIRED` but not automatically required for the Engine. Discovery must first show an Engine invariant that consumes an agreed/quoted amount, especially for `starting_from` and `variable` services. Appointment Engine must not become a sales/order model or integrate payments.
+Appointment agreed/quoted price is `OUT OF SPEC-004 V1`. No current Engine invariant requires it; Appointment must not become a sales/order model.
 
 ## Service and Professional Name Snapshot Assessment
 
-Service-name and Professional-name snapshots are `DISCOVERY REQUIRED / LOWER PRIORITY`. Prefer Core references and current catalog/resource data unless historical or legal correctness proves a snapshot necessary. No duplicate display fields are approved by this draft.
+Service-name and Professional-name snapshots are `OUT OF SPEC-004 V1`. Use Core references/current display; a future legal or accounting consumer may introduce separate snapshots.
 
 ## Appointment Status Assessment
 
 DOMAIN_RULES currently lists a broader candidate vocabulary, but SPEC-004 does not approve every item as a persistent status:
 
 ```text
-pending
 confirmed
 cancelled
 completed
 no_show
 ```
 
-Discovery must confirm the final set, which statuses block capacity and professional availability, and the precise transition graph. Approval/request states such as `REQUEST_RECEIVED`, `PENDING_APPROVAL`, `APPROVED` and `REJECTED` remain workflow-dependent. `DEPOSIT_PENDING` is excluded; `RESCHEDULED` is treated as an operation/history event rather than an approved persistent status. Unknown strings must not be accepted.
+The final V1 set is `confirmed`, `cancelled`, `completed` and `no_show`. There is no approved request/approval consumer, so `REQUEST_RECEIVED`, `PENDING_APPROVAL`, `APPROVED`, `REJECTED`, `DEPOSIT_PENDING` and `RESCHEDULED` are not persistent V1 statuses. Unknown strings must not be accepted.
 
 ## State Transition Assessment
 
-State changes must be controlled by domain behavior and must preserve history. A cancelled appointment must not silently return to confirmed. Approval is required by current business context, but the exact approval workflow remains Discovery/business-rule pending. Cancellation windows and no-show rules remain business-rule pending.
+State changes must be controlled by domain behavior and must preserve history. Creation produces `confirmed` in V1. A cancelled, completed or no-show appointment is terminal. No approval/rejection workflow is implemented; cancellation timing/fees and operational no-show policy remain business-rule pending and non-blocking.
 
 ## Appointment History Assessment
 
@@ -210,7 +209,7 @@ The master architecture references `schedule_version` for rescheduling/history, 
 - Stale-read/concurrency problem solved.
 - Relationship to history and availability checks.
 
-If transactions and locking solve the stale-write problem without a version counter, Discovery should reject `schedule_version`. It is not an Acceptance Criterion in this draft.
+`schedule_version` is `REJECTED FOR SPEC-004 V1`; transactions, deterministic locking and authoritative revalidation are the recommended stale-write strategy. It is not an Acceptance Criterion.
 
 ## Professional Schedule Assessment
 
@@ -247,7 +246,7 @@ The final condition set and statuses that block availability require Discovery c
 
 ## ServiceCategory Active Assessment
 
-Whether an inactive ServiceCategory blocks new appointments while its Service remains active is `DISCOVERY REQUIRED`. No automatic service deactivation or compatibility mutation is approved.
+An inactive ServiceCategory blocks new appointments even when its Service is active. It does not mutate Service or ProfessionalService records; historical appointments remain readable.
 
 ## Professional Overlap Assessment
 
@@ -261,11 +260,11 @@ Adjacent intervals are allowed. The final persistence/concurrency strategy must 
 
 ## Global Capacity Assessment
 
-SPEC-003 owns `max_simultaneous_clients` configuration. SPEC-004 proposes enforcement when creating or changing appointments. Discovery must determine which statuses and temporal boundaries count as active clients, including pending, approved, confirmed, cancelled, completed and no-show states.
+SPEC-003 owns `max_simultaneous_clients` configuration. SPEC-004 enforces it for `confirmed` appointments only. Cancelled, completed and no-show appointments do not count.
 
 ## Capacity Status Semantics
 
-Capacity semantics are `DISCOVERY REQUIRED` and `BUSINESS-RULE PENDING`. No assumption that every stored appointment counts is authorized.
+Capacity semantics are resolved for V1: only `confirmed` appointments count. There is no pending V1 status.
 
 ## Create Appointment Assessment
 
@@ -273,7 +272,7 @@ Create must validate Customer, Service, Professional compatibility, active state
 
 ## Reschedule Assessment
 
-Rescheduling belongs to the Engine only if it reuses the complete availability and capacity rules and preserves history. It must not assume a `schedule_version` field; exact stale-write handling, actors and policy are Discovery/business-rule decisions.
+Rescheduling reuses the complete availability/capacity rules, preserves the current status and appends history. It does not use `schedule_version`.
 
 ## Cancellation Assessment
 
@@ -293,7 +292,7 @@ No payment gateway, payment webhook, refund or card/transfer verification is in 
 
 ## Slot Granularity Assessment
 
-Slot granularity is `BUSINESS-RULE / DISCOVERY REQUIRED`. The draft does not assume 5, 10, 15 or 30 minute increments. Discovery must distinguish validating a requested start time from generating candidate slots and decide whether both belong to the Engine.
+Slot granularity is `DEFERRED / NON-BLOCKING` because candidate-slot generation is deferred. The Engine validates requested intervals only.
 
 ## Buffer Time Assessment
 
@@ -379,7 +378,7 @@ Public identifiers are `DEFERRED`. Internal BIGINT IDs remain the baseline; a fu
 
 ## Timezone/DST Considerations
 
-Business-local recurring rules use the pending `BusinessProfile.timezone`; technical instants remain UTC. Discovery must test DST gaps/folds using technical fixtures without selecting Yaris's production timezone.
+Business-local recurring rules use the pending `BusinessProfile.timezone`; technical instants remain UTC. Discovery resolved rejection of nonexistent local times and explicit disambiguation for ambiguous folds.
 
 ## Security Considerations
 
@@ -457,7 +456,7 @@ The following are draft implementation criteria and require Discovery decisions 
 10. Rescheduling preserves history and the approved stale-write strategy without assuming `schedule_version`.
 11. Time persistence and business timezone behavior handle approved DST cases.
 12. Customer, Service and Professional deletion/lifecycle behavior preserves historical integrity.
-13. Approved duration historical-integrity decisions are implemented; appointment price remains only if Discovery proves it is an Engine invariant.
+13. Approved duration historical-integrity decisions are implemented; appointment price is explicitly out of V1.
 14. No customer accounts, payment integration, notification delivery or public API is introduced.
 15. Security, privacy, authorization and safe errors are tested at approved consumer boundaries.
 16. MySQL 8.4 constraints, indexes, transaction boundaries and concurrency behavior are tested.
@@ -482,17 +481,11 @@ The following are draft implementation criteria and require Discovery decisions 
 
 - Exact appointment schema.
 - UTC/local persistence and DST strategy.
-- Duration and price snapshots.
-- Final status set and transition graph.
-- Blocking statuses for availability/capacity.
+- Duration historical representation.
+- Final status graph and confirmed blocking semantics.
 - Professional recurring schedule and time-off/exception model.
-- ServiceCategory.active interpretation for new appointments.
-- Capacity counting semantics.
-- Whether `schedule_version` is needed or should be rejected.
 - Appointment history representation.
 - Reschedule/cancellation/no-show semantics.
-- Slot granularity and whether slot generation belongs to the Engine.
-- Buffer-time decision if a future business rule appears.
 - API necessity.
 - Soft-delete/deletion and historical FK behavior.
 - Required indexes, FKs and CHECK constraints.
@@ -502,17 +495,12 @@ The following are draft implementation criteria and require Discovery decisions 
 ## Business-Rule Pending Items
 
 - Exact cancellation window and policy.
-- No-show operational policy.
-- Which statuses count toward capacity.
-- Any-compatible-professional request policy is deferred to a consumer scope.
-- Automatic professional assignment is out of scope.
-- Final time-off rules.
+- No-show operational policy beyond the state transition.
+- Final time-off business data/rules.
 
 ## Development-Approval Blockers
 
-- Technical Discovery is required before implementation.
-- Appointment temporal persistence and concurrency strategy must be approved before migrations.
-- Final state transition graph and capacity semantics must be approved before domain actions.
+- None remaining from Technical Discovery. Human development approval is still required before implementation.
 
 ## Deferred Decisions
 
@@ -538,7 +526,7 @@ ADR-003 is created as a `DRAFT` because temporal persistence and lock ordering a
 
 ## Discovery Requirements
 
-Technical Discovery must inspect current Laravel conventions and produce evidence for every Discovery-Required decision. It must include schema alternatives, time/DST behavior, concurrency strategy, relationship lifecycle, privacy, future consumers and test isolation. Discovery is not authorized by this document.
+Technical Discovery inspected Laravel conventions and produced evidence for schema alternatives, time/DST behavior, concurrency strategy, lifecycle, privacy, future consumers and test isolation. Discovery is complete; implementation remains unauthorized.
 
 ## Proposed Implementation Checkpoints
 
@@ -597,29 +585,27 @@ No `schedule_version`, source, notes, service-name snapshot, professional-name s
 
 ### Appointment status recommendation
 
-The recommended operational baseline is:
+The final V1 operational baseline is:
 
 ```text
-pending
 confirmed
 cancelled
 completed
 no_show
 ```
 
-`REQUEST_RECEIVED`, `PENDING_APPROVAL`, `APPROVED` and `REJECTED` remain workflow-dependent. `DEPOSIT_PENDING` is out. `RESCHEDULED` is an operation/history event, not a persistent status.
+`REQUEST_RECEIVED`, `PENDING_APPROVAL`, `APPROVED`, `REJECTED`, `DEPOSIT_PENDING` and `RESCHEDULED` are not V1 persistent statuses. The first four require a future request/approval consumer; the last two are explicitly out/history-only.
 
 The recommended transition graph is:
 
 ```text
-pending   -> confirmed, cancelled
 confirmed -> cancelled, completed, no_show
 cancelled -> terminal
 completed -> terminal
 no_show   -> terminal
 ```
 
-Rescheduling preserves the current operational status and creates history. Whether `pending` blocks resources is a business decision; the conservative recommendation is that it blocks while awaiting approval, with an explicit future resolution/expiry policy.
+Creation produces `confirmed` in V1. Rescheduling preserves `confirmed` and creates history. Terminal states have no outgoing transitions.
 
 ### Appointment history recommendation
 
@@ -631,9 +617,9 @@ Use a focused `appointment_histories` record for creation/status/reschedule/canc
 
 ### Availability and capacity
 
-SPEC-004 validates a requested interval for a specific Professional. Candidate-slot generation is deferred to a future consumer. Availability intersects BusinessHours, ProfessionalSchedule and ProfessionalTimeOff, then checks active states, compatibility, duration, professional overlap and global capacity. `ServiceCategory.active` should block new appointments when false, without mutating Service records; this remains a final development-rule confirmation.
+SPEC-004 validates a requested interval for a specific Professional. Candidate-slot generation is deferred to a future consumer. Availability intersects BusinessHours, ProfessionalSchedule and ProfessionalTimeOff, then checks active states, compatibility, duration, professional overlap and global capacity. `ServiceCategory.active` blocks new appointments when false without mutating Service records.
 
-Global capacity uses an interval/event-sweep calculation over blocking appointments, not same-start counting. The recommended conservative default is that `pending` and `confirmed` block resources/capacity; this requires explicit business approval before development.
+Global capacity uses an interval/event-sweep calculation over `confirmed` appointments, not same-start counting. There is no pending V1 status.
 
 ### Concurrency recommendation
 
@@ -653,17 +639,11 @@ The singleton lock serializes global capacity writes for this single-business, s
 
 HTTP request-token idempotency, appointment source and public identifiers are deferred to consumer specifications. This does not defer database race protection.
 
-### Discovery blockers before development
+### Development approval blockers
 
-The following require human/business approval before implementation:
+Technical Discovery blockers: `NONE`.
 
-- final status/blocking semantics, especially whether `pending` consumes resources;
-- exact cancellation/no-show operational policy;
-- temporal/DST boundary contract for local input;
-- final appointment/history schema and FK deletion policy;
-- professional schedule/time-off schema and overlap rules;
-- concurrency lock order and retry policy;
-- whether appointment price is needed by an Engine consumer.
+Human/business items remain non-blocking business-rule/data decisions: cancellation timing/fees, no-show operational policy, official timezone and real schedule data. Development approval is still required before implementation.
 
 ## Definition State
 

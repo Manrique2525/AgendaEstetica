@@ -114,31 +114,29 @@ Appointment price is `DISCOVERY RESOLVED AS DEFERRED FROM ENGINE BY DEFAULT`. It
 
 ## 21. Service-name snapshot decision
 
-`DISCOVERY REQUIRED / LOWER PRIORITY`. Prefer FK/current catalog unless historical/legal evidence requires a snapshot.
+`OUT OF SPEC-004 V1`. Prefer FK/current catalog; a future legal/accounting consumer may add a snapshot.
 
 ## 22. Professional-name snapshot decision
 
-`DISCOVERY REQUIRED / LOWER PRIORITY`. Prefer FK/current resource display unless historical evidence requires a snapshot.
+`OUT OF SPEC-004 V1`. Prefer FK/current resource display; a future legal/accounting consumer may add a snapshot.
 
 ## 23. Final Appointment statuses
 
-Recommended operational baseline:
+Final V1 operational baseline:
 
 ```text
-pending
 confirmed
 cancelled
 completed
 no_show
 ```
 
-`DEPOSIT_PENDING` and `RESCHEDULED` are excluded from persistent status baseline. Request/approval/rejection vocabulary remains workflow-dependent.
+`REQUEST_RECEIVED`, `PENDING_APPROVAL`, `APPROVED`, `REJECTED`, `DEPOSIT_PENDING` and `RESCHEDULED` are not V1 persistent statuses. Request/approval/rejection vocabulary remains future consumer workflow.
 
 ## 24. Status semantics matrix
 
 | Status | Meaning | Terminal | Blocking |
 | --- | --- | --- | --- |
-| pending | awaiting approved workflow | No | Business decision; conservative recommendation: yes |
 | confirmed | approved/accepted appointment | No | Yes |
 | cancelled | cancelled historical record | Yes | No |
 | completed | completed historical record | Yes | No |
@@ -149,26 +147,25 @@ no_show
 Recommended graph:
 
 ```text
-pending   -> confirmed, cancelled
 confirmed -> cancelled, completed, no_show
 cancelled -> terminal
 completed -> terminal
 no_show   -> terminal
 ```
 
-Reschedule preserves the operational status and writes history.
+Creation produces `confirmed`; reschedule preserves `confirmed` and writes history.
 
 ## 26. Invalid-transition examples
 
-Reject transitions such as `cancelled -> completed`, `completed -> confirmed` and `no_show -> confirmed`. Exact graph remains a development approval item.
+Reject transitions such as `cancelled -> completed`, `completed -> confirmed` and `no_show -> confirmed`. Terminal states have no outgoing transitions.
 
 ## 27. Professional-blocking statuses
 
-`confirmed` blocks. `pending` is a business decision; conservative recommendation is to block while awaiting approval, with a future resolution/expiry policy.
+`confirmed` blocks. There is no pending V1 status.
 
 ## 28. Capacity-counting statuses
 
-`confirmed` counts. `pending` requires explicit business approval before implementation; the safe recommendation is to count it if it blocks professional occupancy.
+`confirmed` counts; cancelled, completed and no-show do not.
 
 ## 29. AppointmentHistory recommendation
 
@@ -275,7 +272,7 @@ Deferred. The Engine validates a requested interval; it does not generate calend
 
 ## 45. ServiceCategory.active rule
 
-`DISCOVERY REQUIRED`. Recommendation: inactive category blocks new appointments without mutating Service or compatibility records.
+`RESOLVED`: inactive category blocks new appointments without mutating Service or compatibility records.
 
 ## 46. Service.active rule
 
@@ -339,7 +336,7 @@ For transitions changing blocking semantics, use the same capacity/professional 
 
 ## 61. Cancellation/confirmation lock impact
 
-Confirmation may become a reservation operation if pending blocks are not selected. Cancellation releases occupancy and must use the same lock protocol when it changes blocking state.
+Creation is confirmed in V1. Confirmation is not a separate pending transition. Cancellation releases occupancy and uses the same lock protocol when blocking state changes.
 
 ## 62. Transaction boundaries
 
@@ -351,7 +348,7 @@ Availability previews may become stale. Every mutation must lock, re-read, reval
 
 ## 64. `schedule_version` final decision
 
-`REJECTED BY DEFAULT`. Locking/revalidation is recommended as sufficient. Reconsider only if development evidence demonstrates unresolved stale writes.
+`REJECTED FOR SPEC-004 V1`. Locking, authoritative revalidation and deterministic transaction ordering are the selected stale-write strategy.
 
 ## 65. Idempotency boundary
 
@@ -367,19 +364,19 @@ Deferred; internal BIGINT remains baseline.
 
 ## 68. Appointment deletion/lifecycle
 
-Appointments are retained stateful records; no normal hard-delete workflow. Exact FK/delete strategy is a development blocker.
+Appointments are retained stateful records with no normal hard-delete workflow. Appointment references to Customer, Service and Professional use restrictive historical lifecycle behavior.
 
 ## 69. Customer historical FK strategy
 
-Recommend restrictive historical reference behavior; deleting a referenced Customer must not destroy appointments.
+`RESOLVED`: restrictive historical reference behavior; deleting a referenced Customer must not destroy appointments.
 
 ## 70. Service historical FK strategy
 
-Recommend restrictive historical reference behavior; inactive/editable Service data must not rewrite existing appointments.
+`RESOLVED`: restrictive historical reference behavior; inactive/editable Service data must not rewrite existing appointments.
 
 ## 71. Professional historical FK strategy
 
-Recommend restrictive historical reference behavior; deleting a Professional must not destroy appointments.
+`RESOLVED`: restrictive historical reference behavior; deleting a Professional must not destroy appointments.
 
 ## 72. ProfessionalService historical implication
 
@@ -518,7 +515,6 @@ Resolved by Discovery: temporal storage recommendation, status baseline, profess
 
 ## 98. Remaining business-rule questions
 
-- Whether `pending` consumes professional/capacity occupancy.
 - Cancellation timing/fee policy.
 - No-show operational policy.
 - Final category-inactive interpretation.
@@ -602,7 +598,7 @@ SPEC-004: `READY FOR DEVELOPMENT APPROVAL`.
 
 ## 118. Blockers
 
-Development approval blockers remain: final business status/blocking semantics, temporal/DST boundary, final schema/FK lifecycle, schedule/time-off schema, lock/retry policy and appointment price necessity.
+Development-approval blockers: `NONE` from Technical Discovery. Human approval remains required before implementation; business timing/no-show policy and real business data are non-blocking pending items.
 
 ## 119. Recommended next action
 
