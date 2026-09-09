@@ -36,7 +36,9 @@ Commits:
 
 - `75672f9 docs: report SPEC-004 checkpoint D`.
 - `51762e5 feat: add SPEC-004 transactional appointment operations`.
+- `cd4dd1f docs: finalize SPEC-004 checkpoint D report`.
 - Remote Quality run: `34377664335`, backend/frontend PASS.
+- Final Quality run after report sync: `34377897617`, backend/frontend PASS.
 
 ## Scope Audit
 
