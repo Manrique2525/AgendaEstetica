@@ -36,6 +36,6 @@ Cada etapa requiere SPEC, discovery, plan aprobado, implementación, pruebas, au
 
 `SPEC-003 - Business Core` está en estado `CLOSED` en `docs/specs/SPEC-003-business-core.md`. Checkpoints A-D están completados y la aceptación humana fue aprobada. SPEC-004 permanece no iniciada y requiere autorización separada.
 
-`SPEC-004 - Appointment Engine` está en estado `APPROVED FOR DEVELOPMENT / IN PROGRESS` en `docs/specs/SPEC-004-appointment-engine.md`. Checkpoints A y B están completados; Checkpoint C está en progreso y Checkpoint D no se inicia automáticamente.
+`SPEC-004 - Appointment Engine` está en estado `APPROVED FOR DEVELOPMENT / IN PROGRESS` en `docs/specs/SPEC-004-appointment-engine.md`. Checkpoints A-D están completados técnicamente; Checkpoint E no se inicia automáticamente.
 
 Target de Foundation: Laravel 13, PHP 8.3+, MySQL 8.4 LTS, Vue 3, TypeScript, Vite, Tailwind CSS, Sanctum y Pest.
