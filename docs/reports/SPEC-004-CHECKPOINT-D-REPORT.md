@@ -32,6 +32,12 @@ No generic transition Action, timing policy, payment behavior or notification be
 
 Covered operations include successful/failed create, stale Service reread, self-exclusion, same/different Professional reschedule, duration preservation, no-op reschedule, terminal-state rejection, status transitions, capacity release and history ordering.
 
+Commits:
+
+- `75672f9 docs: report SPEC-004 checkpoint D`.
+- `51762e5 feat: add SPEC-004 transactional appointment operations`.
+- Remote Quality run: `34377664335`, backend/frontend PASS.
+
 ## Scope Audit
 
 Not implemented: Checkpoint E race stress, custom retry abstraction, new APIs, frontend, notifications, payments, slots, auto-assignment, special hours or SPEC-005.
