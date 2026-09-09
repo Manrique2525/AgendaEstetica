@@ -39,6 +39,11 @@ it('enforces appointment temporal duration and status checks in MySQL', function
 
     expect(fn () => DB::table('appointments')->insert([
         ...$attributes,
+        'duration_minutes' => -1,
+    ]))->toThrow(QueryException::class);
+
+    expect(fn () => DB::table('appointments')->insert([
+        ...$attributes,
         'status' => 'unknown',
     ]))->toThrow(QueryException::class);
 });
@@ -91,13 +96,21 @@ it('persists focused history events and nullable temporal/status fields', functi
         'old_professional_id' => $professional->id,
         'new_professional_id' => $professional->id,
     ]);
+    $statusChanged = AppointmentHistory::factory()->create([
+        'appointment_id' => $appointment->id,
+        'event_type' => AppointmentHistoryEventType::STATUS_CHANGED,
+        'from_status' => AppointmentStatus::CONFIRMED,
+        'to_status' => AppointmentStatus::COMPLETED,
+    ]);
 
     expect($created->refresh()->event_type)->toBe(AppointmentHistoryEventType::CREATED)
         ->and($created->to_status)->toBe(AppointmentStatus::CONFIRMED)
         ->and($created->newProfessional->is($professional))->toBeTrue()
         ->and($rescheduled->refresh()->event_type)->toBe(AppointmentHistoryEventType::RESCHEDULED)
         ->and($rescheduled->old_starts_at->format('Y-m-d H:i:s'))->toBe('2026-01-15 16:00:00')
-        ->and($appointment->history()->count())->toBe(2);
+        ->and($statusChanged->refresh()->event_type)->toBe(AppointmentHistoryEventType::STATUS_CHANGED)
+        ->and($statusChanged->to_status)->toBe(AppointmentStatus::COMPLETED)
+        ->and($appointment->history()->count())->toBe(3);
 });
 
 it('rejects unknown history events and non-null status values', function (): void {

@@ -79,11 +79,11 @@ Enum round-trip and direct unknown-status rejection.
 ## 39. Temporal constraint tests
 Equal/reversed times rejected; ordered times accepted.
 ## 40. Duration constraint tests
-Zero/invalid values rejected; positive values accepted.
+Zero and negative values rejected; positive values accepted.
 ## 41. FK restriction tests
 Referenced Customer, Service and Professional deletion rejected.
 ## 42. History persistence tests
-Created and rescheduled events persist with nullable fields.
+Created, status-changed and rescheduled events persist with nullable fields.
 ## 43. History event tests
 Unknown event types rejected.
 ## 44. History status tests
@@ -117,7 +117,7 @@ PASS.
 ## 58. Re-migration
 PASS.
 ## 59. Backend test result
-PASS: 66 tests, 217 assertions.
+PASS: 66 tests, 220 assertions.
 ## 60. Frontend test result
 PASS: 10 files, 24 tests.
 ## 61. Pint
@@ -145,23 +145,24 @@ SPEC/roadmap status and this report were updated.
 ## 72. Report path
 `docs/reports/SPEC-004-CHECKPOINT-A-REPORT.md`.
 ## 73. Commits
-Pending final review.
+Checkpoint A implementation and documentation commits were created.
 ## 74. Commit hashes
-Pending.
+- `4e96fdf feat: add SPEC-004 appointment persistence foundation`.
+- `76f8458 docs: report SPEC-004 checkpoint A`.
 ## 75. Push result
-Pending.
+PASS: `git push origin feat/spec-004-appointment-engine`.
 ## 76. Remote CI workflow
-Pending push.
+`Quality`.
 ## 77. Remote CI run ID
-Pending push.
+`34368625279`.
 ## 78. Remote backend result
-Pending push.
+PASS.
 ## 79. Remote frontend result
-Pending push.
+PASS.
 ## 80. Working tree
-Pending final staging review.
+Clean before this verification correction.
 ## 81. Local/remote synchronization
-Implementation branch began at Discovery HEAD `1679483`; final synchronization pending.
+Implementation branch began at Discovery HEAD `1679483`; final branch synchronization is complete.
 ## 82. SPEC-004 status
 `APPROVED FOR DEVELOPMENT / IN PROGRESS`.
 ## 83. Checkpoint A status
