@@ -64,9 +64,10 @@ Not implemented: Appointment mutations, history writes, availability locking, ca
 
 - `0cce8e0 feat: add SPEC-004 availability and capacity engine`.
 - `01ccbb7 docs: report SPEC-004 checkpoint C`.
+- `62cdd2a docs: finalize SPEC-004 checkpoint C report`.
 - Push: PASS.
 - Workflow: `Quality`.
-- Run: `34374012470`.
+- Run: `34374253750`.
 - Backend: PASS.
 - Frontend: PASS.
 
