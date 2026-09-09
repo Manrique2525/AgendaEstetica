@@ -651,7 +651,7 @@ Human/business items remain non-blocking business-rule/data decisions: cancellat
 SPEC-004: APPROVED FOR DEVELOPMENT / IN PROGRESS
 Technical Discovery: COMPLETED
 Checkpoint A: COMPLETED
-Checkpoint B: NOT AUTHORIZED
+Checkpoint B: COMPLETED
 Implementation: CHECKPOINT A ONLY
 SPEC-005: NOT STARTED
 ```
