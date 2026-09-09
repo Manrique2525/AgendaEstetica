@@ -145,16 +145,17 @@ SPEC/roadmap status and this report were updated.
 ## 72. Report path
 `docs/reports/SPEC-004-CHECKPOINT-A-REPORT.md`.
 ## 73. Commits
-Checkpoint A implementation and documentation commits were created.
+Checkpoint A implementation, documentation and integrity-coverage correction commits were created.
 ## 74. Commit hashes
 - `4e96fdf feat: add SPEC-004 appointment persistence foundation`.
 - `76f8458 docs: report SPEC-004 checkpoint A`.
+- `2700eee test: complete SPEC-004 checkpoint A integrity coverage`.
 ## 75. Push result
 PASS: `git push origin feat/spec-004-appointment-engine`.
 ## 76. Remote CI workflow
 `Quality`.
 ## 77. Remote CI run ID
-`34368625279`.
+`34369457641`.
 ## 78. Remote backend result
 PASS.
 ## 79. Remote frontend result
@@ -162,7 +163,7 @@ PASS.
 ## 80. Working tree
 Clean before this verification correction.
 ## 81. Local/remote synchronization
-Implementation branch began at Discovery HEAD `1679483`; final branch synchronization is complete.
+Implementation branch began at Discovery HEAD `1679483`; final branch synchronization is complete at `2700eee`.
 ## 82. SPEC-004 status
 `APPROVED FOR DEVELOPMENT / IN PROGRESS`.
 ## 83. Checkpoint A status
