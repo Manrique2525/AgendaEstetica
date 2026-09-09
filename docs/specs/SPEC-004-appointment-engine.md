@@ -10,9 +10,9 @@ Appointment Engine
 
 ## Status
 
-`READY FOR DEVELOPMENT APPROVAL`
+`APPROVED FOR DEVELOPMENT / IN PROGRESS`
 
-Technical Discovery is complete. This document defines the recommended development scope; implementation, migrations, models, enums, Actions, APIs, frontend work and SPEC-005 remain unauthorized until separate human approval.
+Technical Discovery is complete. Checkpoint A is authorized; Checkpoint B and all later work remain unauthorized.
 
 ## Objective
 
@@ -648,8 +648,10 @@ Human/business items remain non-blocking business-rule/data decisions: cancellat
 ## Definition State
 
 ```text
-SPEC-004: READY FOR DEVELOPMENT APPROVAL
+SPEC-004: APPROVED FOR DEVELOPMENT / IN PROGRESS
 Technical Discovery: COMPLETED
-Implementation: NOT AUTHORIZED
+Checkpoint A: COMPLETED
+Checkpoint B: NOT AUTHORIZED
+Implementation: CHECKPOINT A ONLY
 SPEC-005: NOT STARTED
 ```
