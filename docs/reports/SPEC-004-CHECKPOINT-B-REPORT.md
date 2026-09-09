@@ -128,6 +128,34 @@ Not implemented:
 
 `docs/reports/SPEC-004-CHECKPOINT-B-REPORT.md`.
 
-## 16. Recommended next action
+## 16. Commits
+
+- `f935085 feat: add SPEC-004 professional schedule foundation`.
+- `dc6aff2 docs: report SPEC-004 checkpoint B`.
+
+## 17. Push result
+
+PASS: `git push origin feat/spec-004-appointment-engine`.
+
+## 18. Remote CI
+
+- Workflow: `Quality`.
+- Run: `34371280731`.
+- Backend: PASS.
+- Frontend: PASS.
+
+## 19. Final synchronization
+
+The implementation branch is synchronized with its remote and the working tree is clean.
+
+## 20. Final checkpoint state
+
+- SPEC-004: `APPROVED FOR DEVELOPMENT / IN PROGRESS`.
+- Checkpoint A: `COMPLETED / APPROVED`.
+- Checkpoint B: `COMPLETED`.
+- Checkpoint C: `NOT AUTHORIZED`.
+- SPEC-005: `NOT STARTED`.
+
+## 21. Recommended next action
 
 Submit Checkpoint B for human review. Do not start Checkpoint C.
