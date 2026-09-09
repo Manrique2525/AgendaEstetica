@@ -60,6 +60,20 @@ Not implemented: Appointment mutations, history writes, availability locking, ca
 - Checkpoint D: `NOT AUTHORIZED`.
 - SPEC-005: `NOT STARTED`.
 
+## Commits and CI
+
+- `0cce8e0 feat: add SPEC-004 availability and capacity engine`.
+- `01ccbb7 docs: report SPEC-004 checkpoint C`.
+- Push: PASS.
+- Workflow: `Quality`.
+- Run: `34374012470`.
+- Backend: PASS.
+- Frontend: PASS.
+
+## Synchronization
+
+The implementation branch is synchronized at `01ccbb7` and the working tree is clean.
+
 ## Recommended Next Action
 
 Submit Checkpoint C for human review. Do not start Checkpoint D.
