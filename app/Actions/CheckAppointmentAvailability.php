@@ -24,12 +24,16 @@ final class CheckAppointmentAvailability
         Professional $professional,
         CarbonImmutable $startsAt,
         CarbonImmutable $endsAt,
+        ?int $excludeAppointmentId = null,
+        ?int $expectedDurationMinutes = null,
     ): bool {
         if ($startsAt->getTimestamp() >= $endsAt->getTimestamp()) {
             return false;
         }
 
-        if (($endsAt->getTimestamp() - $startsAt->getTimestamp()) !== ($service->duration_minutes * 60)) {
+        $durationMinutes = $expectedDurationMinutes ?? $service->duration_minutes;
+
+        if (($endsAt->getTimestamp() - $startsAt->getTimestamp()) !== ($durationMinutes * 60)) {
             return false;
         }
 
@@ -97,13 +101,14 @@ final class CheckAppointmentAvailability
 
         if ($professional->appointments()
             ->where('status', AppointmentStatus::CONFIRMED)
+            ->when($excludeAppointmentId !== null, fn ($query) => $query->where('appointments.id', '<>', $excludeAppointmentId))
             ->where('starts_at', '<', $endsAt->toDateTimeString())
             ->where('ends_at', '>', $startsAt->toDateTimeString())
             ->exists()) {
             return false;
         }
 
-        return $this->capacityAllows($profile->max_simultaneous_clients, $startsAt, $endsAt);
+        return $this->capacityAllows($profile->max_simultaneous_clients, $startsAt, $endsAt, $excludeAppointmentId);
     }
 
     /**
@@ -194,8 +199,12 @@ final class CheckAppointmentAvailability
         return count($matches) === 1 ? array_values($matches)[0] : null;
     }
 
-    private function capacityAllows(int $capacity, CarbonImmutable $candidateStart, CarbonImmutable $candidateEnd): bool
-    {
+    private function capacityAllows(
+        int $capacity,
+        CarbonImmutable $candidateStart,
+        CarbonImmutable $candidateEnd,
+        ?int $excludeAppointmentId = null,
+    ): bool {
         /** @var array<int, array{0: int, 1: int}> $events */
         $events = [
             [$candidateStart->getTimestamp(), 1],
@@ -204,6 +213,8 @@ final class CheckAppointmentAvailability
 
         foreach (Appointment::query()
             ->where('status', AppointmentStatus::CONFIRMED)
+            ->when($excludeAppointmentId !== null, fn ($query) => $query->where('appointments.id', '<>', $excludeAppointmentId))
+            ->when($excludeAppointmentId !== null, fn ($query) => $query->where('appointments.id', '<>', $excludeAppointmentId))
             ->where('starts_at', '<', $candidateEnd->toDateTimeString())
             ->where('ends_at', '>', $candidateStart->toDateTimeString())
             ->get(['starts_at', 'ends_at']) as $appointment) {
