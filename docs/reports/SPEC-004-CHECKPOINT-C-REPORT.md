@@ -43,7 +43,7 @@ Not implemented: Appointment mutations, history writes, availability locking, ca
 
 ## Evidence
 
-- Backend: 82 tests, 286 assertions, PASS.
+- Backend: 84 tests, 291 assertions, PASS.
 - Frontend: 10 files, 24 tests, PASS.
 - MySQL: 8.4.11.
 - Test DB: `agenda_estetica_test`.
@@ -65,15 +65,16 @@ Not implemented: Appointment mutations, history writes, availability locking, ca
 - `0cce8e0 feat: add SPEC-004 availability and capacity engine`.
 - `01ccbb7 docs: report SPEC-004 checkpoint C`.
 - `62cdd2a docs: finalize SPEC-004 checkpoint C report`.
+- `2b1baec docs: finalize SPEC-004 checkpoint C evidence`.
 - Push: PASS.
 - Workflow: `Quality`.
-- Run: `34374253750`.
+- Run: `34374484612`.
 - Backend: PASS.
 - Frontend: PASS.
 
 ## Synchronization
 
-The implementation branch is synchronized at `01ccbb7` and the working tree is clean.
+The implementation branch is synchronized at `2b1baec` and the working tree is clean.
 
 ## Recommended Next Action
 

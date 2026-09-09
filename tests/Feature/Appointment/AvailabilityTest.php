@@ -106,6 +106,39 @@ it('requires full BusinessHours and ProfessionalSchedule coverage', function ():
         ->toBeFalse();
 });
 
+it('merges adjacent BusinessHours and ProfessionalSchedule intervals without bridging gaps', function (): void {
+    $fixture = availabilityFixture(['duration' => 120]);
+    $fixture['profile']->hours()->delete();
+    $fixture['profile']->hours()->createMany([
+        ['weekday' => 1, 'interval_order' => 1, 'opens_at' => '09:00', 'closes_at' => '13:00'],
+        ['weekday' => 1, 'interval_order' => 2, 'opens_at' => '13:00', 'closes_at' => '17:00'],
+    ]);
+    $fixture['professional']->schedules()->delete();
+    $fixture['professional']->schedules()->createMany([
+        ['weekday' => 1, 'starts_at' => '09:00', 'ends_at' => '13:00'],
+        ['weekday' => 1, 'starts_at' => '13:00', 'ends_at' => '17:00'],
+    ]);
+
+    $checker = new CheckAppointmentAvailability;
+
+    expect($checker->execute($fixture['service'], $fixture['professional'], utcTime('12:00:00'), utcTime('14:00:00')))
+        ->toBeTrue();
+
+    $fixture['profile']->hours()->where('weekday', 1)->delete();
+    $fixture['profile']->hours()->createMany([
+        ['weekday' => 1, 'interval_order' => 1, 'opens_at' => '09:00', 'closes_at' => '13:00'],
+        ['weekday' => 1, 'interval_order' => 2, 'opens_at' => '14:00', 'closes_at' => '17:00'],
+    ]);
+    $fixture['professional']->schedules()->delete();
+    $fixture['professional']->schedules()->createMany([
+        ['weekday' => 1, 'starts_at' => '09:00', 'ends_at' => '13:00'],
+        ['weekday' => 1, 'starts_at' => '14:00', 'ends_at' => '17:00'],
+    ]);
+
+    expect($checker->execute($fixture['service'], $fixture['professional'], utcTime('12:00:00'), utcTime('15:00:00')))
+        ->toBeFalse();
+});
+
 it('rejects ProfessionalTimeOff overlap and allows adjacency', function (): void {
     $fixture = availabilityFixture();
     $fixture['professional']->timeOff()->create([
@@ -192,8 +225,73 @@ it('calculates global capacity by peak concurrency rather than overlapping row c
         ->toBeFalse();
 });
 
+it('processes capacity end events before start events at the same instant', function (): void {
+    $fixture = availabilityFixture(['capacity' => 1]);
+    $other = Professional::factory()->create();
+    $other->services()->attach($fixture['service']);
+    Appointment::factory()->create([
+        'professional_id' => $other->id,
+        'service_id' => $fixture['service']->id,
+        'status' => AppointmentStatus::CONFIRMED,
+        'starts_at' => '2026-01-05 09:00:00',
+        'ends_at' => '2026-01-05 10:00:00',
+        'duration_minutes' => 60,
+    ]);
+
+    expect((new CheckAppointmentAvailability)->execute(
+        $fixture['service'],
+        $fixture['professional'],
+        utcTime('10:00:00'),
+        utcTime('11:00:00'),
+    ))->toBeTrue();
+});
+
 it('rejects nonexistent and ambiguous recurring local boundaries', function (): void {
     $gap = availabilityFixture(['timezone' => 'America/New_York', 'duration' => 30]);
+    $gap['profile']->hours()->delete();
+    $gap['profile']->hours()->create([
+        'weekday' => 7,
+        'interval_order' => 1,
+        'opens_at' => '09:00',
+        'closes_at' => '18:00',
+    ]);
+    $gap['professional']->schedules()->delete();
+    $gap['professional']->schedules()->create([
+        'weekday' => 7,
+        'starts_at' => '09:00',
+        'ends_at' => '18:00',
+    ]);
+    $checker = new CheckAppointmentAvailability;
+
+    expect($checker->execute(
+        $gap['service'],
+        $gap['professional'],
+        CarbonImmutable::parse('2026-07-05 14:00:00', 'UTC'),
+        CarbonImmutable::parse('2026-07-05 14:30:00', 'UTC'),
+    ))->toBeTrue();
+
+    $gap['service']->update(['duration_minutes' => 60]);
+    $gap['profile']->hours()->delete();
+    $gap['profile']->hours()->create([
+        'weekday' => 7,
+        'interval_order' => 1,
+        'opens_at' => '01:00',
+        'closes_at' => '04:00',
+    ]);
+    $gap['professional']->schedules()->delete();
+    $gap['professional']->schedules()->create([
+        'weekday' => 7,
+        'starts_at' => '01:00',
+        'ends_at' => '04:00',
+    ]);
+
+    expect($checker->execute(
+        $gap['service'],
+        $gap['professional'],
+        CarbonImmutable::parse('2026-03-08 06:30:00', 'UTC'),
+        CarbonImmutable::parse('2026-03-08 07:30:00', 'UTC'),
+    ))->toBeTrue();
+
     $gap['profile']->hours()->delete();
     $gap['profile']->hours()->create([
         'weekday' => 7,
@@ -214,7 +312,7 @@ it('rejects nonexistent and ambiguous recurring local boundaries', function (): 
         $gap['service'],
         $gap['professional'],
         CarbonImmutable::parse('2026-03-08 07:30:00', 'UTC'),
-        CarbonImmutable::parse('2026-03-08 08:00:00', 'UTC'),
+        CarbonImmutable::parse('2026-03-08 08:30:00', 'UTC'),
     ))->toBeFalse();
 
     $fold = $gap;
@@ -236,7 +334,7 @@ it('rejects nonexistent and ambiguous recurring local boundaries', function (): 
         $fold['service'],
         $fold['professional'],
         CarbonImmutable::parse('2026-11-01 05:30:00', 'UTC'),
-        CarbonImmutable::parse('2026-11-01 06:00:00', 'UTC'),
+        CarbonImmutable::parse('2026-11-01 06:30:00', 'UTC'),
     ))->toBeFalse();
 });
 
