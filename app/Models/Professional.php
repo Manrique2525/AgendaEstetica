@@ -34,4 +34,9 @@ class Professional extends Model
     {
         return $this->hasMany(ProfessionalTimeOff::class);
     }
+
+    public function appointments(): HasMany
+    {
+        return $this->hasMany(Appointment::class);
+    }
 }
