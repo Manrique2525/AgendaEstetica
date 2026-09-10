@@ -2,7 +2,7 @@
 
 ## Scope
 
-Checkpoint E validates real MySQL concurrency for the already-approved D transaction architecture. Checkpoint F remains unauthorized.
+Checkpoint E validates real MySQL concurrency for the already-approved D transaction architecture. Checkpoint F final audit is documented separately.
 
 ## Harness
 
@@ -121,12 +121,12 @@ Not implemented: Checkpoint F, stress beyond the bounded E suite, generic retry 
 
 ## Status
 
-- SPEC-004: `APPROVED FOR DEVELOPMENT / IN PROGRESS`.
-- Checkpoints A-D: `COMPLETED / APPROVED`.
+- SPEC-004: `READY FOR HUMAN ACCEPTANCE`.
+- Checkpoints A-F: `COMPLETED / APPROVED`.
 - Checkpoint E: `COMPLETED`.
-- Checkpoint F: `NOT AUTHORIZED`.
+- Checkpoint F: `COMPLETED`.
 - SPEC-005: `NOT STARTED`.
 
 ## Recommended Next Action
 
-Submit Checkpoint E for human review. Do not start Checkpoint F.
+Checkpoint E evidence is included in the Checkpoint F final audit. Do not close SPEC-004 without explicit human approval.

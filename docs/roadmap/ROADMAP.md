@@ -34,8 +34,8 @@ Cada etapa requiere SPEC, discovery, plan aprobado, implementación, pruebas, au
 
 `SPEC-002 - UX and Design System Foundation` está en estado `CLOSED` en `docs/specs/SPEC-002-ux-design-system.md`. SPEC-003 y el siguiente item del roadmap no se inician automáticamente.
 
-`SPEC-003 - Business Core` está en estado `CLOSED` en `docs/specs/SPEC-003-business-core.md`. Checkpoints A-D están completados y la aceptación humana fue aprobada. SPEC-004 permanece no iniciada y requiere autorización separada.
+`SPEC-003 - Business Core` está en estado `CLOSED` en `docs/specs/SPEC-003-business-core.md`. Checkpoints A-D están completados y la aceptación humana fue aprobada. SPEC-004 está autorizada y permanece abierta para aceptación humana.
 
-`SPEC-004 - Appointment Engine` está en estado `APPROVED FOR DEVELOPMENT / IN PROGRESS` en `docs/specs/SPEC-004-appointment-engine.md`. Checkpoints A-E están completados técnicamente; Checkpoint F no se inicia automáticamente.
+`SPEC-004 - Appointment Engine` está en estado `READY FOR HUMAN ACCEPTANCE` en `docs/specs/SPEC-004-appointment-engine.md`. Checkpoints A-F están completados; el cierre requiere aprobación humana explícita y Checkpoint F no autoriza merge ni SPEC-005.
 
 Target de Foundation: Laravel 13, PHP 8.3+, MySQL 8.4 LTS, Vue 3, TypeScript, Vite, Tailwind CSS, Sanctum y Pest.
