@@ -5,6 +5,7 @@ import AdminAgendaPage from '../pages/admin/AdminAgendaPage.vue';
 import AdminAgendaDetailPage from '../pages/admin/AdminAgendaDetailPage.vue';
 import NotFoundPage from '../pages/NotFoundPage.vue';
 import FoundationPage from '../pages/public/FoundationPage.vue';
+import PublicBookingPage from '../pages/public/PublicBookingPage.vue';
 import { useAuth } from '../composables/useAuth';
 
 const router = createRouter({
@@ -13,6 +14,12 @@ const router = createRouter({
         {
             path: '/',
             component: FoundationPage,
+            meta: { surface: 'public' },
+        },
+        {
+            path: '/reservar',
+            component: PublicBookingPage,
+            name: 'public.booking',
             meta: { surface: 'public' },
         },
         {

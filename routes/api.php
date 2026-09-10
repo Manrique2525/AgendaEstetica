@@ -6,9 +6,29 @@ use App\Http\Controllers\Api\V1\AdminAgendaLookupController;
 use App\Http\Controllers\Api\V1\AdminAgendaMutationController;
 use App\Http\Controllers\Api\V1\AdminAuthController;
 use App\Http\Controllers\Api\V1\HealthController;
+use App\Http\Controllers\Api\V1\PublicBookingAppointmentController;
+use App\Http\Controllers\Api\V1\PublicBookingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', HealthController::class)->name('api.health');
+
+Route::prefix('public/booking')->group(function (): void {
+    Route::get('/context', [PublicBookingController::class, 'context'])
+        ->middleware('throttle:public-booking-catalog')
+        ->name('public.booking.context');
+    Route::get('/services', [PublicBookingController::class, 'services'])
+        ->middleware('throttle:public-booking-catalog')
+        ->name('public.booking.services');
+    Route::get('/professionals', [PublicBookingController::class, 'professionals'])
+        ->middleware('throttle:public-booking-professionals')
+        ->name('public.booking.professionals');
+    Route::get('/availability', [PublicBookingController::class, 'availability'])
+        ->middleware('throttle:public-booking-availability')
+        ->name('public.booking.availability');
+    Route::post('/appointments', [PublicBookingAppointmentController::class, 'store'])
+        ->middleware('throttle:public-booking-appointments')
+        ->name('public.booking.appointments.store');
+});
 
 Route::prefix('admin/auth')->group(function (): void {
     Route::post('/login', [AdminAuthController::class, 'login'])
