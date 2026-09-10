@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { nextTick, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import AdminLayout from '../../layouts/AdminLayout.vue';
 import UiButton from '../../components/ui/UiButton.vue';
 import UiCard from '../../components/ui/UiCard.vue';
+import UiConfirmDialog from '../../components/ui/UiConfirmDialog.vue';
 import { adminAgendaApi, type AgendaAppointmentDetail, type AgendaLookupProfessional, type AppointmentStatus } from '../../services/api/adminAgenda';
 import { ApiError } from '../../services/http';
 import { businessDateFromInstant, formatBusinessTime, resolveLocalDateTime } from '../../utils/adminAgendaTime';
@@ -22,6 +23,11 @@ const rescheduleProfessionals = ref<AgendaLookupProfessional[]>([]);
 const reschedulePending = ref(false);
 const rescheduleError = ref('');
 const rescheduleSuccess = ref('');
+const terminalAction = ref<'cancel' | 'complete' | 'no-show' | null>(null);
+const terminalPending = ref(false);
+const terminalError = ref('');
+const terminalSuccess = ref('');
+const confirmationTrigger = ref<HTMLElement | null>(null);
 const statusLabels: Record<AppointmentStatus, string> = {
     confirmed: 'Confirmada',
     cancelled: 'Cancelada',
@@ -48,6 +54,32 @@ function mutationMessage(errorValue: unknown): string {
 
     if (errorValue instanceof ApiError && errorValue.status === 422) return 'Revisa la fecha y hora seleccionadas.';
     return 'No fue posible reprogramar la cita.';
+}
+
+const terminalActionCopy = {
+    cancel: {
+        title: '¿Cancelar esta cita?',
+        message: 'La cita pasará a estado Cancelada. Esta acción no se puede revertir desde la agenda.',
+        confirmLabel: 'Cancelar cita',
+    },
+    complete: {
+        title: '¿Marcar esta cita como completada?',
+        message: 'La cita pasará a estado Completada. Esta acción no se puede revertir desde la agenda.',
+        confirmLabel: 'Completar cita',
+    },
+    'no-show': {
+        title: '¿Marcar esta cita como “No asistió”?',
+        message: 'La cita pasará a estado No asistió. Esta acción no se puede revertir desde la agenda.',
+        confirmLabel: 'Marcar no asistió',
+    },
+} as const;
+
+function terminalConflictMessage(errorValue: unknown): string {
+    if (errorValue instanceof ApiError && errorValue.status === 409 && errorValue.code === 'appointment_state_conflict') {
+        return 'La cita ya no puede procesarse en su estado actual. Se actualizó el detalle.';
+    }
+
+    return 'No fue posible actualizar el estado de la cita.';
 }
 
 async function loadDetail(): Promise<void> {
@@ -89,6 +121,51 @@ async function submitReschedule(): Promise<void> {
     }
 }
 
+function openTerminalConfirmation(action: 'cancel' | 'complete' | 'no-show', event: Event): void {
+    confirmationTrigger.value = event.currentTarget as HTMLElement;
+    terminalAction.value = action;
+    terminalError.value = '';
+    terminalSuccess.value = '';
+}
+
+function closeTerminalConfirmation(): void {
+    if (terminalPending.value) return;
+
+    terminalAction.value = null;
+    void nextTick(() => confirmationTrigger.value?.focus());
+}
+
+async function confirmTerminalAction(): Promise<void> {
+    if (!appointment.value || !terminalAction.value || terminalPending.value) return;
+
+    const action = terminalAction.value;
+    terminalPending.value = true;
+    terminalError.value = '';
+    terminalSuccess.value = '';
+
+    try {
+        const updated = action === 'cancel'
+            ? await adminAgendaApi.cancelAppointment(appointment.value.id)
+            : action === 'complete'
+                ? await adminAgendaApi.completeAppointment(appointment.value.id)
+                : await adminAgendaApi.markAppointmentNoShow(appointment.value.id);
+        appointment.value = updated;
+        terminalSuccess.value = 'Estado de la cita actualizado correctamente.';
+        terminalAction.value = null;
+    } catch (reason) {
+        terminalError.value = terminalConflictMessage(reason);
+        terminalAction.value = null;
+
+        try {
+            await loadDetail();
+        } catch {
+            terminalError.value = 'No fue posible actualizar el detalle de la cita.';
+        }
+    } finally {
+        terminalPending.value = false;
+    }
+}
+
 onMounted(async () => {
     try {
         const [loadedContext, detail] = await Promise.all([
@@ -120,8 +197,15 @@ onMounted(async () => {
                     <p class="font-ui text-sm font-semibold uppercase tracking-[0.16em] text-text-secondary">Detalle de cita</p>
                     <h1 class="font-display text-5xl leading-none text-text-primary">{{ appointment.service.name }}</h1>
                     <p class="font-body text-text-secondary">{{ statusLabels[appointment.status] }} · {{ formatTime(appointment.starts_at) }} - {{ formatTime(appointment.ends_at) }}</p>
-                    <UiButton v-if="appointment.status === 'confirmed'" class="mt-4" @click="rescheduleOpen = !rescheduleOpen">Reprogramar</UiButton>
-                </header>
+                     <div v-if="appointment.status === 'confirmed'" class="mt-4 flex flex-wrap gap-2" aria-label="Acciones de cita">
+                         <UiButton @click="rescheduleOpen = !rescheduleOpen">Reprogramar</UiButton>
+                         <UiButton variant="secondary" @click="openTerminalConfirmation('cancel', $event)">Cancelar</UiButton>
+                         <UiButton variant="secondary" @click="openTerminalConfirmation('complete', $event)">Completar</UiButton>
+                         <UiButton variant="secondary" @click="openTerminalConfirmation('no-show', $event)">Marcar como no asistió</UiButton>
+                     </div>
+                 </header>
+                 <p v-if="terminalError" role="alert" aria-live="assertive" class="rounded-md border border-state-error p-4 font-body text-sm text-state-error">{{ terminalError }}</p>
+                 <p v-if="terminalSuccess" role="status" aria-live="polite" class="rounded-md border border-state-success p-4 font-body text-sm text-state-success">{{ terminalSuccess }}</p>
                 <UiCard v-if="rescheduleOpen">
                     <form class="space-y-5" aria-labelledby="reschedule-title" @submit.prevent="submitReschedule">
                         <h2 id="reschedule-title" class="font-display text-3xl text-text-primary">Reprogramar cita</h2>
@@ -153,7 +237,7 @@ onMounted(async () => {
                         <p><strong class="text-text-primary">Duración:</strong> {{ appointment.duration_minutes }} minutos</p>
                     </div>
                 </UiCard>
-                <section aria-labelledby="history-title" class="space-y-3">
+                 <section aria-labelledby="history-title" class="space-y-3">
                     <h2 id="history-title" class="font-display text-3xl text-text-primary">Historial</h2>
                     <ol class="space-y-3">
                         <li v-for="event in appointment.history" :key="event.id" class="rounded-xl border border-border-default bg-surface-elevated p-4 font-body text-sm text-text-secondary">
@@ -161,8 +245,17 @@ onMounted(async () => {
                             <span v-if="event.from_status && event.to_status"> · {{ statusLabels[event.from_status] }} a {{ statusLabels[event.to_status] }}</span>
                         </li>
                     </ol>
-                </section>
-            </template>
+                 </section>
+                 <UiConfirmDialog
+                     :open="terminalAction !== null"
+                     :title="terminalAction ? terminalActionCopy[terminalAction].title : ''"
+                     :message="terminalAction ? terminalActionCopy[terminalAction].message : ''"
+                     :confirm-label="terminalAction ? terminalActionCopy[terminalAction].confirmLabel : ''"
+                     :pending="terminalPending"
+                     @cancel="closeTerminalConfirmation"
+                     @confirm="void confirmTerminalAction()"
+                 />
+             </template>
         </div>
     </AdminLayout>
 </template>

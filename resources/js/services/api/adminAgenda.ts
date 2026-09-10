@@ -126,4 +126,16 @@ export const adminAgendaApi = {
     rescheduleAppointment(id: number, payload: RescheduleAppointmentPayload): Promise<AgendaAppointmentDetail> {
         return http.post<AgendaAppointmentDetail>(`/admin/agenda/appointments/${id}/reschedule`, payload);
     },
+
+    cancelAppointment(id: number): Promise<AgendaAppointmentDetail> {
+        return http.post<AgendaAppointmentDetail>(`/admin/agenda/appointments/${id}/cancel`);
+    },
+
+    completeAppointment(id: number): Promise<AgendaAppointmentDetail> {
+        return http.post<AgendaAppointmentDetail>(`/admin/agenda/appointments/${id}/complete`);
+    },
+
+    markAppointmentNoShow(id: number): Promise<AgendaAppointmentDetail> {
+        return http.post<AgendaAppointmentDetail>(`/admin/agenda/appointments/${id}/no-show`);
+    },
 };
