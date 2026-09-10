@@ -100,14 +100,14 @@ Local final evidence:
 Closure-head Quality evidence:
 
 - Workflow: `Quality`.
-- Run: `34429398197`.
-- Commit before closure documentation: `e5acd2671ee0ed41844fec9e8ef313fc3a76e6eb`.
+- Run: `34429950375`.
+- Commit: `b596ef0` (`b596ef0` full hash recorded by Git).
 - Branch: `feat/spec-004-appointment-engine`.
 - Backend: PASS, 113 tests, 547 assertions.
 - Concurrency: PASS, 17 tests, not skipped.
 - Frontend: PASS, 10 files, 24 tests.
 
-The closure documentation commit is documentation-only and requires the final closure-head Quality run recorded after push.
+This closure commit is documentation-only; the final evidence synchronization commit below is also documentation-only and receives its own final-head Quality run.
 
 ## Deferred Boundaries
 
@@ -123,7 +123,7 @@ The following remain intentionally deferred and are not defects in SPEC-004:
 
 ## Git and Branch State
 
-- Closure documentation commit: recorded after commit creation.
+- Closure documentation commit: `b596ef0`.
 - Feature branch: `feat/spec-004-appointment-engine`.
 - `main`: unchanged.
 - `origin/main`: unchanged.
