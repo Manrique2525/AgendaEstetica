@@ -113,7 +113,7 @@
 85. 409 code and safe response mapping: PASS.
 86. Unknown Appointment JSON 404: PASS.
 87. Admin Agenda feature suite: 41 tests, 197 assertions, PASS.
-88. Full backend suite: 154 tests, 746 assertions, PASS.
+88. Full backend suite: 154 tests, 744 assertions, PASS. Assertion totals vary by the permitted race-winner ordering.
 
 ## 10. Frontend Tests
 
@@ -162,7 +162,8 @@
 - Backend: `d4807b8` — `feat: add SPEC-005 terminal appointment actions`.
 - Frontend: `5a85eaf` — `feat: add SPEC-005 terminal action experience`.
 - Tests: `dde4ff8` — `test: complete SPEC-005 checkpoint D coverage`.
-- Documentation commit: recorded with the final report publication.
+- Documentation commit: `8afa0c9` — `docs: report SPEC-005 checkpoint D`.
+- Final evidence synchronization commit: recorded after this report correction.
 - Final HEAD: recorded after the documentation commit and remote synchronization.
 - Report path: `docs/reports/SPEC-005-CHECKPOINT-D-REPORT.md`.
 
