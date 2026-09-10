@@ -34,4 +34,23 @@ describe('Admin Agenda API', () => {
             expect.objectContaining({ credentials: 'include' }),
         );
     });
+
+    it.each([
+        ['cancelAppointment', 1, '/api/v1/admin/agenda/appointments/1/cancel'],
+        ['completeAppointment', 2, '/api/v1/admin/agenda/appointments/2/complete'],
+        ['markAppointmentNoShow', 3, '/api/v1/admin/agenda/appointments/3/no-show'],
+    ])('%s uses an explicit terminal intent endpoint', async (method, id, path) => {
+        vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(
+            JSON.stringify({ data: { id } }),
+            { status: 200, headers: { 'Content-Type': 'application/json' } },
+        )));
+
+        await adminAgendaApi[method as 'cancelAppointment' | 'completeAppointment' | 'markAppointmentNoShow'](id as number);
+
+        expect(fetch).toHaveBeenCalledWith(path, expect.objectContaining({
+            method: 'POST',
+            body: undefined,
+            credentials: 'include',
+        }));
+    });
 });

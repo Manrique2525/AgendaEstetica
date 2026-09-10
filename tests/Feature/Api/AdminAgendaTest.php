@@ -327,3 +327,134 @@ it('maps terminal reschedule conflicts to 409', function (): void {
         ->assertStatus(409)
         ->assertJsonPath('code', 'appointment_state_conflict');
 });
+
+it('cancels a confirmed Appointment through the authoritative Action', function (): void {
+    $fixture = adminAgendaFixture();
+    $appointment = adminAgendaAppointment($fixture, '2026-01-05 10:00:00', '2026-01-05 11:00:00');
+    $original = $appointment->only(['customer_id', 'service_id', 'professional_id', 'starts_at', 'ends_at', 'duration_minutes']);
+
+    $this->actingAs($fixture['admin'])
+        ->postJson("/api/v1/admin/agenda/appointments/{$appointment->id}/cancel")
+        ->assertOk()
+        ->assertJsonPath('data.status', 'cancelled')
+        ->assertJsonPath('data.history.0.event_type', 'status_changed')
+        ->assertJsonPath('data.history.0.from_status', 'confirmed')
+        ->assertJsonPath('data.history.0.to_status', 'cancelled');
+
+    $appointment->refresh();
+    expect($appointment->only(array_keys($original)))->toMatchArray($original)
+        ->and($appointment->status)->toBe(AppointmentStatus::CANCELLED)
+        ->and($appointment->history()->count())->toBe(1);
+});
+
+it('completes a confirmed Appointment through the authoritative Action', function (): void {
+    $fixture = adminAgendaFixture();
+    $appointment = adminAgendaAppointment($fixture, '2026-01-05 10:00:00', '2026-01-05 11:00:00');
+    $original = $appointment->only(['customer_id', 'service_id', 'professional_id', 'starts_at', 'ends_at', 'duration_minutes']);
+
+    $this->actingAs($fixture['admin'])
+        ->postJson("/api/v1/admin/agenda/appointments/{$appointment->id}/complete")
+        ->assertOk()
+        ->assertJsonPath('data.status', 'completed')
+        ->assertJsonPath('data.history.0.event_type', 'status_changed')
+        ->assertJsonPath('data.history.0.from_status', 'confirmed')
+        ->assertJsonPath('data.history.0.to_status', 'completed');
+
+    $appointment->refresh();
+    expect($appointment->only(array_keys($original)))->toMatchArray($original)
+        ->and($appointment->status)->toBe(AppointmentStatus::COMPLETED)
+        ->and($appointment->history()->count())->toBe(1);
+});
+
+it('marks a confirmed Appointment as no-show through the authoritative Action', function (): void {
+    $fixture = adminAgendaFixture();
+    $appointment = adminAgendaAppointment($fixture, '2026-01-05 10:00:00', '2026-01-05 11:00:00');
+    $original = $appointment->only(['customer_id', 'service_id', 'professional_id', 'starts_at', 'ends_at', 'duration_minutes']);
+
+    $this->actingAs($fixture['admin'])
+        ->postJson("/api/v1/admin/agenda/appointments/{$appointment->id}/no-show")
+        ->assertOk()
+        ->assertJsonPath('data.status', 'no_show')
+        ->assertJsonPath('data.history.0.event_type', 'status_changed')
+        ->assertJsonPath('data.history.0.from_status', 'confirmed')
+        ->assertJsonPath('data.history.0.to_status', 'no_show');
+
+    $appointment->refresh();
+    expect($appointment->only(array_keys($original)))->toMatchArray($original)
+        ->and($appointment->status)->toBe(AppointmentStatus::NO_SHOW)
+        ->and($appointment->history()->count())->toBe(1);
+});
+
+it('rejects every terminal action from every terminal status', function (string $status, string $endpoint): void {
+    $fixture = adminAgendaFixture();
+    $appointment = adminAgendaAppointment($fixture, '2026-01-05 10:00:00', '2026-01-05 11:00:00');
+    $appointment->update(['status' => $status]);
+
+    $this->actingAs($fixture['admin'])
+        ->postJson("/api/v1/admin/agenda/appointments/{$appointment->id}/{$endpoint}")
+        ->assertStatus(409)
+        ->assertJsonPath('code', 'appointment_state_conflict')
+        ->assertJsonMissingPath('exception');
+
+    expect($appointment->refresh()->status->value)->toBe($status)
+        ->and($appointment->history()->count())->toBe(0);
+})->with([
+    ['cancelled', 'cancel'], ['cancelled', 'complete'], ['cancelled', 'no-show'],
+    ['completed', 'cancel'], ['completed', 'complete'], ['completed', 'no-show'],
+    ['no_show', 'cancel'], ['no_show', 'complete'], ['no_show', 'no-show'],
+]);
+
+it('rejects cross-terminal stale actions after the first action succeeds', function (string $first, string $second, string $status): void {
+    $fixture = adminAgendaFixture();
+    $appointment = adminAgendaAppointment($fixture, '2026-01-05 10:00:00', '2026-01-05 11:00:00');
+
+    $this->actingAs($fixture['admin'])
+        ->postJson("/api/v1/admin/agenda/appointments/{$appointment->id}/{$first}")
+        ->assertOk()
+        ->assertJsonPath('data.status', $status);
+
+    $this->postJson("/api/v1/admin/agenda/appointments/{$appointment->id}/{$second}")
+        ->assertStatus(409)
+        ->assertJsonPath('code', 'appointment_state_conflict');
+})->with([
+    ['complete', 'cancel', 'completed'],
+    ['cancel', 'no-show', 'cancelled'],
+    ['no-show', 'complete', 'no_show'],
+]);
+
+it('ignores unrelated terminal request fields and preserves appointment data', function (): void {
+    $fixture = adminAgendaFixture();
+    $appointment = adminAgendaAppointment($fixture, '2026-01-05 10:00:00', '2026-01-05 11:00:00');
+    $original = $appointment->only(['customer_id', 'service_id', 'professional_id', 'starts_at', 'ends_at', 'duration_minutes']);
+
+    $this->actingAs($fixture['admin'])
+        ->postJson("/api/v1/admin/agenda/appointments/{$appointment->id}/cancel", [
+            'status' => 'completed',
+            'customer_id' => Customer::factory()->create()->id,
+            'service_id' => Service::factory()->create()->id,
+            'professional_id' => Professional::factory()->create()->id,
+            'starts_at' => '2030-01-01T10:00:00Z',
+            'ends_at' => '2030-01-01T11:00:00Z',
+            'duration_minutes' => 5,
+        ])
+        ->assertOk()
+        ->assertJsonPath('data.status', 'cancelled');
+
+    expect($appointment->refresh()->only(array_keys($original)))->toMatchArray($original);
+});
+
+it('requires the authenticated admin session for all terminal routes', function (string $endpoint): void {
+    $this->post($endpoint)->assertStatus(401)->assertJsonStructure(['message']);
+})->with([
+    '/api/v1/admin/agenda/appointments/1/cancel',
+    '/api/v1/admin/agenda/appointments/1/complete',
+    '/api/v1/admin/agenda/appointments/1/no-show',
+]);
+
+it('returns JSON 404 for an unknown terminal Appointment', function (): void {
+    $fixture = adminAgendaFixture();
+
+    $this->actingAs($fixture['admin'])
+        ->postJson('/api/v1/admin/agenda/appointments/999999/cancel')
+        ->assertNotFound();
+});
