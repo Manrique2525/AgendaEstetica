@@ -49,10 +49,20 @@ it('requires the authenticated admin session for read endpoints', function (stri
     expect($this->get($endpoint)->status())->toBe(401);
 })->with([
     '/api/v1/admin/agenda/appointments?from=2026-01-05&to=2026-01-06',
+    '/api/v1/admin/agenda/context',
     '/api/v1/admin/agenda/customers?q=ana',
     '/api/v1/admin/agenda/services',
     '/api/v1/admin/agenda/professionals',
 ]);
+
+it('returns the authoritative business timezone with no extra context fields', function (): void {
+    $fixture = adminAgendaFixture('America/New_York');
+
+    $this->actingAs($fixture['admin'])
+        ->getJson('/api/v1/admin/agenda/context')
+        ->assertOk()
+        ->assertExactJson(['data' => ['timezone' => 'America/New_York']]);
+});
 
 it('validates bounded business-local agenda ranges', function (): void {
     $fixture = adminAgendaFixture();

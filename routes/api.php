@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AdminAgendaAppointmentController;
+use App\Http\Controllers\Api\V1\AdminAgendaContextController;
 use App\Http\Controllers\Api\V1\AdminAgendaLookupController;
 use App\Http\Controllers\Api\V1\AdminAuthController;
 use App\Http\Controllers\Api\V1\HealthController;
@@ -20,6 +21,8 @@ Route::prefix('admin/auth')->group(function (): void {
 });
 
 Route::prefix('admin/agenda')->middleware('auth:sanctum')->group(function (): void {
+    Route::get('/context', AdminAgendaContextController::class)
+        ->name('admin.agenda.context');
     Route::get('/appointments', [AdminAgendaAppointmentController::class, 'index'])
         ->name('admin.agenda.appointments.index');
     Route::get('/appointments/{appointment}', [AdminAgendaAppointmentController::class, 'show'])
