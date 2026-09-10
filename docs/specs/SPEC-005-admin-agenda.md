@@ -67,6 +67,7 @@ Customers remain business identities without application accounts. Customer info
 - Notifications, WhatsApp, email or reminders.
 - Deposits, payments, refunds or financial workflows.
 - BusinessSpecialHours, holiday calendars or buffers.
+- ProfessionalSchedule CRUD or ProfessionalTimeOff CRUD/approval workflows.
 - CMS, ecommerce, inventory, checkout or orders.
 - Production business data or invented catalog data.
 - SPEC-006 or any later SPEC.
@@ -101,6 +102,8 @@ This scope is `PROPOSED / REQUIRES HUMAN APPROVAL`. It is based only on the road
 
 ### Appointment operations
 
+The proposed administrative workflow includes initiating an appointment creation request. The authenticated administrator must invoke the authoritative Action; no direct Appointment write is allowed.
+
 The consumer may expose only approved operations whose UX and authorization are confirmed during Discovery:
 
 - Create a confirmed Appointment through `CreateAppointment`.
@@ -113,7 +116,8 @@ The consumer must never write Appointment or AppointmentHistory directly. Availa
 
 ### Resource context
 
-- Present ProfessionalSchedule, ProfessionalTimeOff and BusinessHours context where it helps explain an unavailable interval.
+- Present existing ProfessionalSchedule, ProfessionalTimeOff and BusinessHours context where it helps explain an unavailable interval.
+- Schedule and TimeOff administration remain deferred; this consumer does not create, edit, delete or approve those records.
 - Treat the Appointment Engine as authoritative for availability outcomes.
 - Do not expose raw database locking, internal exception details or implementation-specific query state.
 
@@ -151,6 +155,7 @@ The consumer must never write Appointment or AppointmentHistory directly. Availa
 - Payments/deposits.
 - CMS, ecommerce and reporting.
 - Professional self-service.
+- ProfessionalSchedule and ProfessionalTimeOff administrative management.
 
 ## Dependencies
 
@@ -173,7 +178,7 @@ Agenda reads must use backend-owned queries/Actions and must not infer appointme
 
 ### FR-03 Date and timezone handling
 
-The consumer must define how a business-local date/range is converted to the UTC query boundary. The official business timezone remains business-data dependent and must not be invented.
+`BusinessProfile.timezone` is the inherited business-timezone authority. The consumer must define how a business-local date/range is converted to the UTC query boundary; concrete appointments remain UTC instants.
 
 ### FR-04 Appointment presentation
 
@@ -197,7 +202,7 @@ Controllers, API Resources and Vue components must not contain appointment busin
 
 ### FR-09 Resource context
 
-Where schedule or TimeOff context is presented, it must be read from the authoritative backend models and must not become an alternate availability calculation.
+Where existing ProfessionalSchedule or ProfessionalTimeOff context is presented, it must be read from authoritative backend models and must not become an alternate availability calculation or administration workflow.
 
 ### FR-10 Data minimization
 
@@ -258,15 +263,17 @@ SPEC-005 must not introduce a second retry, locking, reservation or capacity abs
 - Loading/cache strategy and invalidation after mutations.
 - Error code mapping for domain conflicts.
 - Query/index needs based on actual usage and EXPLAIN evidence.
+- Backend/frontend UTC and business-local serialization boundary.
+- Presentation of DST errors and stale-data conflicts.
 
 ## Business Open Questions
 
 - Which agenda views are operationally required first: day, week, list or timeline?
-- Should Yaris manage schedule and TimeOff from Admin Agenda or a later administrative scope?
+- Which existing schedule/TimeOff context is operationally useful to display without assigning administration ownership?
 - What customer fields are necessary for daily operation?
-- Which lifecycle actions should be available to the administrator and under what policy?
-- Is a cancellation window or no-show operational policy approved?
-- Which official business timezone and working-date rules should the consumer use?
+- Which already-approved SPEC-004 Actions should be exposed in the initial Admin Agenda UX?
+- What confirmation UX is required for destructive or terminal actions?
+- How should the inherited `BusinessProfile.timezone` be rendered at the consumer boundary?
 - Are historical appointment details subject to retention or anonymization rules?
 
 ## Architecture Open Questions
@@ -294,7 +301,7 @@ SPEC-005 must not introduce a second retry, locking, reservation or capacity abs
 
 ## Acceptance Criteria
 
-1. The Admin Agenda Definition has an approved canonical name and roadmap position.
+1. The Admin Agenda Definition records the canonical roadmap name and position for human approval.
 2. The Definition clearly distinguishes SPEC-003 ownership, SPEC-004 ownership and SPEC-005 consumer ownership.
 3. The Definition does not introduce API, UI, migration, dependency or production-code implementation.
 4. Appointment reads and mutations are explicitly delegated to the authoritative SPEC-004 boundary.

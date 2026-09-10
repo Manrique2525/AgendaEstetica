@@ -7,7 +7,7 @@
 - Closure authorization: `GRANTED`.
 - Merge to `main`: `NOT AUTHORIZED`.
 - Production release: `NOT AUTHORIZED`.
-- SPEC-005: `DEFINITION COMPLETED / AWAITING HUMAN APPROVAL`.
+- SPEC-005: `NOT STARTED`.
 
 ## Executive Summary
 
@@ -133,4 +133,4 @@ The following remain intentionally deferred and are not defects in SPEC-004:
 
 ## Final State
 
-SPEC-004 is formally closed with human acceptance. Merge to `main` requires separate explicit authorization. SPEC-005 has only a Definition and awaits human approval; Technical Discovery and Development have not started.
+SPEC-004 is formally closed with human acceptance. Merge to `main` requires separate explicit authorization. SPEC-005 remains not started.
