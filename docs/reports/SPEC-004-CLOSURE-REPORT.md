@@ -100,8 +100,8 @@ Local final evidence:
 Closure-head Quality evidence:
 
 - Workflow: `Quality`.
-- Run: `34429950375`.
-- Commit: `b596ef0` (`b596ef0` full hash recorded by Git).
+- Run: `34430086512`.
+- Commit: `3e51637` (`3e51637a17a679c59f7517aebbc9bffb240556bd`).
 - Branch: `feat/spec-004-appointment-engine`.
 - Backend: PASS, 113 tests, 547 assertions.
 - Concurrency: PASS, 17 tests, not skipped.
@@ -123,7 +123,7 @@ The following remain intentionally deferred and are not defects in SPEC-004:
 
 ## Git and Branch State
 
-- Closure documentation commit: `b596ef0`.
+- Closure documentation commits: `b596ef0`, `3e51637`.
 - Feature branch: `feat/spec-004-appointment-engine`.
 - `main`: unchanged.
 - `origin/main`: unchanged.

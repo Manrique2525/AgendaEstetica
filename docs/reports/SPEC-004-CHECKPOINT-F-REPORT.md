@@ -40,7 +40,7 @@ The complete required context, SPEC-003 and SPEC-004 documents, A-E reports, ADR
 | AC-15 | Security/privacy/safe errors at approved boundaries | foundation C.1 JSON error regressions; no Appointment consumer boundary approved | PASS; no unapproved HTTP boundary introduced |
 | AC-16 | MySQL constraints, indexes, transactions and concurrency | metadata, EXPLAIN, migration lifecycle and race suite | PASS |
 | AC-17 | Dedicated DB, quality gates, documentation and CI | local gates, reports, final F report and remote CI | PASS |
-| AC-18 | Human acceptance before closure | F authorization recorded; closure remains explicitly pending | PASS as closure gate; SPEC-004 is not closed |
+| AC-18 | Human acceptance before closure | Explicit closure authorization and formal closure report | PASS |
 
 ## 5. Scope Audit
 
