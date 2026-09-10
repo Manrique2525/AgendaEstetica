@@ -68,6 +68,20 @@ export interface AgendaQuery {
     customer_id?: number;
 }
 
+export interface CreateAppointmentPayload {
+    customer_id: number;
+    service_id: number;
+    professional_id: number;
+    starts_at: string;
+    ends_at: string;
+}
+
+export interface RescheduleAppointmentPayload {
+    professional_id: number;
+    starts_at: string;
+    ends_at: string;
+}
+
 function queryString(query: object): string {
     const params = new URLSearchParams();
 
@@ -103,5 +117,13 @@ export const adminAgendaApi = {
 
     listProfessionals(serviceId?: number): Promise<AgendaLookupProfessional[]> {
         return http.get<AgendaLookupProfessional[]>(`/admin/agenda/professionals?${queryString({ service_id: serviceId })}`);
+    },
+
+    createAppointment(payload: CreateAppointmentPayload): Promise<AgendaAppointmentDetail> {
+        return http.post<AgendaAppointmentDetail>('/admin/agenda/appointments', payload);
+    },
+
+    rescheduleAppointment(id: number, payload: RescheduleAppointmentPayload): Promise<AgendaAppointmentDetail> {
+        return http.post<AgendaAppointmentDetail>(`/admin/agenda/appointments/${id}/reschedule`, payload);
     },
 };

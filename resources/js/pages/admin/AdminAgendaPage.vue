@@ -16,7 +16,7 @@ import {
     type AgendaLookupService,
     type AppointmentStatus,
 } from '../../services/api/adminAgenda';
-import { addCalendarDays, businessDateToday, formatBusinessTime } from '../../utils/adminAgendaTime';
+import { addCalendarDays, businessDateToday, formatBusinessTime, resolveLocalDateTime } from '../../utils/adminAgendaTime';
 
 const route = useRoute();
 const router = useRouter();
@@ -38,6 +38,19 @@ const loading = ref(true);
 const error = ref('');
 const requestVersion = ref(0);
 const customerSearchVersion = ref(0);
+const createOpen = ref(false);
+const createCustomerQuery = ref('');
+const createCustomers = ref<AgendaLookupCustomer[]>([]);
+const createCustomerId = ref('');
+const createServiceId = ref('');
+const createProfessionalId = ref('');
+const createDate = ref('');
+const createTime = ref('');
+const createProfessionals = ref<AgendaLookupProfessional[]>([]);
+const createPending = ref(false);
+const createError = ref('');
+const createSuccess = ref('');
+const createSearchVersion = ref(0);
 
 const statusLabels: Record<AppointmentStatus, string> = {
     confirmed: 'Confirmada',
@@ -76,6 +89,95 @@ async function searchCustomers(): Promise<void> {
 
     if (version === customerSearchVersion.value) {
         customers.value = results;
+    }
+}
+
+async function searchCreateCustomers(): Promise<void> {
+    if (createCustomerQuery.value.trim().length < 2) {
+        createCustomers.value = [];
+        return;
+    }
+
+    const version = ++createSearchVersion.value;
+    const results = await adminAgendaApi.searchCustomers(createCustomerQuery.value.trim());
+
+    if (version === createSearchVersion.value) {
+        createCustomers.value = results;
+    }
+}
+
+async function loadCreateProfessionals(): Promise<void> {
+    createProfessionals.value = await adminAgendaApi.listProfessionals(
+        createServiceId.value ? Number(createServiceId.value) : undefined,
+    );
+}
+
+function selectCreateCustomer(customer: AgendaLookupCustomer): void {
+    createCustomerId.value = String(customer.id);
+    createCustomerQuery.value = `${customer.name} · ${customer.phone}`;
+    createCustomers.value = [];
+}
+
+function apiMutationMessage(value: unknown): string {
+    if (value instanceof ApiError && value.status === 409) {
+        return value.code === 'appointment_state_conflict'
+            ? 'La cita ya no puede procesarse en su estado actual.'
+            : 'El horario seleccionado ya no está disponible.';
+    }
+
+    if (value instanceof ApiError && value.status === 422) {
+        return 'Revisa los datos y el horario seleccionados.';
+    }
+
+    return 'No fue posible completar la operación.';
+}
+
+function createEndTime(): string | null {
+    const service = services.value.find((item) => item.id === Number(createServiceId.value));
+
+    if (!context.value || !service || !createDate.value || !createTime.value) {
+        return null;
+    }
+
+    try {
+        return new Date(Date.parse(resolveLocalDateTime(createDate.value, createTime.value, context.value.timezone)) + service.duration_minutes * 60_000).toISOString();
+    } catch {
+        return null;
+    }
+}
+
+async function submitCreate(): Promise<void> {
+    const endsAt = createEndTime();
+
+    if (!createCustomerId.value || !createServiceId.value || !createProfessionalId.value || !createDate.value || !createTime.value || !endsAt || !context.value) {
+        createError.value = 'Completa Customer, Service, Professional, fecha y hora válida.';
+        return;
+    }
+
+    createPending.value = true;
+    createError.value = '';
+    createSuccess.value = '';
+
+    try {
+        const startsAt = resolveLocalDateTime(createDate.value, createTime.value, context.value.timezone);
+        await adminAgendaApi.createAppointment({
+            customer_id: Number(createCustomerId.value),
+            service_id: Number(createServiceId.value),
+            professional_id: Number(createProfessionalId.value),
+            starts_at: startsAt,
+            ends_at: endsAt,
+        });
+        createSuccess.value = 'Cita creada correctamente.';
+        createOpen.value = false;
+        createCustomerQuery.value = '';
+        createCustomerId.value = '';
+        createServiceId.value = '';
+        createProfessionalId.value = '';
+        await loadAppointments();
+    } catch (reason) {
+        createError.value = apiMutationMessage(reason);
+    } finally {
+        createPending.value = false;
     }
 }
 
@@ -164,11 +266,17 @@ onMounted(async () => {
         if (!rangeFrom.value) rangeFrom.value = selectedDate.value;
         if (!rangeTo.value) rangeTo.value = addCalendarDays(rangeFrom.value, 7);
         await loadLookups();
+        await loadCreateProfessionals();
         await loadAppointments();
     } catch (reason) {
         error.value = apiErrorMessage(reason);
         loading.value = false;
     }
+});
+
+watch(createServiceId, () => {
+    createProfessionalId.value = '';
+    void loadCreateProfessionals();
 });
 
 watch([professionalId, serviceId, status, customerId], () => {
@@ -184,7 +292,45 @@ watch([professionalId, serviceId, status, customerId], () => {
                 <p class="font-ui text-sm font-semibold uppercase tracking-[0.16em] text-text-secondary">Administración</p>
                 <h1 class="font-display text-5xl leading-none text-text-primary">Agenda</h1>
                 <p class="max-w-2xl font-body text-base text-text-secondary">Consulta las citas confirmadas y su historial operativo.</p>
+                <UiButton class="mt-4" @click="createOpen = !createOpen; createDate = selectedDate">Nueva cita</UiButton>
             </header>
+
+            <UiCard v-if="createOpen">
+                <form class="space-y-5" aria-labelledby="create-appointment-title" @submit.prevent="submitCreate">
+                    <h2 id="create-appointment-title" class="font-display text-3xl text-text-primary">Nueva cita</h2>
+                    <div class="grid gap-4 md:grid-cols-2">
+                    <UiFormField id="create-customer" label="Cliente existente">
+                            <UiInput id="create-customer" v-model="createCustomerQuery" type="text" autocomplete="off" required @input="void searchCreateCustomers()" />
+                            <div v-if="createCustomers.length" class="mt-2 space-y-1 rounded-md border border-border-default bg-surface-elevated p-2" role="listbox" aria-label="Clientes para la cita">
+                                <button v-for="customer in createCustomers" :key="customer.id" type="button" class="block w-full rounded px-3 py-2 text-left font-body text-sm hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring" @click="selectCreateCustomer(customer)">
+                                    {{ customer.name }}<span class="ml-2 text-text-secondary">{{ customer.phone }}</span>
+                                </button>
+                            </div>
+                        </UiFormField>
+                        <UiFormField id="create-service" label="Servicio">
+                            <select id="create-service" v-model="createServiceId" required class="min-h-11 w-full rounded-md border border-border-default bg-surface-elevated px-3 font-body text-base">
+                                <option value="">Selecciona un servicio</option>
+                                <option v-for="service in services" :key="service.id" :value="service.id">{{ service.name }} · {{ service.duration_minutes }} min</option>
+                            </select>
+                        </UiFormField>
+                        <UiFormField id="create-professional" label="Profesional">
+                            <select id="create-professional" v-model="createProfessionalId" required class="min-h-11 w-full rounded-md border border-border-default bg-surface-elevated px-3 font-body text-base">
+                                <option value="">Selecciona un profesional</option>
+                                <option v-for="professional in createProfessionals" :key="professional.id" :value="professional.id">{{ professional.name }}</option>
+                            </select>
+                        </UiFormField>
+                        <UiFormField id="create-date" label="Fecha">
+                            <UiInput id="create-date" v-model="createDate" type="date" required />
+                        </UiFormField>
+                        <UiFormField id="create-time" label="Hora de inicio">
+                            <UiInput id="create-time" v-model="createTime" type="time" required />
+                        </UiFormField>
+                    </div>
+                    <p v-if="createError" role="alert" class="font-body text-sm text-state-error">{{ createError }}</p>
+                    <UiButton type="submit" :loading="createPending">Crear cita</UiButton>
+                </form>
+            </UiCard>
+            <p v-if="createSuccess" role="status" aria-live="polite" class="font-body text-sm text-state-success">{{ createSuccess }}</p>
 
             <UiCard>
                 <div class="flex flex-wrap gap-2" aria-label="Vista de agenda">
@@ -193,14 +339,14 @@ watch([professionalId, serviceId, status, customerId], () => {
                 </div>
 
                 <div class="mt-5 grid gap-4 md:grid-cols-2">
-                    <UiFormField label="Fecha" label-for="agenda-date">
+                    <UiFormField id="agenda-date" label="Fecha">
                         <UiInput id="agenda-date" v-model="selectedDate" type="date" @change="syncQuery(); void loadAppointments()" />
                     </UiFormField>
                     <div v-if="view === 'list'" class="grid gap-4 sm:grid-cols-2">
-                        <UiFormField label="Desde" label-for="agenda-from">
+                        <UiFormField id="agenda-from" label="Desde">
                             <UiInput id="agenda-from" v-model="rangeFrom" type="date" />
                         </UiFormField>
-                        <UiFormField label="Hasta" label-for="agenda-to">
+                        <UiFormField id="agenda-to" label="Hasta">
                             <UiInput id="agenda-to" v-model="rangeTo" type="date" />
                         </UiFormField>
                     </div>
@@ -214,19 +360,19 @@ watch([professionalId, serviceId, status, customerId], () => {
                 </div>
 
                 <div class="mt-6 grid gap-4 md:grid-cols-3">
-                    <UiFormField label="Profesional" label-for="agenda-professional">
+                    <UiFormField id="agenda-professional" label="Profesional">
                         <select id="agenda-professional" v-model="professionalId" class="min-h-11 w-full rounded-md border border-border-default bg-surface-elevated px-3 font-body text-base" aria-label="Filtrar por profesional">
                             <option value="">Todos</option>
                             <option v-for="professional in professionals" :key="professional.id" :value="professional.id">{{ professional.name }}</option>
                         </select>
                     </UiFormField>
-                    <UiFormField label="Servicio" label-for="agenda-service">
+                    <UiFormField id="agenda-service" label="Servicio">
                         <select id="agenda-service" v-model="serviceId" class="min-h-11 w-full rounded-md border border-border-default bg-surface-elevated px-3 font-body text-base" aria-label="Filtrar por servicio">
                             <option value="">Todos</option>
                             <option v-for="service in services" :key="service.id" :value="service.id">{{ service.name }}</option>
                         </select>
                     </UiFormField>
-                    <UiFormField label="Estado" label-for="agenda-status">
+                    <UiFormField id="agenda-status" label="Estado">
                         <select id="agenda-status" v-model="status" class="min-h-11 w-full rounded-md border border-border-default bg-surface-elevated px-3 font-body text-base" aria-label="Filtrar por estado">
                             <option value="">Todos</option>
                             <option value="confirmed">Confirmada</option>
@@ -238,7 +384,7 @@ watch([professionalId, serviceId, status, customerId], () => {
                 </div>
 
                 <div class="mt-5 max-w-xl">
-                    <UiFormField label="Buscar cliente" label-for="agenda-customer">
+                    <UiFormField id="agenda-customer" label="Buscar cliente">
                         <UiInput id="agenda-customer" v-model="customerQuery" type="text" autocomplete="off" @input="void searchCustomers()" />
                     </UiFormField>
                     <div v-if="customers.length" class="mt-2 space-y-1 rounded-md border border-border-default bg-surface-elevated p-2" role="listbox" aria-label="Clientes encontrados">

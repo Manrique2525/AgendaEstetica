@@ -261,6 +261,25 @@ it('maps create domain availability conflicts to 409 without partial persistence
     expect(Appointment::query()->count())->toBe(1);
 });
 
+it('uses fresh Service duration authority when the client submits a stale interval', function (): void {
+    $fixture = adminAgendaFixture();
+    $fixture['service']->update(['duration_minutes' => 90]);
+
+    $this->actingAs($fixture['admin'])
+        ->postJson('/api/v1/admin/agenda/appointments', [
+            'customer_id' => $fixture['customer']->id,
+            'service_id' => $fixture['service']->id,
+            'professional_id' => $fixture['professional']->id,
+            'starts_at' => '2026-01-05T10:00:00Z',
+            'ends_at' => '2026-01-05T11:00:00Z',
+            'duration_minutes' => 999,
+        ])
+        ->assertStatus(409)
+        ->assertJsonPath('code', 'appointment_unavailable');
+
+    expect(Appointment::query()->count())->toBe(0);
+});
+
 it('reschedules through the authoritative Action using historical duration', function (): void {
     $fixture = adminAgendaFixture();
     $appointment = (new CreateAppointment)->execute(
