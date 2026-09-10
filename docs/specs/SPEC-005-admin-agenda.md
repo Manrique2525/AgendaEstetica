@@ -340,7 +340,7 @@ If human approval is granted, a separate Technical Discovery must investigate:
 SPEC-005: TECHNICAL DISCOVERY COMPLETED / AWAITING HUMAN APPROVAL
 Definition: APPROVED
 Technical Discovery: COMPLETED
-Development: NOT STARTED
+Development: NOT AUTHORIZED
 SPEC-004: CLOSED
 SPEC-006+: NOT STARTED
 ```
