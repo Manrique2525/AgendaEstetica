@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import AdminLoginPage from '../pages/admin/AdminLoginPage.vue';
 import AdminPage from '../pages/admin/AdminPage.vue';
+import AdminAgendaPage from '../pages/admin/AdminAgendaPage.vue';
+import AdminAgendaDetailPage from '../pages/admin/AdminAgendaDetailPage.vue';
 import NotFoundPage from '../pages/NotFoundPage.vue';
 import FoundationPage from '../pages/public/FoundationPage.vue';
 import { useAuth } from '../composables/useAuth';
@@ -17,6 +19,18 @@ const router = createRouter({
             path: '/admin',
             component: AdminPage,
             name: 'admin.home',
+            meta: { requiresAuth: true },
+        },
+        {
+            path: '/admin/agenda',
+            component: AdminAgendaPage,
+            name: 'admin.agenda',
+            meta: { requiresAuth: true },
+        },
+        {
+            path: '/admin/agenda/:id',
+            component: AdminAgendaDetailPage,
+            name: 'admin.agenda.detail',
             meta: { requiresAuth: true },
         },
         {
