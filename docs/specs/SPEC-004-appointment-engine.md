@@ -10,9 +10,9 @@ Appointment Engine
 
 ## Status
 
-`READY FOR HUMAN ACCEPTANCE`
+`CLOSED`
 
-Technical Discovery is complete. Checkpoints A-F are complete for the approved backend/domain scope. SPEC-004 remains open pending explicit human closure approval.
+Technical Discovery and Checkpoints A-F are complete for the approved backend/domain scope. Human closure acceptance is recorded; merge remains separately unauthorized.
 
 ## Objective
 
@@ -648,7 +648,7 @@ Human/business items remain non-blocking business-rule/data decisions: cancellat
 ## Definition State
 
 ```text
-SPEC-004: READY FOR HUMAN ACCEPTANCE
+SPEC-004: CLOSED
 Technical Discovery: COMPLETED
 Checkpoint A: COMPLETED
 Checkpoint B: COMPLETED
@@ -656,6 +656,6 @@ Checkpoint C: COMPLETED
 Checkpoint D: COMPLETED
 Checkpoint E: COMPLETED
 Checkpoint F: COMPLETED
-Implementation: CHECKPOINTS A-F ONLY
+Implementation: CHECKPOINTS A-F ONLY; CLOSURE DOCUMENTED
 SPEC-005: NOT STARTED
 ```

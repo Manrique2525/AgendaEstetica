@@ -4,7 +4,7 @@
 
 Checkpoint F was explicitly authorized for `feat/spec-004-appointment-engine`. This report covers final tests, documentation, architecture, domain, schema, concurrency, regression and scope audits only. No production implementation was changed during F.
 
-SPEC-004 remains open. Closure, merge to `main`, production release and SPEC-005 remain unauthorized.
+SPEC-004 closure is now authorized and documented. Merge to `main`, production release and SPEC-005 remain unauthorized.
 
 ## 2. Git Baseline
 
@@ -218,10 +218,10 @@ These are approved boundaries, not F blockers:
 
 ## 14. Documentation Status
 
-- SPEC-004: `READY FOR HUMAN ACCEPTANCE`.
+- SPEC-004: `CLOSED`.
 - Checkpoints A-E: `COMPLETED / APPROVED`.
 - Checkpoint F: `COMPLETED`.
-- SPEC-004 closure: `NOT AUTHORIZED`.
+- SPEC-004 closure: `AUTHORIZED / COMPLETED`.
 - Merge: `NOT AUTHORIZED`.
 - SPEC-005: `NOT STARTED`.
 - Final F report: `docs/reports/SPEC-004-CHECKPOINT-F-REPORT.md`.
@@ -236,6 +236,6 @@ Architecture blockers: NONE.
 
 Technical blockers: NONE.
 
-Acceptance blocker: explicit human closure approval remains pending by instruction.
+Acceptance blocker: NONE; explicit human closure approval is recorded.
 
-Recommended next action: submit SPEC-004 for explicit human acceptance/closure authorization. Do not close, merge or start SPEC-005.
+Recommended next action: stop and request separate merge authorization. Do not merge or start SPEC-005.

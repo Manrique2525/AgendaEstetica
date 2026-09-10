@@ -121,7 +121,7 @@ Not implemented: Checkpoint F, stress beyond the bounded E suite, generic retry 
 
 ## Status
 
-- SPEC-004: `READY FOR HUMAN ACCEPTANCE`.
+- SPEC-004: `CLOSED`.
 - Checkpoints A-F: `COMPLETED / APPROVED`.
 - Checkpoint E: `COMPLETED`.
 - Checkpoint F: `COMPLETED`.
@@ -129,4 +129,4 @@ Not implemented: Checkpoint F, stress beyond the bounded E suite, generic retry 
 
 ## Recommended Next Action
 
-Checkpoint E evidence is included in the Checkpoint F final audit. Do not close SPEC-004 without explicit human approval.
+Checkpoint E evidence is included in the Checkpoint F final audit and formal closure report.
