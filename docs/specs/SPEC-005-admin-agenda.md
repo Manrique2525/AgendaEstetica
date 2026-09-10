@@ -227,7 +227,7 @@ The consumer must provide semantic navigation, keyboard operation, visible focus
 
 ## API/UI Boundary
 
-The Admin Agenda is expected to require an administrative consumer boundary, but exact endpoints, Resources, Form Requests and Vue pages are Technical Discovery decisions. This Definition does not approve endpoint signatures, migration changes, controller structure or component tree.
+Technical Discovery defines the `/api/v1/admin/agenda/*` consumer boundary, explicit intent endpoints, lookup endpoints and `/admin/agenda` plus `/admin/agenda/:id` routes. This Definition does not authorize implementation, migrations, controllers, Resources or Vue components.
 
 If a later Discovery confirms an API is needed, it must use `/api/v1/admin/*`, preserve the existing error contract and delegate business behavior to Actions/domain services.
 
@@ -251,53 +251,39 @@ Read views may become stale and must communicate that limitation where relevant.
 
 SPEC-005 must not introduce a second retry, locking, reservation or capacity abstraction.
 
-## API/UI and Implementation Decisions Deferred to Discovery
+## Discovery Decisions
 
-- Whether the first consumer needs a dedicated Admin Agenda API or can use an approved existing boundary.
-- Exact date-range query contract and pagination strategy.
-- Exact filters and search behavior.
-- Exact mutation forms and confirmation flows.
-- Authorization granularity if more than one administrator is introduced.
-- Mobile agenda interaction pattern.
-- Calendar visualization versus list/timeline presentation.
-- Loading/cache strategy and invalidation after mutations.
-- Error code mapping for domain conflicts.
-- Query/index needs based on actual usage and EXPLAIN evidence.
-- Backend/frontend UTC and business-local serialization boundary.
-- Presentation of DST errors and stale-data conflicts.
+- Implementation-level endpoint signatures and request/Resource contracts.
+- Read query implementation and pagination if future volume requires it.
+- Authorization changes if multiple administrators are introduced; V1 uses the authenticated internal User boundary.
+- Loading/cache strategy and invalidation details.
+- Query/index confirmation through Development EXPLAIN evidence.
+- Exact copy and component details for conflicts and confirmations.
 
-## Business Open Questions
+## Human Approval Points
 
-- Which agenda views are operationally required first: day, week, list or timeline?
-- Which existing schedule/TimeOff context is operationally useful to display without assigning administration ownership?
-- What customer fields are necessary for daily operation?
-- Which already-approved SPEC-004 Actions should be exposed in the initial Admin Agenda UX?
-- What confirmation UX is required for destructive or terminal actions?
-- How should the inherited `BusinessProfile.timezone` be rendered at the consumer boundary?
-- Are historical appointment details subject to retention or anonymization rules?
+- Approve day plus bounded list/range as V1 views.
+- Approve existing-Customer-only creation and minimal Customer projections.
+- Approve exposure of the five existing SPEC-004 Actions.
+- Approve 24-hour display and route-addressable detail.
+- Record retention/anonymization as deferred.
 
-## Architecture Open Questions
+## Architecture Approval Points
 
-- Is an Admin Agenda API required immediately, or can the first consumer use a narrowly approved server boundary?
-- Does the existing Foundation auth model need explicit permission policy for multiple administrators?
-- What query/read model is sufficient without introducing CQRS, repositories or a reporting subsystem?
-- Are additional indexes justified after representative EXPLAIN plans?
-- Does a calendar library provide enough value to justify a new dependency, or is a focused list/timeline sufficient?
+- Approve the `/api/v1/admin/agenda/*` boundary and exact endpoint set.
+- Approve the 31-calendar-day range guard.
+- Approve authenticated-only access with no new RBAC in V1.
 
-## UX Open Questions
+## UX Approval Points
 
-- Which agenda density is usable for salon operations?
-- How should overlapping Professionals and global capacity context be communicated?
-- How should reschedule and terminal-action confirmations work?
-- How should stale data/conflict states be presented after another worker changes an appointment?
-- What responsive interaction is required for small phones without inventing a separate mobile workflow?
+- Approve mobile day/list interaction and `/admin/agenda/:id` detail route.
+- Approve 24-hour display convention.
+- Approve conflict and terminal-action confirmation behavior.
 
-## Security Open Questions
+## Security Approval Points
 
-- Is single-administrator access sufficient for the first Admin Agenda consumer?
-- Which fields are sensitive enough to require additional masking or audit treatment?
-- What rate limits or session policies apply to future administrative agenda endpoints?
-- Is a focused administrative audit beyond AppointmentHistory required, and if so, in which approved scope?
+- Approve the minimum Customer projection and phone placement.
+- Approve no additional Policy/Gate or actor audit in V1.
 
 ## Acceptance Criteria
 
@@ -315,7 +301,7 @@ SPEC-005 must not introduce a second retry, locking, reservation or capacity abs
 12. Technical Discovery topics required to resolve HOW are listed.
 13. No real business data, prices, people, images, policies or testimonials are invented.
 14. The Definition has observable, testable Acceptance Criteria for its eventual implementation.
-15. SPEC-005 remains `DEFINITION COMPLETED / AWAITING HUMAN APPROVAL` and development is not authorized.
+15. SPEC-005 remains `TECHNICAL DISCOVERY COMPLETED / AWAITING HUMAN APPROVAL` and development is not authorized.
 
 ## Technical Discovery Requirements
 

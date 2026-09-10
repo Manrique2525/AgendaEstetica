@@ -63,7 +63,7 @@ The read side may use focused query classes or query services. A generic Reposit
 
 The write side must invoke SPEC-004 Actions. Controllers and Vue components must not write `Appointment` or `AppointmentHistory` directly.
 
-## 5. Agenda View Recommendation
+## 5. Final V1 Agenda Views
 
 ### Recommended V1
 
@@ -74,7 +74,7 @@ The write side must invoke SPEC-004 Actions. Controllers and Vue components must
 - Week navigation may be represented as date navigation/filtering, not as a full grid in V1.
 - Month view is deferred; no operational requirement currently justifies its complexity.
 
-This recommendation requires human/product confirmation before Development.
+This is the final Discovery decision for V1 and requires human approval before Development.
 
 ### Mobile strategy
 
@@ -88,22 +88,22 @@ This recommendation requires human/product confirmation before Development.
 
 `BusinessProfile.timezone` is the inherited and authoritative business timezone. SPEC-005 does not ask which timezone the business uses and does not introduce another timezone authority.
 
-Recommended request contract:
+Final request contract:
 
 - `from`: required business-local calendar date, inclusive, `YYYY-MM-DD`.
 - `to`: required business-local calendar date, exclusive, `YYYY-MM-DD`.
 - The backend resolves the date range using `BusinessProfile.timezone`.
 - The database query uses UTC `starts_at`/`ends_at` instants.
 - The API returns canonical UTC instants plus enough business-local display context for the consumer.
-- A bounded maximum range is required; Discovery recommends 31 calendar days for list/range reads, subject to implementation benchmarking.
+- A bounded maximum range of 31 calendar days is required for list/range reads.
 
 Appointments remain concrete UTC instants. Recurring BusinessHours and ProfessionalSchedule remain business-local `TIME` rules. No implicit browser timezone conversion is authoritative.
 
 DST errors and ambiguous local input must be rejected or explicitly represented by the inherited SPEC-004 temporal contract. Admin Agenda must present those errors; it must not choose a fold or normalize a gap.
 
-## 7. Read API Proposal
+## 7. Final Read API
 
-The proposed namespace is `/api/v1/admin/agenda`.
+The final Discovery namespace is `/api/v1/admin/agenda`.
 
 ### Appointment collection
 
@@ -111,7 +111,7 @@ The proposed namespace is `/api/v1/admin/agenda`.
 GET /api/v1/admin/agenda/appointments
 ```
 
-Proposed query parameters:
+Final query parameters:
 
 - `from`, required, inclusive business-local date.
 - `to`, required, exclusive business-local date.
@@ -129,6 +129,16 @@ GET /api/v1/admin/agenda/appointments/{appointment}
 ```
 
 The detail response may include focused AppointmentHistory ordered chronologically. History is read-only; no history mutation endpoint exists.
+
+### Lookup endpoints
+
+```text
+GET /api/v1/admin/agenda/customers
+GET /api/v1/admin/agenda/services
+GET /api/v1/admin/agenda/professionals
+```
+
+Lookups are bounded, server-side and deterministic. Customer lookup searches existing Customer identity fields and returns only `id`, `name` and `phone`; it never exposes `phone_normalized` or creates Customer records. Service and Professional lookups return minimal selector data. `service_id` may improve Professional filtering but backend compatibility remains authoritative.
 
 ### Response shape
 
@@ -164,13 +174,13 @@ No price, notes, source, public identifier or copied Service/Professional name s
 
 ## 9. Appointment Creation Decision
 
-Administrative creation is proposed in SPEC-005 V1.
+Administrative creation is included in the proposed SPEC-005 V1 consumer.
 
 The authenticated admin selects existing Customer, Service, Professional and an interval. The request delegates to `CreateAppointment`. SPEC-005 does not create Customer records, introduce Customer CRUD or bypass compatibility, availability, capacity, duration or transaction validation.
 
 Customer creation is deferred to a future Customer-management decision unless a later human-approved scope adds it. The operational consequence is explicit: V1 creation requires an existing Customer.
 
-## 10. Mutation API Proposal
+## 10. Final Mutation API
 
 Explicit intent endpoints are preferred over a generic status mutation:
 
@@ -182,7 +192,7 @@ POST /api/v1/admin/agenda/appointments/{appointment}/complete
 POST /api/v1/admin/agenda/appointments/{appointment}/no-show
 ```
 
-These are Discovery proposals only. Exact routes and request contracts require human approval before Development.
+These are the final Discovery route proposals; implementation still requires human approval before Development.
 
 ### Create
 
@@ -231,7 +241,7 @@ Conflict responses should identify the operation and safe user-facing reason, th
 
 V1 uses the existing `auth:sanctum` same-origin administrative session. No new RBAC tables, roles, Professional login or Customer login are proposed.
 
-A focused Policy/Gate may be introduced during Development only if multiple administrator behavior or an actual authorization distinction requires it. Until then, authenticated internal admin access is the boundary.
+No separate Policy/Gate or RBAC primitive is required for V1. The existing authenticated internal User/Sanctum boundary is the authorization boundary; a future multi-administrator permission decision belongs to a later approved scope.
 
 Mutations use the existing CSRF cookie/XSRF header behavior in the fetch wrapper. Browser token storage is not introduced.
 
@@ -258,7 +268,7 @@ The existing SPEC-004 indexes are sufficient as the starting point: Professional
 ## 15. Frontend Architecture
 
 - Add a future `/admin/agenda` route within the existing AdminLayout.
-- Prefer a route-addressable appointment detail view or drawer with a stable deep-link strategy; exact choice remains UX approval.
+- Use route-addressable `/admin/agenda` and `/admin/agenda/:id` views; this is the V1 detail strategy.
 - Reuse the existing `http` fetch wrapper and `useAuth` session.
 - Use focused agenda API modules and composables; do not scatter raw fetch calls through pages.
 - Do not add Pinia/Vuex by default; composable/local state is sufficient for the first consumer.
@@ -276,15 +286,15 @@ Required UI states are loading, empty, filtered, request failure, unauthorized, 
 - Touch targets and readable text at mobile zoom.
 - Reduced-motion behavior inherited from SPEC-002.
 - Spanish presentation labels for the four canonical statuses; persistence/API values remain canonical English enum strings.
-- Day/time display should use a consistent 12-hour or 24-hour project convention, to be confirmed in UX review, while persistence remains UTC.
+- Use 24-hour day/time display; persistence remains UTC.
 
 ## 17. Calendar Dependency Decision
 
-Recommendation: `DEFER LIBRARY / START WITH FOCUSED NATIVE VUE LIST-DAY PRESENTATION`.
+Decision: `DEFER LIBRARY / START WITH FOCUSED NATIVE VUE LIST-DAY PRESENTATION`.
 
 Rationale:
 
-- V1 recommendation is day plus bounded list/range, not a full month/week grid.
+- V1 decision is day plus bounded list/range, not a full month/week grid.
 - Native Vue composition avoids bundle, licensing and maintenance cost.
 - Existing UI primitives and Tailwind foundation are sufficient for the first focused surface.
 - A calendar library can be evaluated later if a human-approved week/month grid requirement emerges.
@@ -318,9 +328,9 @@ No dependency was installed or selected during Discovery.
 
 SPEC-005 tests should verify delegation and consumer contracts. They must not duplicate SPEC-004 low-level MySQL concurrency tests; the existing 17-test concurrency suite remains the domain authority.
 
-## 19. Checkpoint Proposal
+## 19. Development Checkpoint Proposal
 
-The following is a proposal for later Development approval:
+The following is the final Discovery checkpoint decomposition for later Development approval:
 
 ### Checkpoint A - Admin read API and authorization
 
@@ -346,10 +356,10 @@ The following is a proposal for later Development approval:
 - Evidence: complete consumer tests, route audit, query plans and CI.
 - Exclusions: notifications, payments, public booking and SPEC-006.
 
-### Final audit checkpoint
+### Checkpoint E - Final tests, documentation and audit
 
 - Scope: final tests, documentation, security, accessibility, scope and CI audit.
-- Status: not authorized.
+- Status: requires later development authorization.
 
 ## 20. Definition AC Mapping
 
@@ -375,32 +385,31 @@ The following is a proposal for later Development approval:
 
 No new ADR is required by this Discovery. Existing ADR-003 fully covers temporal/concurrency authority. A future calendar dependency or materially new read/API architecture may require an ADR only if implementation evidence demonstrates a durable cross-cutting decision.
 
-## 22. Open Decisions Requiring Human/Product Review
+## 22. Human Approval Points
 
 ### Business
 
-- Confirm day + list/range as the V1 agenda view rather than a full week/month grid.
-- Confirm which approved lifecycle Actions are exposed in V1.
-- Confirm whether Customer phone is operationally necessary in detail.
-- Confirm retention/anonymization policy remains deferred.
+- Approve day + bounded list/range as the V1 agenda view.
+- Approve exposure of all five existing SPEC-004 Actions through explicit intent endpoints.
+- Approve existing-Customer-only creation and Customer phone only in lookup/detail.
+- Record retention/anonymization as deferred.
 
 ### Architecture
 
-- Approve the proposed `/api/v1/admin/agenda/*` boundary and exact endpoint contracts.
-- Approve the 31-calendar-day range guard or select a benchmark-based limit.
-- Confirm whether authenticated-only access is sufficient for V1.
+- Approve the `/api/v1/admin/agenda/*` boundary and exact endpoint set.
+- Approve the 31-calendar-day range guard.
+- Approve authenticated-only access with no new RBAC in V1.
 
 ### UX
 
-- Confirm mobile day/list interaction and detail drawer/page choice.
-- Confirm 12-hour versus 24-hour display convention.
-- Confirm conflict/terminal-action confirmation language and behavior.
+- Approve mobile day/list interaction and `/admin/agenda/:id` detail route.
+- Approve 24-hour display convention.
+- Approve conflict and terminal-action confirmation behavior.
 
 ### Security
 
-- Confirm minimum Customer projection.
-- Confirm any focused Policy/Gate requirement for future administrators.
-- Confirm whether additional audit accountability beyond AppointmentHistory is needed.
+- Approve the minimum Customer projection and phone placement.
+- Approve no additional Policy/Gate or actor audit in V1.
 
 ## 23. Explicit Deferred Scope
 
