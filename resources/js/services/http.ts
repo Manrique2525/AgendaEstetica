@@ -93,10 +93,11 @@ export const http = {
         return request<T>(path);
     },
 
-    post<T>(path: string, body?: unknown): Promise<T> {
+    post<T>(path: string, body?: unknown, requestHeaders?: HeadersInit): Promise<T> {
         return request<T>(path, {
             method: 'POST',
             body: body === undefined ? undefined : JSON.stringify(body),
+            headers: requestHeaders,
         });
     },
 };

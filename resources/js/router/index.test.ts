@@ -12,6 +12,12 @@ describe('frontend router', () => {
         expect(router.resolve('/admin/login').meta.guestOnly).toBe(true);
     });
 
+    it('resolves the public booking route without authentication', () => {
+        expect(router.resolve('/reservar').name).toBe('public.booking');
+        expect(router.resolve('/reservar').meta.surface).toBe('public');
+        expect(router.resolve('/reservar').meta.requiresAuth).toBeUndefined();
+    });
+
     it('resolves unknown frontend paths to NotFound', () => {
         expect(router.resolve('/unknown-foundation-route').matched.slice(-1)[0]?.components?.default)
             .toBeDefined();
