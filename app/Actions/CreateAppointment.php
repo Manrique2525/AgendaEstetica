@@ -40,7 +40,7 @@ final class CreateAppointment
                 ->lockForUpdate()
                 ->first();
             $freshCustomer = Customer::query()->find($customer->getKey());
-            $freshService = Service::query()->find($service->getKey());
+            $freshService = Service::query()->lockForUpdate()->find($service->getKey());
 
             if ($lockedProfessional === null || $freshCustomer === null || $freshService === null) {
                 throw (new ModelNotFoundException)->setModel(Appointment::class);
@@ -51,6 +51,9 @@ final class CreateAppointment
                 $lockedProfessional,
                 $startsAt,
                 $endsAt,
+                null,
+                null,
+                true,
             )) {
                 throw new InvalidArgumentException('Appointment is unavailable.');
             }

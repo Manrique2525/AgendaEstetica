@@ -70,7 +70,7 @@ final class RescheduleAppointment
                 return $lockedAppointment->fresh();
             }
 
-            $service = Service::query()->find($lockedAppointment->service_id);
+            $service = Service::query()->lockForUpdate()->find($lockedAppointment->service_id);
 
             if ($service === null) {
                 throw new ModelNotFoundException;
@@ -85,6 +85,7 @@ final class RescheduleAppointment
                 $newEndsAt,
                 $lockedAppointment->id,
                 $lockedAppointment->duration_minutes,
+                true,
             )) {
                 throw new InvalidArgumentException('Appointment is unavailable.');
             }

@@ -26,6 +26,7 @@ final class CheckAppointmentAvailability
         CarbonImmutable $endsAt,
         ?int $excludeAppointmentId = null,
         ?int $expectedDurationMinutes = null,
+        bool $useCurrentReads = false,
     ): bool {
         if ($startsAt->getTimestamp() >= $endsAt->getTimestamp()) {
             return false;
@@ -37,8 +38,12 @@ final class CheckAppointmentAvailability
             return false;
         }
 
-        $profile = BusinessProfile::query()->first();
+        $profileQuery = BusinessProfile::query()->where('singleton_key', 1);
+        $profile = ($useCurrentReads ? $profileQuery->lockForUpdate() : $profileQuery)->first();
         $category = ServiceCategory::query()->find($service->service_category_id);
+        if ($useCurrentReads) {
+            $category = ServiceCategory::query()->whereKey($service->service_category_id)->lockForUpdate()->first();
+        }
 
         if ($profile === null
             || $category === null
@@ -56,7 +61,7 @@ final class CheckAppointmentAvailability
         }
 
         if (! $this->coversRecurringIntervals(
-            $profile->hours()->get()->map(static function ($hour): array {
+            $profile->hours()->when($useCurrentReads, static fn ($query) => $query->lockForUpdate())->get()->map(static function ($hour): array {
                 /** @var BusinessHour $hour */
                 return [
                     'weekday' => $hour->weekday,
@@ -74,7 +79,7 @@ final class CheckAppointmentAvailability
         }
 
         if (! $this->coversRecurringIntervals(
-            $professional->schedules()->get()->map(static function ($schedule): array {
+            $professional->schedules()->when($useCurrentReads, static fn ($query) => $query->lockForUpdate())->get()->map(static function ($schedule): array {
                 /** @var ProfessionalSchedule $schedule */
                 return [
                     'weekday' => $schedule->weekday,
@@ -91,24 +96,30 @@ final class CheckAppointmentAvailability
             return false;
         }
 
-        if (ProfessionalTimeOff::query()
+        $timeOffQuery = ProfessionalTimeOff::query()
             ->where('professional_id', $professional->getKey())
             ->where('starts_at', '<', $endsAt->toDateTimeString())
-            ->where('ends_at', '>', $startsAt->toDateTimeString())
-            ->exists()) {
+            ->where('ends_at', '>', $startsAt->toDateTimeString());
+        if ($useCurrentReads) {
+            $timeOffQuery->lockForUpdate();
+        }
+        if ($timeOffQuery->exists()) {
             return false;
         }
 
-        if ($professional->appointments()
+        $professionalAppointments = $professional->appointments()
             ->where('status', AppointmentStatus::CONFIRMED)
             ->when($excludeAppointmentId !== null, fn ($query) => $query->where('appointments.id', '<>', $excludeAppointmentId))
             ->where('starts_at', '<', $endsAt->toDateTimeString())
-            ->where('ends_at', '>', $startsAt->toDateTimeString())
-            ->exists()) {
+            ->where('ends_at', '>', $startsAt->toDateTimeString());
+        if ($useCurrentReads) {
+            $professionalAppointments->lockForUpdate();
+        }
+        if ($professionalAppointments->exists()) {
             return false;
         }
 
-        return $this->capacityAllows($profile->max_simultaneous_clients, $startsAt, $endsAt, $excludeAppointmentId);
+        return $this->capacityAllows($profile->max_simultaneous_clients, $startsAt, $endsAt, $excludeAppointmentId, $useCurrentReads);
     }
 
     /**
@@ -204,6 +215,7 @@ final class CheckAppointmentAvailability
         CarbonImmutable $candidateStart,
         CarbonImmutable $candidateEnd,
         ?int $excludeAppointmentId = null,
+        bool $useCurrentReads = false,
     ): bool {
         /** @var array<int, array{0: int, 1: int}> $events */
         $events = [
@@ -211,13 +223,15 @@ final class CheckAppointmentAvailability
             [$candidateEnd->getTimestamp(), -1],
         ];
 
-        foreach (Appointment::query()
+        $appointmentsQuery = Appointment::query()
             ->where('status', AppointmentStatus::CONFIRMED)
             ->when($excludeAppointmentId !== null, fn ($query) => $query->where('appointments.id', '<>', $excludeAppointmentId))
-            ->when($excludeAppointmentId !== null, fn ($query) => $query->where('appointments.id', '<>', $excludeAppointmentId))
             ->where('starts_at', '<', $candidateEnd->toDateTimeString())
-            ->where('ends_at', '>', $candidateStart->toDateTimeString())
-            ->get(['starts_at', 'ends_at']) as $appointment) {
+            ->where('ends_at', '>', $candidateStart->toDateTimeString());
+        if ($useCurrentReads) {
+            $appointmentsQuery->lockForUpdate();
+        }
+        foreach ($appointmentsQuery->get(['starts_at', 'ends_at']) as $appointment) {
             $start = max($candidateStart->getTimestamp(), CarbonImmutable::parse((string) $appointment->starts_at, 'UTC')->getTimestamp());
             $end = min($candidateEnd->getTimestamp(), CarbonImmutable::parse((string) $appointment->ends_at, 'UTC')->getTimestamp());
 
