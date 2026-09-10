@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AdminAgendaAppointmentController;
+use App\Http\Controllers\Api\V1\AdminAgendaLookupController;
 use App\Http\Controllers\Api\V1\AdminAuthController;
 use App\Http\Controllers\Api\V1\HealthController;
 use Illuminate\Support\Facades\Route;
@@ -15,4 +17,17 @@ Route::prefix('admin/auth')->group(function (): void {
         Route::get('/me', [AdminAuthController::class, 'me'])->name('admin.auth.me');
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.auth.logout');
     });
+});
+
+Route::prefix('admin/agenda')->middleware('auth:sanctum')->group(function (): void {
+    Route::get('/appointments', [AdminAgendaAppointmentController::class, 'index'])
+        ->name('admin.agenda.appointments.index');
+    Route::get('/appointments/{appointment}', [AdminAgendaAppointmentController::class, 'show'])
+        ->name('admin.agenda.appointments.show');
+    Route::get('/customers', [AdminAgendaLookupController::class, 'customers'])
+        ->name('admin.agenda.customers.index');
+    Route::get('/services', [AdminAgendaLookupController::class, 'services'])
+        ->name('admin.agenda.services.index');
+    Route::get('/professionals', [AdminAgendaLookupController::class, 'professionals'])
+        ->name('admin.agenda.professionals.index');
 });

@@ -1,0 +1,148 @@
+<?php
+
+use App\Enums\AppointmentHistoryEventType;
+use App\Enums\AppointmentStatus;
+use App\Models\Appointment;
+use App\Models\BusinessProfile;
+use App\Models\Customer;
+use App\Models\Professional;
+use App\Models\Service;
+use App\Models\ServiceCategory;
+use App\Models\User;
+use Carbon\CarbonImmutable;
+
+function adminAgendaFixture(string $timezone = 'UTC'): array
+{
+    $profile = BusinessProfile::factory()->create(['timezone' => $timezone]);
+    $profile->hours()->create(['weekday' => 1, 'interval_order' => 1, 'opens_at' => '09:00', 'closes_at' => '18:00']);
+    $category = ServiceCategory::factory()->create(['active' => true]);
+    $service = Service::factory()->create(['service_category_id' => $category->id, 'active' => true, 'duration_minutes' => 60]);
+    $professional = Professional::factory()->create(['active' => true]);
+    $professional->services()->attach($service);
+    $professional->schedules()->create(['weekday' => 1, 'starts_at' => '09:00', 'ends_at' => '18:00']);
+
+    return [
+        'profile' => $profile,
+        'category' => $category,
+        'service' => $service,
+        'professional' => $professional,
+        'customer' => Customer::factory()->create(),
+        'admin' => User::factory()->create(),
+    ];
+}
+
+function adminAgendaAppointment(array $fixture, string $startsAt, string $endsAt): Appointment
+{
+    return Appointment::factory()->create([
+        'customer_id' => $fixture['customer']->id,
+        'service_id' => $fixture['service']->id,
+        'professional_id' => $fixture['professional']->id,
+        'starts_at' => $startsAt,
+        'ends_at' => $endsAt,
+        'duration_minutes' => 60,
+        'status' => AppointmentStatus::CONFIRMED,
+    ]);
+}
+
+it('requires the authenticated admin session for read endpoints', function (string $endpoint): void {
+    expect($this->get($endpoint)->status())->toBe(401);
+})->with([
+    '/api/v1/admin/agenda/appointments?from=2026-01-05&to=2026-01-06',
+    '/api/v1/admin/agenda/customers?q=ana',
+    '/api/v1/admin/agenda/services',
+    '/api/v1/admin/agenda/professionals',
+]);
+
+it('validates bounded business-local agenda ranges', function (): void {
+    $fixture = adminAgendaFixture();
+    $this->actingAs($fixture['admin']);
+
+    $this->getJson('/api/v1/admin/agenda/appointments?from=2026-01-05&to=2026-02-06')
+        ->assertStatus(422)->assertJsonValidationErrors('from');
+
+    $this->getJson('/api/v1/admin/agenda/appointments?from=2026-01-06&to=2026-01-05')
+        ->assertStatus(422)->assertJsonValidationErrors('from');
+});
+
+it('lists intersecting appointments with filters and minimal card projection', function (): void {
+    $fixture = adminAgendaFixture();
+    $appointment = adminAgendaAppointment($fixture, '2026-01-05 23:30:00', '2026-01-06 00:30:00');
+    Appointment::factory()->create([
+        'customer_id' => Customer::factory()->create()->id,
+        'service_id' => $fixture['service']->id,
+        'professional_id' => $fixture['professional']->id,
+        'starts_at' => '2026-01-06 01:00:00',
+        'ends_at' => '2026-01-06 02:00:00',
+        'duration_minutes' => 60,
+        'status' => AppointmentStatus::CANCELLED,
+    ]);
+
+    $this->actingAs($fixture['admin'])
+        ->getJson('/api/v1/admin/agenda/appointments?from=2026-01-06&to=2026-01-07&status=confirmed')
+        ->assertOk()
+        ->assertJsonPath('data.0.id', $appointment->id)
+        ->assertJsonPath('data.0.status', 'confirmed')
+        ->assertJsonMissingPath('data.0.customer.phone')
+        ->assertJsonMissingPath('data.0.customer.phone_normalized');
+});
+
+it('resolves business-local date ranges against UTC appointments', function (): void {
+    $fixture = adminAgendaFixture('America/New_York');
+    $included = adminAgendaAppointment($fixture, '2026-01-06 04:30:00', '2026-01-06 05:30:00');
+
+    $this->actingAs($fixture['admin'])
+        ->getJson('/api/v1/admin/agenda/appointments?from=2026-01-05&to=2026-01-06')
+        ->assertOk()->assertJsonPath('data.0.id', $included->id);
+});
+
+it('returns detail with phone and ordered focused history', function (): void {
+    $fixture = adminAgendaFixture();
+    $appointment = adminAgendaAppointment($fixture, '2026-01-05 10:00:00', '2026-01-05 11:00:00');
+    $appointment->history()->create([
+        'event_type' => AppointmentHistoryEventType::CREATED,
+        'to_status' => AppointmentStatus::CONFIRMED,
+        'new_starts_at' => CarbonImmutable::parse('2026-01-05 10:00:00', 'UTC'),
+        'new_ends_at' => CarbonImmutable::parse('2026-01-05 11:00:00', 'UTC'),
+        'new_professional_id' => $fixture['professional']->id,
+    ]);
+
+    $this->actingAs($fixture['admin'])
+        ->getJson("/api/v1/admin/agenda/appointments/{$appointment->id}")
+        ->assertOk()
+        ->assertJsonPath('data.customer.phone', $fixture['customer']->phone)
+        ->assertJsonPath('data.history.0.event_type', 'created')
+        ->assertJsonMissingPath('data.customer.phone_normalized');
+});
+
+it('returns bounded existing Customer lookup results', function (): void {
+    $fixture = adminAgendaFixture();
+    Customer::factory()->create(['name' => 'Ana Agenda', 'phone' => '+529999999999']);
+
+    $this->actingAs($fixture['admin'])
+        ->getJson('/api/v1/admin/agenda/customers?q=Ana')
+        ->assertOk()->assertJsonPath('data.0.name', 'Ana Agenda')
+        ->assertJsonMissingPath('data.0.phone_normalized');
+});
+
+it('returns active compatible Service and Professional lookups only', function (): void {
+    $fixture = adminAgendaFixture();
+    $inactiveCategory = ServiceCategory::factory()->create(['active' => false]);
+    Service::factory()->create(['service_category_id' => $inactiveCategory->id, 'active' => true]);
+    $inactiveProfessional = Professional::factory()->create(['active' => false]);
+    $inactiveProfessional->services()->attach($fixture['service']);
+
+    $this->actingAs($fixture['admin'])
+        ->getJson('/api/v1/admin/agenda/services')->assertOk()
+        ->assertJsonPath('data.0.id', $fixture['service']->id);
+
+    $this->getJson("/api/v1/admin/agenda/professionals?service_id={$fixture['service']->id}")
+        ->assertOk()->assertJsonPath('data.0.id', $fixture['professional']->id)
+        ->assertJsonMissing(['id' => $inactiveProfessional->id]);
+});
+
+it('does not expose mutation routes in Checkpoint A', function (): void {
+    $fixture = adminAgendaFixture();
+    $this->actingAs($fixture['admin']);
+
+    $this->postJson('/api/v1/admin/agenda/appointments')->assertStatus(405);
+});
