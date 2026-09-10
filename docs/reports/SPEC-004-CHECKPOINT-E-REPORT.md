@@ -78,7 +78,7 @@ The schedule/re-schedule test initially allowed an invalid reschedule after the 
 - Reschedule loser state and history remain unchanged.
 - No worker timeouts, lock wait timeouts or unexpected SQL exceptions occurred.
 
-The dedicated suite was also rerun in isolation after one intentionally parallelized local invocation exceeded the harness timeout while sharing the test database with other commands. The isolated result was 17 tests and 212 assertions, PASS; the timeout was not reproduced and did not produce a worker result, SQL exception or application deadlock.
+The dedicated suite was also rerun in isolation after one intentionally parallelized local invocation exceeded the harness timeout while sharing the test database with other commands. The isolated result was 17 tests and 212 assertions, PASS; the timeout was not reproduced and did not produce a worker result, SQL exception or application deadlock. Assertion totals vary by serial winner because losing-worker detail assertions are conditional; the remote Quality run recorded the same 17 passing tests.
 
 ## Retry and Architecture
 
@@ -99,8 +99,8 @@ The dedicated suite was also rerun in isolation after one intentionally parallel
 
 ## Regression Evidence
 
-- Concurrency suite: 17 tests, 212 assertions, PASS.
-- Full Pest: 113 tests, 547 assertions, PASS.
+- Concurrency suite: 17 tests, 212 assertions locally, PASS; remote Quality: 17 passed.
+- Full Pest: 113 tests, 547 assertions locally, PASS; remote Quality: 113 passed (545 assertions in run 34427643414).
 - Frontend: 10 files, 24 tests, PASS.
 - Composer, Pint, PHPStan, ESLint, TypeScript, build and audits: PASS.
 - Migration lifecycle on `agenda_estetica_test`: PASS.

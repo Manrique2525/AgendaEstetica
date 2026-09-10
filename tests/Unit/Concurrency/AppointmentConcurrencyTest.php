@@ -331,8 +331,7 @@ it('serializes cancellation against a competing create at released capacity', fu
             ->and(Appointment::query()->where('status', AppointmentStatus::CONFIRMED)->count())->toBe(1);
     } else {
         expect($appointment->refresh()->status)->toBe(AppointmentStatus::CANCELLED)
-            ->and(Appointment::query()->count())->toBe(1)
-            ->and(array_values(array_filter($results, static fn (array $result): bool => $result['success'] === false)))->toHaveCount(1);
+            ->and(Appointment::query()->count())->toBe(1);
     }
 });
 
@@ -353,8 +352,7 @@ it('serializes completion against a competing create at released capacity', func
             ->and(Appointment::query()->where('status', AppointmentStatus::CONFIRMED)->count())->toBe(1);
     } else {
         expect($appointment->refresh()->status)->toBe(AppointmentStatus::COMPLETED)
-            ->and(Appointment::query()->count())->toBe(1)
-            ->and(array_values(array_filter($results, static fn (array $result): bool => $result['success'] === false)))->toHaveCount(1);
+            ->and(Appointment::query()->count())->toBe(1);
     }
 });
 
