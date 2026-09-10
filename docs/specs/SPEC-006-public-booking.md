@@ -10,9 +10,9 @@ Public Booking
 
 ## Status
 
-`DEFINITION COMPLETED / TECHNICAL DISCOVERY COMPLETED / AWAITING HUMAN APPROVAL`
+`APPROVED FOR DEVELOPMENT / IN PROGRESS`
 
-This Definition and its Technical Discovery describe the public booking consumer identified as roadmap item `06`. Discovery is complete but does not authorize Development, Checkpoint A, migrations, routes, dependencies or implementation code.
+This Definition and its Technical Discovery describe the public booking consumer identified as roadmap item `06`. Checkpoint A is implemented; Checkpoints B-F and further development require separate approval.
 
 ## Roadmap Source
 
@@ -377,12 +377,17 @@ Technical Discovery is documented in `docs/reports/SPEC-006-DISCOVERY-REPORT.md`
 ## Definition State
 
 ```text
-SPEC-006: DEFINITION COMPLETED / APPROVED
+SPEC-006: APPROVED FOR DEVELOPMENT / IN PROGRESS
 Canonical name: Public Booking
 Roadmap item: 06
-Definition: COMPLETED
-Technical Discovery: COMPLETED / AWAITING HUMAN APPROVAL
-Development: NOT STARTED
-Checkpoint A: NOT AUTHORIZED
+Definition: COMPLETED / APPROVED
+Technical Discovery: COMPLETED / APPROVED
+Development: CHECKPOINT A
+Checkpoint A: COMPLETED / READY FOR HUMAN APPROVAL
+Checkpoint B: NOT AUTHORIZED
+Checkpoint C: NOT AUTHORIZED
+Checkpoint D: NOT AUTHORIZED
+Checkpoint E: NOT AUTHORIZED
+Checkpoint F: NOT AUTHORIZED
 SPEC-007+: NOT AUTHORIZED
 ```
