@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\AdminAgendaLookupController;
 use App\Http\Controllers\Api\V1\AdminAgendaMutationController;
 use App\Http\Controllers\Api\V1\AdminAuthController;
 use App\Http\Controllers\Api\V1\HealthController;
+use App\Http\Controllers\Api\V1\PublicBookingAppointmentController;
 use App\Http\Controllers\Api\V1\PublicBookingController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,8 @@ Route::prefix('public/booking')->group(function (): void {
     Route::get('/availability', [PublicBookingController::class, 'availability'])
         ->middleware('throttle:public-booking-availability')
         ->name('public.booking.availability');
+    Route::post('/appointments', [PublicBookingAppointmentController::class, 'store'])
+        ->name('public.booking.appointments.store');
 });
 
 Route::prefix('admin/auth')->group(function (): void {
