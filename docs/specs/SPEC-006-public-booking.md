@@ -382,7 +382,7 @@ Canonical name: Public Booking
 Roadmap item: 06
 Definition: COMPLETED / APPROVED
 Technical Discovery: COMPLETED / APPROVED
-Development: CHECKPOINTS A-D
+Development: CHECKPOINTS A-F
 Checkpoint A: COMPLETED / APPROVED
 Checkpoint B: COMPLETED / APPROVED
 Checkpoint C: COMPLETED / APPROVED
