@@ -53,11 +53,11 @@ final class ConcurrentProcessRun
             ], $pipes, dirname(__DIR__, 3), [
                 'APP_ENV' => 'testing',
                 'DB_CONNECTION' => 'mysql',
-                'DB_HOST' => '127.0.0.1',
-                'DB_PORT' => '3307',
-                'DB_DATABASE' => 'agenda_estetica_test',
-                'DB_USERNAME' => 'agenda_estetica_test',
-                'DB_PASSWORD' => (string) env('DB_PASSWORD'),
+                'DB_HOST' => (string) config('database.connections.mysql.host'),
+                'DB_PORT' => (string) config('database.connections.mysql.port'),
+                'DB_DATABASE' => (string) config('database.connections.mysql.database'),
+                'DB_USERNAME' => (string) config('database.connections.mysql.username'),
+                'DB_PASSWORD' => (string) config('database.connections.mysql.password'),
             ]);
 
             if (! is_resource($process)) {
