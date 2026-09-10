@@ -129,13 +129,13 @@ The frontend must never become availability authority or decide whether an appoi
 
 V1 is guest booking without Customer authentication. The visitor must provide both required fields `name` and `phone`; address, birth date, gender, email, notes and marketing profile are not part of V1.
 
-The booking capability may reuse an existing Customer or create a minimal Customer when no existing record is available. Technical Discovery must determine server-side matching, normalization flow, duplicate handling and transaction behavior while preserving the existing `phone_normalized` indexed-but-not-unique contract. Public Customer search, enumeration and general Customer CRUD remain out of scope.
+The booking capability may reuse an existing Customer or create a minimal Customer when no existing record is available. Technical Discovery finalizes server-side matching, normalization flow, duplicate handling and transaction behavior while preserving the existing `phone_normalized` indexed-but-not-unique contract. Public Customer search, enumeration and general Customer CRUD remain out of scope.
 
 Customer authentication is out of V1; any future account flow requires a separate approved scope.
 
 ## Availability and Professional Selection
 
-The public user must select a valid bookable time before submission. Bookable-time/slot selection is in scope as a business capability; the representation and derivation algorithm remain Technical Discovery topics. A displayed available time is not a reservation guarantee and may become unavailable before final submit.
+The public user must select a valid bookable time before submission. Bookable-time/slot selection is in scope as a business capability; the finalized Discovery contract uses 15-minute candidate starts, one business-local date per request and a 90-calendar-day inclusive horizon. A displayed available time is not a reservation guarantee and may become unavailable before final submit.
 
 The visitor must select a specific Professional. The flow does not offer `cualquiera disponible`, server-selected Professionals, ranking, round robin or automatic assignment. Final Service/Professional compatibility remains backend/domain-authoritative.
 
@@ -186,7 +186,7 @@ Pricing text must be understandable without relying only on color or styling to 
 - Server-side validation and SPEC-004 authority must govern every booking submission.
 - Conflict messages must be safe and must not disclose SQL, locks, internal classes or persistence details.
 - The public flow must address duplicate submits, appointment spam, availability scraping and high-rate availability requests.
-- Rate-limit values, abuse controls, CSRF/session behavior and idempotency strategy require Technical Discovery; no vendor or mechanism is selected here.
+- Rate limits, abuse controls, CSRF/session behavior and idempotency follow the finalized Technical Discovery contract and use no new vendor or mechanism.
 - No bearer-token or browser-storage authentication is introduced by this Definition.
 
 ## Mobile and Accessibility Goals
@@ -311,11 +311,7 @@ NONE. Public Service pricing visibility and presentation are finalized for V1.
 
 ### Architecture
 
-- What public API/read boundary is needed for Services, Professionals and bookable times?
-- Does public availability require a new consumer query over SPEC-004 or an approved Action extension?
-- What Customer matching/creation strategy preserves the non-unique normalized phone contract?
-- What duplicate-submit/idempotency strategy is appropriate without prematurely modifying SPEC-004 persistence?
-- What public session/CSRF boundary applies to anonymous same-origin booking?
+See `docs/reports/SPEC-006-DISCOVERY-REPORT.md` for the finalized public API, availability, Customer, idempotency and session/CSRF contracts. No unresolved Architecture question remains for the current V1 boundary; checkpoint implementation must verify the documented transaction and performance evidence.
 
 ### UX
 
@@ -327,10 +323,7 @@ NONE. Public Service pricing visibility and presentation are finalized for V1.
 
 ### Security
 
-- Which controls prevent Customer and Appointment enumeration?
-- What rate-limit and abuse policy is needed for availability and submit requests?
-- What PII may appear in success and error responses?
-- What operational monitoring is needed without introducing external providers?
+The finalized security boundary requires non-enumerating responses, HMAC-protected phone limiter keys, bounded rate limits, safe PII projections and existing Laravel monitoring facilities. Implementation evidence is deferred to the approved Development checkpoints.
 
 ## Future Cross-SPEC Changes Requiring Human Approval
 
@@ -354,9 +347,9 @@ The following must not be resolved silently in SPEC-006:
 - Public responses may leak Customer or Appointment information if projections are not minimized.
 - Timezone/DST behavior may confuse visitors if business-local presentation is inconsistent.
 
-## Technical Discovery Requirements
+## Technical Discovery Topics
 
-Future Discovery must investigate, without assuming a solution:
+The completed Discovery investigated the following topics without authorizing implementation:
 
 - Existing public SPA/API conventions and the smallest `/api/v1/public/*` boundary.
 - Public Service/Professional projections and active-state semantics.
@@ -379,7 +372,7 @@ This Definition introduces no application implementation, routes, controllers, A
 
 ## Technical Discovery Reference
 
-Technical Discovery is documented in `docs/reports/SPEC-006-DISCOVERY-REPORT.md`. The report defines the recommended public contracts, authority boundaries, Customer resolution, availability strategy, abuse controls and Development checkpoint plan. It does not implement or authorize code.
+Technical Discovery is documented in `docs/reports/SPEC-006-DISCOVERY-REPORT.md`. The report defines the final public contracts, authority boundaries, Customer resolution, availability strategy, abuse controls and Development checkpoint plan. It does not implement or authorize code.
 
 ## Definition State
 

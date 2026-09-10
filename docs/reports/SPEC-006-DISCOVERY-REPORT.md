@@ -13,7 +13,7 @@
 
 Public Booking V1 is a same-origin, guest booking consumer. A visitor selects an active Service, a specific compatible Professional and a valid bookable time, supplies required name and phone, reviews the booking and submits it. The public flow resolves or creates a minimal Customer and immediately delegates appointment creation to `CreateAppointment`, producing a confirmed Appointment visible to Admin Agenda.
 
-The recommended design uses a small `/api/v1/public/booking/*` boundary, existing Laravel database cache/session/rate-limiter facilities, server-side Customer resolution and bounded one-business-day bookable-time queries. No new domain status, appointment source, public lookup token, booking hold, migration, dependency or SPEC-003/004/005 change is required.
+The final design uses a small `/api/v1/public/booking/*` boundary, existing Laravel database cache/session/rate-limiter facilities, server-side Customer resolution and bounded one-business-day bookable-time queries. No new domain status, appointment source, public lookup token, booking hold, migration, dependency or SPEC-003/004/005 change is required.
 
 ## 1. Architecture and Ownership
 
@@ -27,7 +27,7 @@ The recommended design uses a small `/api/v1/public/booking/*` boundary, existin
 
 ## 2. Proposed Public API
 
-The smallest recommended V1 surface is:
+The final V1 surface is:
 
 ```text
 GET  /api/v1/public/booking/context
@@ -37,14 +37,14 @@ GET  /api/v1/public/booking/availability?service_id={id}&professional_id={id}&da
 POST /api/v1/public/booking/appointments
 ```
 
-8. Context is optional as a separate implementation endpoint but recommended for the authoritative timezone and future public display context.
+8. Context is a dedicated minimal endpoint for the authoritative timezone and public booking display context.
 9. No V1 endpoint is proposed for Customer search/detail, Appointment detail/lookup/history, cancellation, reschedule, payments, notifications, raw schedules, raw TimeOff or capacity internals.
 10. All success responses use the existing `data` envelope; exact controller/request/resource names remain Development decisions.
 11. The public group must not use `auth:sanctum`; it is anonymous public access with the separate CSRF/session boundary described below.
 
 ### Public context projection
 
-Recommended safe response:
+Final safe response:
 
 ```json
 {
@@ -58,11 +58,16 @@ Recommended safe response:
 
 ### Service projection
 
-Recommended public-safe fields:
+Final public-safe fields:
 
 ```text
 id
 name
+duration_minutes
+pricing_type
+price (null for variable)
+category: { id, name } or null
+```
 
 13. Only active Services under an active ServiceCategory are projected.
 14. Pricing preserves authoritative values: `fixed` exact configured amount, `starting_from` configured amount rendered as `Desde $X`, and `variable` rendered as `Precio variable` with no amount.
@@ -70,16 +75,16 @@ name
 
 ### Professional projection
 
-Recommended fields are `id` and display `name`, limited to active Professionals compatible with the selected active Service. No user relationship, schedule, TimeOff or administrative metadata is exposed.
+Final fields are `id` and display `name`, limited to active Professionals compatible with the selected active Service. No user relationship, schedule, TimeOff or administrative metadata is exposed.
 
 ## 3. Bookable-Time Design
 
 16. Availability request parameters are `service_id`, `professional_id` and one business-local `date=YYYY-MM-DD`.
-17. One local business day per request is the recommended bound; no arbitrary month/year availability query is allowed.
-18. Recommended booking horizon is from the current business-local date through 90 calendar days ahead. This is a technical abuse/performance bound, not a new Appointment domain rule; it requires confirmation during Development planning.
+17. One local business day per request is the final bound; no arbitrary month/year availability query is allowed.
+18. Final booking horizon is the inclusive business-local interval `[today, today + 90 calendar days]`. This is a bounded Public Booking query rule, not a new Appointment domain invariant.
 19. Dates before the current business-local date are not bookable. For today, candidate starts whose UTC instant is not in the future at evaluation time are excluded.
-20. No minimum lead time is invented because no current domain/product rule defines one.
-21. No slot granularity exists in the current Appointment Engine. A 15-minute candidate increment is recommended as a public presentation default, not as a new domain invariant; any different product requirement must be approved before Development.
+20. Additional minimum lead time is `NONE`.
+21. No slot granularity exists in the current Appointment Engine. Public Booking uses a final 15-minute candidate-start increment as its presentation/query rule, not as a new domain invariant.
 22. Candidate generation is distinct from authority: the public consumer generates bounded local candidates, resolves each candidate through the BusinessProfile timezone and fresh Service duration, and relies on SPEC-004 availability authority for final eligibility.
 23. Existing `CheckAppointmentAvailability` validates an exact interval and already evaluates Service/Category active state, Professional active state and compatibility, BusinessHours, ProfessionalSchedule, TimeOff, Professional overlap and global capacity.
 24. The first implementation should reuse that authority rather than copy its private rules. A maximum 15-minute grid across one day bounds candidates to at most 96 before business/schedule filtering.
@@ -87,7 +92,7 @@ Recommended fields are `id` and display `name`, limited to active Professionals 
 
 ### Slot response
 
-Recommended safe slot projection:
+Final recommended safe slot projection:
 
 ```text
 starts_at: UTC ISO-8601 instant
@@ -115,17 +120,18 @@ local_time: business-local HH:mm
 
 37. Normalization authority is the existing `CustomerPhoneNormalizer`; no second phone algorithm is allowed.
 38. `customers.phone_normalized` is indexed but not unique. Discovery makes no one-phone-one-Customer assumption and proposes no uniqueness constraint.
-39. Recommended server-side strategy: normalize submitted phone, lock/read matching normalized rows within the booking transaction, reuse exactly one match, create a minimal Customer when there are zero matches, and create a new minimal Customer when multiple matches exist rather than guessing an identity.
-40. Reuse never silently changes an existing Customer name when submitted name differs; the submitted name is retained only for a newly created Customer. This avoids overwriting shared-family phones, typos or changed names.
-41. The API never reveals whether a Customer exists, how many matches were found, which Customer was selected or any Customer ID.
-42. Customer create/reuse is allowed only as part of the booking operation; there is no public Customer search, list, detail or management surface.
-43. Recommended transaction boundary: public booking orchestration owns one same-connection database transaction around Customer resolution and the nested `CreateAppointment` call, relying on Laravel savepoint semantics. Development must verify nested rollback behavior against the target MySQL setup.
-44. If a new Customer is created and `CreateAppointment` fails, the outer transaction rolls back both records. A reused Customer is not modified.
-45. The orchestration must not change SPEC-004 canonical lock ordering; Customer resolution occurs before the Action's existing BusinessProfile/Professional/Service locking path and adds no domain lock protocol.
+39. Final server-side strategy: normalize submitted phone, then resolve by `phone_normalized` as follows: zero matches creates a new Customer; exactly one match with an equivalent submitted name reuses it; exactly one match with a different name creates a new Customer; two or more matches creates a new Customer. No arbitrary first match is selected.
+40. Name equivalence is focused and exact: trim surrounding whitespace, collapse repeated internal whitespace, compare case-insensitively with Unicode-safe lowercasing supported by the PHP runtime, and perform no nickname, phonetic, fuzzy, Levenshtein or meaningful-component removal.
+41. Reuse never silently changes an existing Customer name when submitted name differs; the submitted name is retained only for a newly created Customer.
+42. The API never reveals whether a Customer exists, how many matches were found, which Customer was selected or any Customer ID.
+43. Customer create/reuse is allowed only as part of the booking operation; there is no public Customer search, list, detail or management surface.
+44. Final transaction boundary: public booking orchestration owns one same-connection database transaction around Customer resolution and the nested `CreateAppointment` call. Laravel's same-connection nested `DB::transaction()` uses savepoints; Development must verify rollback behavior against the target MySQL setup.
+45. If a new Customer is created and `CreateAppointment` fails, the outer transaction rolls back both records. A reused Customer is not modified.
+46. The orchestration must not change SPEC-004 canonical lock ordering; Customer resolution occurs before the Action's existing BusinessProfile/Professional/Service locking path and adds no domain lock protocol.
 
 ## 6. Public Booking Mutation
 
-Recommended logical request fields:
+Final logical request fields:
 
 ```text
 service_id
@@ -143,16 +149,20 @@ phone
 
 ### Success projection
 
-Recommended success data contains only a safe confirmation message, Service name, Professional name, business-local date/time, canonical start/end instants if needed for display, and `confirmed` status. It omits Customer ID/phone, AppointmentHistory, capacity, lock data and internal Appointment ID. No public lookup identifier is required by V1.
+Final success data contains only a safe confirmation message, Service name, Professional name, business-local date/time, canonical start/end instants if needed for display, and `confirmed` status. It omits Customer ID/phone, AppointmentHistory, capacity, lock data and internal Appointment ID. No public lookup identifier is required by V1.
 
 ## 7. Duplicate Submission and Idempotency
 
-51. Frontend must disable submit while pending, but this is not sufficient on its own.
-52. Recommended server strategy: require an opaque `Idempotency-Key` per booking intent and bind it to a normalized request fingerprint excluding raw phone from logs/keys.
-53. Use the existing database cache store and cache table for a short 15-minute idempotency record plus a database-backed cache lock; add no package, table or column.
-54. A repeated key with the same fingerprint replays the safe stored response. A repeated key with a different fingerprint returns safe HTTP `422`.
-55. If the first request committed but its response was lost before cache storage, the authoritative Appointment conflict remains the safety fallback; the API must not create a second booking.
-56. Idempotency persistence required: no new schema; it uses existing Laravel database cache infrastructure. Development must verify cache atomicity and failure handling.
+47. Frontend must disable submit while pending, but this is not sufficient on its own.
+48. The public booking POST requires `Idempotency-Key: <UUID>`; the frontend generates it with `crypto.randomUUID()`.
+49. The server validates UUID format and computes a fingerprint from canonical sorted serialization of `service_id`, `professional_id`, `starts_at`, normalized phone and normalized/trimmed name, hashed with SHA-256. Raw JSON key order and unsanitized values are not fingerprinted.
+50. Use the existing database cache store and `cache_locks` table for a 15-minute idempotency record plus a database-backed cache lock; add no package, table or column.
+51. Internal cache/lock keys use `HMAC-SHA256(config('app.key'), Idempotency-Key)`; raw keys are not logged unnecessarily.
+52. A repeated key with the same fingerprint replays the stored successful response without Customer resolution or another `CreateAppointment` call.
+53. A repeated key with a different fingerprint returns HTTP `409` with `idempotency_key_conflict`, without exposing stored payload details.
+54. Concurrent same-key requests wait up to 2 seconds for the database cache lock; the loser replays the stored result when available, or returns safe `409 idempotency_request_in_progress` without booking orchestration.
+55. Only successful committed responses are cached. Validation, `appointment_unavailable`, rate-limit and unexpected failures are not cached as successes; an uncommitted request may retry with the same key.
+56. If the first request committed but its response was lost before cache storage, the authoritative Appointment conflict remains the safety fallback; the API must not create a second booking.
 57. Two legitimate requests with the same Customer/Service/Professional/time are still governed by SPEC-004 overlap/capacity authority and are not silently merged.
 
 ## 8. Anonymous Session, CSRF and Auth Separation
@@ -165,45 +175,48 @@ Recommended success data contains only a safe confirmation message, Service name
 
 ## 9. Rate Limits and Abuse
 
-Use existing Laravel `RateLimiter` and database cache facilities; values below are recommended Development defaults to validate, not new business rules:
+Use existing Laravel `RateLimiter` and database cache facilities; values below are the final V1 technical policy:
 
 63. Catalog/context reads: 120 requests per minute per IP.
 64. Professional lookup: 60 requests per minute per IP.
 65. Availability: 30 requests per minute per IP, additionally bounded to one date and one Service/Professional pair per request.
-66. Booking submission: 5 requests per minute per IP and 3 per hour by a non-reversible hash of normalized phone; never use raw phone as a key or log field.
-67. Rate-limit key policy combines IP and, where available, an anonymous session; phone-derived keys are hashed and access-controlled.
+66. Booking submission: 5 requests per minute per IP and 3 per hour by `HMAC-SHA256(config('app.key'), phone_normalized)`; never use raw phone or plain unsalted hashes as keys or log fields.
+67. Rate-limit key policy combines IP and, where available, an anonymous session; phone-derived keys use the server application key and are access-controlled.
 68. Controls address availability scraping, booking spam, high-frequency requests, identity probing, many phones from one IP and the same phone across many IPs without revealing identity matches.
 69. CAPTCHA is not required for V1. Start with rate limiting, server validation and operational monitoring; add a provider only after abuse evidence and separate approval.
 70. Monitor conceptually 429 volume, booking conflicts, validation failures and unexpected 5xx responses using existing Laravel logging/CI facilities.
 
 ## 10. Error Contract
 
-71. `422`: malformed request, missing name/phone, invalid phone format, invalid timestamp or idempotency-key fingerprint mismatch.
+71. `422`: malformed request, missing name/phone, invalid phone format or invalid UUID Idempotency-Key.
 72. `409 appointment_unavailable`: stale/unavailable slot, inactive or incompatible booking resources, schedule/TimeOff/capacity conflict, or an unknown resource handled generically to avoid enumeration.
-73. `429`: rate limit exceeded with retry guidance that discloses no identity information.
-74. `500`: generic safe public message only; no SQLSTATE, QueryException, table, lock, stack, class or filesystem path.
-75. Public booking does not normally return `401`; anonymous access is intended. Authentication errors apply only if a future session boundary explicitly requires it.
-76. Unknown/inactive Service or Professional should use the same safe unavailable policy rather than distinguish resource existence publicly.
-77. Customer name/phone validation may identify errors in the visitor's own submitted fields but must never reveal database matching.
-78. No public error returns Customer ID, Appointment ID, History, capacity, schedule rows or internal conflict details.
+73. `409 idempotency_key_conflict`: same key reused with a different canonical fingerprint.
+74. `409 idempotency_request_in_progress`: bounded same-key lock wait expires without a stored result.
+75. `429`: rate limit exceeded with retry guidance that discloses no identity information.
+76. `500`: generic safe public message only; no SQLSTATE, QueryException, table, lock, stack, class or filesystem path.
+77. Public booking does not normally return `401`; anonymous access is intended. Authentication errors apply only if a future session boundary explicitly requires it.
+78. Unknown/inactive Service or Professional should use the same safe unavailable policy rather than distinguish resource existence publicly.
+79. Customer name/phone validation may identify errors in the visitor's own submitted fields but must never reveal database matching.
+80. No public error returns Customer ID, Appointment ID, History, capacity, schedule rows or internal conflict details.
 
 ## 11. Frontend Discovery
 
-79. Recommended public route is `/reservar` within the existing public SPA and PublicLayout/design system; no second SPA is needed.
-80. Recommended mobile-first sequence: Service -> specific Professional -> date/time -> name/phone -> review -> submit -> on-screen success.
-81. Changing Service resets Professional, selected slot and dependent pricing/duration state.
-82. Changing Professional resets selected slot and availability state.
-83. Changing date refetches availability for the selected Service/Professional/date.
-84. Availability is fetched on Service, Professional and date changes and manually retried after `409`; no polling is required.
-85. Stale availability responses are protected with request versioning or AbortController; the older response cannot overwrite newer selections.
-86. A `409` preserves safe Service/Professional/contact context, refreshes availability and requires a new explicit slot choice; it never fakes success.
-87. A `429` shows a safe retry-later message without exposing rate-limit keys.
-88. Pricing UX is text-based: exact formatted amount for `fixed`, `Desde $X` for `starting_from`, `Precio variable` for `variable`; no payment CTA.
-89. Time UX uses 24-hour business-local display, with server-provided UTC instants and local display values.
-90. Native Vue state/composables are recommended; Pinia/Vuex are unnecessary for the bounded flow.
-91. The existing native fetch wrapper is recommended; Axios is not needed.
-92. Forms, loading, validation, conflict, unavailable, success and abuse states must be keyboard and screen-reader accessible.
-93. Mobile behavior must support small/large phones, tablet and desktop without horizontal overflow or a scheduler grid.
+81. The existing public application is a single Vue SPA served by the root web route; it currently has a technical public root and no separate public booking shell. The final booking route is `/reservar`, reusing existing design primitives; no second SPA is needed.
+82. Final mobile-first sequence: Service -> specific Professional -> date/time -> name/phone -> review -> submit -> on-screen success.
+83. Changing Service resets Professional, selected slot and dependent pricing/duration state.
+84. Changing Professional resets selected slot and availability state.
+85. Changing date refetches availability for the selected Service/Professional/date.
+86. Availability is fetched on Service, Professional and date changes and manually retried after `409`; no polling is required.
+87. Stale availability responses are protected with request versioning or AbortController; the older response cannot overwrite newer selections.
+88. A `409` preserves safe Service/Professional/contact context, refreshes availability and requires a new explicit slot choice; it never fakes success.
+89. A `429` shows a safe retry-later message without exposing rate-limit keys.
+90. The frontend reuses the same Idempotency-Key for an uncertain retry with an unchanged fingerprint and generates a new key whenever Service, Professional, start time, name or phone changes.
+91. Pricing UX is text-based: exact formatted amount for `fixed`, `Desde $X` for `starting_from`, `Precio variable` for `variable`; no payment CTA.
+92. Time UX uses 24-hour business-local display, with server-provided UTC instants and local display values.
+93. Native Vue state/composables are recommended; Pinia/Vuex are unnecessary for the bounded flow.
+94. The existing native fetch wrapper is recommended; Axios is not needed.
+95. Forms, loading, validation, conflict, unavailable, success and abuse states must be keyboard and screen-reader accessible.
+96. Mobile behavior must support small/large phones, tablet and desktop without horizontal overflow or a scheduler grid.
 
 ## 12. Projection and Authority Matrices
 
@@ -236,7 +249,7 @@ Use existing Laravel `RateLimiter` and database cache facilities; values below a
 
 ### Transaction matrix
 
-| Operation | Recommended owner | Notes |
+| Operation | Owner | Notes |
 | --- | --- | --- |
 | Customer reuse | public orchestration transaction | no Customer mutation |
 | Customer creation | same outer transaction | rollback if appointment fails |
@@ -245,24 +258,20 @@ Use existing Laravel `RateLimiter` and database cache facilities; values below a
 
 ## 13. Performance and Schema Analysis
 
-94. Availability requests are bounded to one local day, one Service, one specific Professional and a 90-day horizon.
-95. Candidate generation is capped at 96 15-minute starts before schedule filtering; actual business/schedule intervals reduce this set.
-96. Existing Appointment indexes are `professional_id/status/starts_at/ends_at` and `status/starts_at/ends_at`; no new index is justified at Discovery.
-97. Customer resolution uses existing indexed `phone_normalized`; no uniqueness constraint is proposed.
-98. Active Service/Professional lookups use existing active/category/compatibility relationships; Development should verify query plans against realistic data.
-99. History is not loaded for catalog, Professional or availability responses.
-100. N+1 risk must be avoided in Service/Professional projections and slot validation; benchmark candidate validation before selecting a bulk strategy.
-101. New tables: none required.
-102. New columns: none required.
-103. New indexes: none required.
-104. New constraints: none required.
-105. New migrations: none expected.
-106. Idempotency uses the existing database cache table; it does not require Appointment `source`, `public_id`, `booking_token`, `schedule_version` or price snapshot.
+- Availability requests are bounded to one local day, one Service, one specific Professional and a 90-day horizon.
+- Candidate generation is capped at 96 15-minute starts before schedule filtering; actual business/schedule intervals reduce this set.
+- Existing Appointment indexes are `professional_id/status/starts_at/ends_at` and `status/starts_at/ends_at`; no new index is justified at Discovery.
+- Customer resolution uses existing indexed `phone_normalized`; no uniqueness constraint is proposed.
+- Active Service/Professional lookups use existing active/category/compatibility relationships; Development should verify query plans against realistic data.
+- History is not loaded for catalog, Professional or availability responses.
+- N+1 risk must be avoided in Service/Professional projections and slot validation; benchmark candidate validation before selecting a bulk strategy.
+- New tables, columns, indexes, constraints and migrations: none required.
+- Idempotency uses the existing database cache table; it does not require Appointment `source`, `public_id`, `booking_token`, `schedule_version` or price snapshot.
 
 ## 14. ADR Assessment
 
-107. No new ADR is required at Discovery: the recommendation stays within the modular monolith, existing cache/session facilities and SPEC-004 authority.
-108. A future ADR is required before any durable cross-cutting change to public idempotency persistence, Customer identity semantics, public identifiers or availability architecture.
+- No new ADR is required at Discovery: the recommendation stays within the modular monolith, existing cache/session facilities and SPEC-004 authority.
+- A future ADR is required before any durable cross-cutting change to public idempotency persistence, Customer identity semantics, public identifiers or availability architecture.
 
 ## 15. Development Checkpoint Plan
 
@@ -312,19 +321,19 @@ Development stop policy: no checkpoint starts automatically; each requires separ
 
 ## 16. Test Strategy for Future Development
 
-108. Backend tests: public context/catalog, active filtering, pricing projection, Professional compatibility, bounded availability, past/horizon behavior, DST, capacity, overlap, TimeOff, BusinessHours/Schedule effects, Customer create/reuse, non-enumeration, duplicate submit, successful CreateAppointment, stale-slot 409, deactivation races, rate limits and safe errors.
-109. Focused concurrency tests: only public orchestration risks such as duplicate idempotency keys and Customer create/reuse races; retain and run the complete SPEC-004 concurrency suite without duplicating it.
-110. Frontend tests: complete step flow, Service/Professional/slot reset, pricing labels, name/phone validation, stale requests, review, pending submit, success, 409/429 UX, accessible errors and mobile structure.
-111. Security tests: no Customer/Appointment enumeration, malicious field rejection/ignoring, CSRF/session separation, rate-limit keys, idempotency mismatch and error disclosure.
-112. DST/timezone tests: business-local date conversion, server-provided slot instants, no gap/fold slots, past-time exclusion and BusinessProfile timezone authority.
+- Backend tests: public context/catalog, active filtering, pricing projection, Professional compatibility, bounded availability, past/horizon behavior, DST, capacity, overlap, TimeOff, BusinessHours/Schedule effects, Customer create/reuse, non-enumeration, duplicate submit, successful CreateAppointment, stale-slot 409, deactivation races, rate limits and safe errors.
+- Focused concurrency tests: only public orchestration risks such as duplicate idempotency keys and Customer create/reuse races; retain and run the complete SPEC-004 concurrency suite without duplicating it.
+- Frontend tests: complete step flow, Service/Professional/slot reset, pricing labels, name/phone validation, stale requests, review, pending submit, success, 409/429 UX, accessible errors and mobile structure.
+- Security tests: no Customer/Appointment enumeration, malicious field rejection/ignoring, CSRF/session separation, rate-limit keys, idempotency mismatch and error disclosure.
+- DST/timezone tests: business-local date conversion, server-provided slot instants, no gap/fold slots, past-time exclusion and BusinessProfile timezone authority.
 
 ## 17. Cross-SPEC and Scope Audit
 
-113. Current SPEC-003 changes required: none.
-114. Current SPEC-004 changes required: none.
-115. Current SPEC-005 changes required: none.
-116. Future cross-SPEC review is required only for new statuses, holds, public lookup identifiers, Customer uniqueness/authentication, Appointment source/idempotency persistence or a new availability architecture.
-117. Deferred: Customer accounts/CRUD, public cancel/reschedule/lookup, payments/deposits/checkout, notifications, WhatsApp/email/SMS, auto-assignment, rich calendars, RBAC, actor attribution, retention automation and SPEC-007+.
+- Current SPEC-003 changes required: none.
+- Current SPEC-004 changes required: none.
+- Current SPEC-005 changes required: none.
+- Future cross-SPEC review is required only for new statuses, holds, public lookup identifiers, Customer uniqueness/authentication, Appointment source/idempotency persistence or a new availability architecture.
+- Deferred: Customer accounts/CRUD, public cancel/reschedule/lookup, payments/deposits/checkout, notifications, WhatsApp/email/SMS, auto-assignment, rich calendars, RBAC, actor attribution, retention automation and SPEC-007+.
 
 ## Final State
 
