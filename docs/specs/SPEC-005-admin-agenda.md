@@ -328,7 +328,8 @@ Definition: APPROVED
 Technical Discovery: COMPLETED
 Development: CHECKPOINT A ONLY
 SPEC-004: CLOSED
-Checkpoint A: COMPLETED
-Checkpoint B: NOT AUTHORIZED
+Checkpoint A: COMPLETED / APPROVED
+Checkpoint B: COMPLETED
+Checkpoint C: NOT AUTHORIZED
 SPEC-006+: NOT STARTED
 ```
