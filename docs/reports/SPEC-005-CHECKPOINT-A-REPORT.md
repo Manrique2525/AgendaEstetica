@@ -80,8 +80,9 @@ Added `tests/Feature/Api/AdminAgendaTest.php` covering:
 
 ## Quality Evidence
 
-- Checkpoint A API/foundation tests: 20 tests, 79 assertions, PASS.
-- Full backend: 124 tests, 577 assertions, PASS.
+- Checkpoint A API tests: 14 tests, 42 assertions, PASS.
+- Foundation/C.1 API regressions: 9 tests, 49 assertions, PASS.
+- Full backend: 127 tests, 589 assertions, PASS.
 - Existing SPEC-004 concurrency suite: 17 tests, 212 assertions, PASS, not skipped.
 - Pint: PASS.
 - PHPStan: PASS.
@@ -90,6 +91,25 @@ Added `tests/Feature/Api/AdminAgendaTest.php` covering:
 - ESLint, TypeScript, build and npm audit: PASS.
 - Route audit: only the five read routes were added; no mutation routes.
 - `git diff --check`: PASS.
+
+## EXPLAIN Evidence
+
+Representative MySQL 8.4 plans against the testing schema:
+
+| Query | Type | Chosen key | Key length | Rows | Extra |
+| --- | --- | --- | ---: | ---: | --- |
+| Unfiltered UTC range overlap | `index` | `appointments_status_time_index` | 140 | 10 | `Using where; Using index; Using filesort` |
+| Professional + range overlap | `ref` | `appointments_professional_status_time_index` | 8 | 1 | `Using where; Using index; Using filesort` |
+| Status + range overlap | `range` | `appointments_status_time_index` | 135 | 1 | `Using where; Using index; Using filesort` |
+| Service + range overlap | `ref` | `appointments_service_id_foreign` | 8 | 1 | `Using where; Using filesort` |
+
+The unfiltered query has `appointments_status_time_index` in `possible_keys`, but because its leading `status` column is unconstrained, MySQL uses an index scan rather than a selective range access. This is accepted for the single-business V1 and hard maximum of 31 calendar days; no speculative migration/index was added. Query plans must be rechecked during a future volume/performance review.
+
+## DST and Ordering Evidence
+
+- Spring-forward `America/New_York`, `2026-03-08` to `2026-03-09`: independently resolved UTC range is 23 hours; endpoint includes a boundary-crossing Appointment and excludes the next-day Appointment.
+- Fall-back `America/New_York`, `2026-11-01` to `2026-11-02`: independently resolved UTC range is 25 hours; endpoint includes/excludes the corresponding boundary cases.
+- Same-start ordering test: two Appointments are returned by `starts_at ASC`, then ascending `id`.
 
 ## Scope Audit
 
