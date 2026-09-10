@@ -8,6 +8,7 @@ use App\Models\Customer;
 use App\Models\Professional;
 use App\Models\Service;
 use App\Models\ServiceCategory;
+use App\Models\User;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Cache;
@@ -295,4 +296,19 @@ it('returns a bounded in-progress conflict when the same idempotency lock is hel
         ->assertJsonPath('code', 'idempotency_request_in_progress');
 
     $lock->release();
+});
+
+it('makes a public confirmed booking visible through the existing Admin Agenda read', function (): void {
+    $fixture = publicBookingAppointmentFixture();
+    $admin = User::factory()->create();
+
+    postPublicBooking(publicBookingPayload($fixture), '12121212-1212-4121-8121-121212121212')
+        ->assertCreated();
+
+    $this->actingAs($admin)
+        ->getJson('/api/v1/admin/agenda/appointments?from=2026-01-05&to=2026-01-06')
+        ->assertOk()
+        ->assertJsonPath('data.0.status', 'confirmed')
+        ->assertJsonPath('data.0.service.id', $fixture['service']->id)
+        ->assertJsonPath('data.0.professional.id', $fixture['professional']->id);
 });

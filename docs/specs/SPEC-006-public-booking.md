@@ -12,7 +12,7 @@ Public Booking
 
 `APPROVED FOR DEVELOPMENT / IN PROGRESS`
 
-This Definition and its Technical Discovery describe the public booking consumer identified as roadmap item `06`. Checkpoints A-E are implemented; Checkpoint F and further development require separate approval.
+This Definition and its Technical Discovery describe the public booking consumer identified as roadmap item `06`. Checkpoints A-F are implemented; closure, merge and further development require separate approval.
 
 ## Roadmap Source
 
@@ -387,7 +387,9 @@ Checkpoint A: COMPLETED / APPROVED
 Checkpoint B: COMPLETED / APPROVED
 Checkpoint C: COMPLETED / APPROVED
 Checkpoint D: COMPLETED / APPROVED
-Checkpoint E: COMPLETED / READY FOR HUMAN APPROVAL
-Checkpoint F: NOT AUTHORIZED
+Checkpoint E: COMPLETED / APPROVED
+Checkpoint F: COMPLETED / READY FOR HUMAN APPROVAL
+Closure: NOT AUTHORIZED
+Merge: NOT AUTHORIZED
 SPEC-007+: NOT AUTHORIZED
 ```
