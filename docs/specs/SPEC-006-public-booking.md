@@ -20,11 +20,11 @@ The provisional roadmap places `06. Public booking` immediately after `05. Admin
 
 ## Business Problem
 
-A customer should be able to request or book an appointment through a public experience without authenticating as an internal administrator. The public consumer must make a safe appointment request understandable on a phone while preserving the Appointment Engine as the only authority for availability, duration, status, capacity, history and concurrency.
+A customer should be able to book an appointment through a public experience without authenticating as an internal administrator. The public consumer must make immediate confirmed booking understandable on a phone while preserving the Appointment Engine as the only authority for availability, duration, status, capacity, history and concurrency.
 
 ## Purpose
 
-Define the business capability and boundaries for a focused Public Booking consumer. The eventual consumer may let a visitor select an eligible service and booking interval, provide the minimum customer contact information, submit the request and receive a clear result. It must consume SPEC-003 and SPEC-004 rather than create a second booking or availability engine.
+Define the business capability and boundaries for a focused Public Booking consumer. The consumer lets a guest select an eligible Service, a specific Professional and a valid bookable time, provide required name and phone, submit the booking and receive an on-screen confirmation. It must consume SPEC-003 and SPEC-004 rather than create a second booking or availability engine.
 
 ## Actors
 
@@ -38,9 +38,10 @@ Define the business capability and boundaries for a focused Public Booking consu
 ## Goals
 
 - Let a public visitor understand available Services without exposing internal administration data.
-- Let the visitor select a valid booking option through a future approved public flow.
-- Collect only the minimum Customer identity/contact data required for an appointment.
-- Submit a booking request safely and provide clear success, validation and conflict outcomes.
+- Let a guest select a specific Professional and valid bookable time through the approved public flow.
+- Collect required `name` and `phone` without requiring an account.
+- Create or reuse the minimum Customer record and submit an immediate confirmed booking safely.
+- Provide clear on-screen success, validation and conflict outcomes.
 - Use the authoritative SPEC-004 Appointment Engine for every appointment decision.
 - Make a successfully created appointment visible to the existing Admin Agenda consumer.
 - Preserve BusinessProfile timezone and business-local presentation at the public boundary.
@@ -57,20 +58,22 @@ Define the business capability and boundaries for a focused Public Booking consu
 - Payments, deposits, refunds or financial confirmation.
 - CMS, ecommerce, products, inventory, cart or orders.
 - Rich week/month calendar grids, drag/drop or a calendar library.
-- Automatic Professional assignment unless separately approved.
-- Public customer cancellation, rescheduling or appointment lookup by default.
-- New Appointment states, public IDs, booking holds or persistence changes without cross-SPEC approval.
+- Automatic Professional assignment or any-Professional selection.
+- Public customer cancellation, rescheduling or appointment lookup.
+- New Appointment states, required public IDs, booking holds or persistence changes.
 - SPEC-007 or any later SPEC.
 
 ## In-Scope Business Workflows
 
 - Public booking entry from the public product surface.
 - Active Service/category discovery and selection.
-- Professional choice when the approved business flow requires a specific Professional.
-- Date/time or bookable-option selection using future public availability behavior.
-- Minimum Customer identity/contact capture.
+- Specific Professional selection.
+- Valid bookable date/time selection using future public availability behavior.
+- Required `name` and `phone` capture without Customer authentication.
+- Minimal Customer create or reuse as part of booking.
 - Review and explicit booking submission.
-- On-screen success confirmation with the resulting appointment facts that are safe to disclose.
+- Immediate confirmed Appointment creation through `CreateAppointment`.
+- On-screen success confirmation with safe Service, Professional and date/time facts.
 - Safe validation, unavailable, stale-state, abuse and unexpected-failure presentation.
 - Downstream visibility of the created appointment in Admin Agenda.
 
@@ -79,7 +82,7 @@ These are business workflows, not authorization for routes, controllers, Vue com
 ## Out-of-Scope Workflows
 
 - Administrative Appointment operations already owned by SPEC-005.
-- Public cancellation, public rescheduling and public appointment lookup unless a later decision adds them.
+- Public cancellation, public rescheduling and public appointment lookup.
 - Customer profile management or account lifecycle.
 - Professional management or automatic assignment.
 - Schedule, TimeOff and BusinessHours administration.
@@ -89,9 +92,9 @@ These are business workflows, not authorization for routes, controllers, Vue com
 
 ### SPEC-003 dependencies
 
-SPEC-006 may consume active ServiceCategory, Service, Professional, ProfessionalService, BusinessProfile and business configuration, plus Customer identity. SPEC-003 remains authoritative for those concepts, validation, lifecycle and privacy boundaries. Customer data is not a public directory and Core fields are not automatically public-readable or publicly writable.
+SPEC-006 may consume active ServiceCategory, Service, Professional, ProfessionalService, BusinessProfile and business configuration, plus Customer identity. SPEC-003 remains authoritative for those concepts, validation, lifecycle and privacy boundaries. Customer data is not a public directory; SPEC-006 may create or reuse only the minimum Customer identity required by a booking and does not own general Customer CRUD.
 
-Candidate public-readable data is limited to active Service/category presentation, approved duration and pricing presentation, eligible Professional display data, and the business-local date/time context needed for booking. Customer records, normalized phones and internal configuration remain non-public. Public Customer creation/matching is an open Definition decision, not an implementation decision.
+Candidate public-readable data is limited to active Service/category presentation, approved duration and pricing presentation, eligible Professional display data, and the business-local date/time context needed for booking. Customer records, normalized phones and internal configuration remain non-public. Public Customer create/reuse is limited to the booking capability and does not authorize public search or enumeration.
 
 ### SPEC-004 dependencies
 
@@ -124,30 +127,25 @@ The frontend must never become availability authority or decide whether an appoi
 
 ## Customer Identity Boundary
 
-The likely V1 direction is guest booking without Customer authentication. The visitor must provide the minimum operational identity/contact data, currently expected to be `name` and `phone`; no address, birth date, gender, email, notes or marketing profile is invented here.
+V1 is guest booking without Customer authentication. The visitor must provide both required fields `name` and `phone`; address, birth date, gender, email, notes and marketing profile are not part of V1.
 
-The following remain decisions for Technical Discovery and human approval:
+The booking capability may reuse an existing Customer or create a minimal Customer when no existing record is available. Technical Discovery must determine server-side matching, normalization flow, duplicate handling and transaction behavior while preserving the existing `phone_normalized` indexed-but-not-unique contract. Public Customer search, enumeration and general Customer CRUD remain out of scope.
 
-- Whether the public flow always creates a Customer or can recognize an existing one.
-- How matching and duplicate Customers work while `phone_normalized` remains indexed but non-unique.
-- Whether a public visitor may create a Customer record directly through the booking boundary.
-- What consent/contact metadata, if any, is needed for future notifications.
-
-Customer authentication remains out of V1 unless explicitly approved.
+Customer authentication is out of V1; any future account flow requires a separate approved scope.
 
 ## Availability and Professional Selection
 
-The public user needs a clear way to select a valid bookable time before submission; whether this is a slot list or another representation is a business requirement to confirm and a Technical Discovery topic. No slot algorithm is defined here.
+The public user must select a valid bookable time before submission. Bookable-time/slot selection is in scope as a business capability; the representation and derivation algorithm remain Technical Discovery topics. A displayed available time is not a reservation guarantee and may become unavailable before final submit.
 
-The current Appointment Engine evaluates a specific Professional. V1 should prefer a specific Professional selection unless the business explicitly chooses `cualquiera disponible`. Any-compatible selection, ranking or automatic assignment is a cross-SPEC decision because it may require new orchestration beyond the current Action contract.
+The visitor must select a specific Professional. The flow does not offer `cualquiera disponible`, server-selected Professionals, ranking, round robin or automatic assignment. Final Service/Professional compatibility remains backend/domain-authoritative.
 
 Service duration is displayed as information only. The visitor cannot provide or override `duration_minutes`.
 
 ## Appointment Status and Lifecycle
 
-No new status is proposed by this Definition. The current CreateAppointment behavior produces `confirmed`; whether public submission should immediately create a confirmed Appointment or first represent a request requiring administrative approval is an explicit Business open question.
+New Appointment status required: `NO`. Successful Public Booking immediately invokes `CreateAppointment` and creates a `confirmed` Appointment.
 
-If approval is required, introducing `pending`, `requested`, `approved` or `rejected` would affect the closed SPEC-004 lifecycle and is a `CROSS-SPEC DECISION REQUIRING HUMAN APPROVAL`. SPEC-006 must not invent or persist such a status.
+V1 has no approval queue or intermediate booking-request state. Introducing `pending`, `requested`, `approved`, `rejected` or equivalent later would affect the closed SPEC-004 lifecycle and require separate human authorization and cross-SPEC design.
 
 The inherited lifecycle and history authority remains SPEC-004. Public Booking must not expose AppointmentHistory or allow public status mutation.
 
@@ -165,13 +163,13 @@ The public boundary must not expose Customer lists, Customer phones, `phone_norm
 
 ## Public Self-Service Boundary
 
-Public cancellation, rescheduling and appointment lookup are not included in V1 by default. Exposing those capabilities would require a separate public authorization/identifier decision and must not reuse authenticated Admin Agenda mutation endpoints. No public ID or token strategy is chosen here.
+Public cancellation, rescheduling and appointment lookup are out of V1. The public boundary must not reuse authenticated Admin Agenda mutation endpoints, and no public booking-management identifier or token is required by this Definition.
 
 ## Pricing, Payments and Notifications
 
-Public Booking may present approved Service pricing semantics if the public product requires it, without inventing prices or turning booking into checkout. Payments and deposits remain deferred.
+Public Booking may present existing approved Service pricing semantics without inventing prices or turning booking into checkout. Payments and deposits are out of scope.
 
-The minimum success experience is on-screen. WhatsApp, email, SMS, reminders and notification jobs remain outside SPEC-006 unless the roadmap or a later approved scope explicitly assigns them.
+The required success experience is on-screen only. WhatsApp, email, SMS, reminders and notification jobs are out of scope.
 
 ## Security and Abuse Goals
 
@@ -204,7 +202,7 @@ The visitor can inspect and select an active Service through a bounded public pr
 
 ### FR-03 Professional selection
 
-The flow supports the approved Professional-selection behavior, without implying automatic assignment.
+The visitor selects one specific Professional; the flow does not offer any-Professional or server-selected assignment.
 
 ### FR-04 Bookable time selection
 
@@ -212,15 +210,15 @@ The visitor can select a time that the approved public booking flow presents as 
 
 ### FR-05 Customer contact
 
-The flow collects the minimum approved Customer identity/contact fields and does not require an account by default.
+The flow requires `name` and `phone` and does not require a Customer account.
 
 ### FR-06 Explicit submission
 
-The visitor explicitly reviews and submits the booking request.
+The visitor explicitly reviews and submits the booking.
 
 ### FR-07 Authoritative appointment creation
 
-A valid submission is processed through the authoritative SPEC-004 operation and never through direct persistence.
+A valid submission resolves or creates the minimal Customer and immediately invokes `CreateAppointment`, producing a confirmed Appointment without direct persistence.
 
 ### FR-08 Duration integrity
 
@@ -232,7 +230,7 @@ The flow presents success, validation, unavailability, stale-state, abuse and un
 
 ### FR-10 Admin integration
 
-A successfully created Appointment is available to the existing Admin Agenda read consumer.
+A successfully created confirmed Appointment is available to the existing Admin Agenda read consumer.
 
 ### FR-11 Timezone correctness
 
@@ -275,38 +273,30 @@ The flow remains usable on mobile, tablet and desktop without requiring a separa
 3. The Definition preserves SPEC-003 authority for Core entities and does not introduce Customer or Professional authentication.
 4. The Definition preserves SPEC-004 authority for availability, duration, status, history, capacity, timezone/DST, locking and concurrency.
 5. The Definition identifies the Admin Agenda as the downstream consumer without expanding its scope.
-6. The Definition states the likely guest-booking direction and leaves Customer matching/creation decisions explicit.
-7. The Definition identifies public time selection as a business requirement without specifying a slot algorithm.
-8. The Definition does not invent a new Appointment status or silently alter the closed lifecycle.
-9. The Definition defines public data minimization and prevents Customer/Appointment enumeration as a requirement.
-10. The Definition keeps public cancellation, rescheduling and lookup out of V1 unless separately approved.
-11. The Definition keeps payments, deposits, notifications, CMS, ecommerce and later modules deferred.
-12. The Definition identifies security, abuse, rate-limit and duplicate-submission requirements without selecting implementation mechanisms.
-13. The Definition includes mobile and accessibility goals.
-14. Functional and non-functional requirements are business-observable, testable and implementation-independent.
-15. Technical Discovery topics needed to resolve public API, availability, identity, security, UX, privacy, performance and testing are listed.
-16. No routes, controllers, Actions, models, migrations, Vue implementation, tests or dependencies are introduced by this Definition.
-17. No production data, prices, people, photos, testimonials or policies are invented.
+6. The Definition freezes guest booking, required name/phone and Customer create/reuse without Customer authentication.
+7. The Definition requires a specific Professional and excludes any-Professional selection and auto-assignment.
+8. The Definition requires bookable-time selection without specifying the slot algorithm.
+9. The Definition freezes immediate `confirmed` creation through `CreateAppointment` and introduces no new Appointment status.
+10. The Definition preserves SPEC-004 lifecycle authority and requires no lifecycle change to SPEC-004.
+11. The Definition defines public data minimization and prevents Customer/Appointment enumeration.
+12. The Definition excludes public cancellation, rescheduling and appointment lookup from V1.
+13. The Definition keeps payments, deposits and outbound notifications out of V1 and requires on-screen confirmation.
+14. The Definition identifies security, abuse, rate-limit and duplicate-submission requirements without selecting mechanisms.
+15. Functional and non-functional requirements are business-observable, testable and implementation-independent, including mobile/accessibility goals.
+16. Technical Discovery topics needed to resolve public API, availability, Customer resolution, security, UX, privacy, performance and testing are listed.
+17. No routes, controllers, Actions, models, migrations, Vue implementation, tests or dependencies are introduced by this Definition.
 18. SPEC-006 remains `DEFINITION COMPLETED / AWAITING HUMAN APPROVAL`; Technical Discovery and Development are not started.
 
 ## Open Questions
 
 ### Business
 
-- Is V1 strictly guest booking without Customer login?
-- Does public submission create `confirmed` immediately or require administrative approval?
-- Can a visitor select a specific Professional only, or is `cualquiera disponible` required?
-- Are public cancellation, rescheduling or appointment lookup needed in V1?
-- Which Customer fields are mandatory, and is phone the primary operational contact?
-- Should public booking create a Customer, match an existing Customer, or use another identity boundary?
-- Is public Service pricing presentation required, and are deposits explicitly deferred?
-- Is on-screen confirmation sufficient without notifications?
+- Should public Service pricing always be shown during booking?
 
 ### Architecture
 
 - What public API/read boundary is needed for Services, Professionals and bookable times?
 - Does public availability require a new consumer query over SPEC-004 or an approved Action extension?
-- What public identifier or capability token is needed, if any, without exposing internal Appointment IDs?
 - What Customer matching/creation strategy preserves the non-unique normalized phone contract?
 - What duplicate-submit/idempotency strategy is appropriate without prematurely modifying SPEC-004 persistence?
 - What public session/CSRF boundary applies to anonymous same-origin booking?
@@ -314,7 +304,7 @@ The flow remains usable on mobile, tablet and desktop without requiring a separa
 ### UX
 
 - What are the exact booking steps and review contents?
-- How should Professional selection and “any available” be presented if approved?
+- How should specific Professional selection be presented?
 - How should business-local date/time and unavailable outcomes be communicated?
 - What safe appointment facts belong on success?
 - Is the booking entry part of the future public site or a focused route within it?
@@ -324,20 +314,19 @@ The flow remains usable on mobile, tablet and desktop without requiring a separa
 - Which controls prevent Customer and Appointment enumeration?
 - What rate-limit and abuse policy is needed for availability and submit requests?
 - What PII may appear in success and error responses?
-- Is any public access token required for future self-service?
 - What operational monitoring is needed without introducing external providers?
 
-## Cross-SPEC Decisions Requiring Human Approval
+## Future Cross-SPEC Changes Requiring Human Approval
 
 The following must not be resolved silently in SPEC-006:
 
 - Any new `pending`, `requested`, `approved` or `rejected` Appointment status.
 - Any change to SPEC-004 lifecycle, history, duration or concurrency contracts.
-- Any public Appointment ID, lookup token or self-service capability token.
-- Any automatic Professional assignment or “any available” orchestration.
+- Any future public Appointment ID, lookup token or self-service capability token.
+- Any future automatic Professional assignment or “any available” orchestration.
 - Any booking hold/reservation model.
 - Any idempotency persistence or source field added to the Appointment domain.
-- Any Customer uniqueness, deduplication or authentication change.
+- Any Customer uniqueness, deduplication or authentication change beyond the approved minimal create/reuse capability.
 
 ## Risks
 
@@ -346,8 +335,6 @@ The following must not be resolved silently in SPEC-006:
 - Availability reads may be scraped or abused.
 - Public responses may leak Customer or Appointment information if projections are not minimized.
 - Timezone/DST behavior may confuse visitors if business-local presentation is inconsistent.
-- Approval requirements could conflict with SPEC-004's current immediate `confirmed` creation behavior.
-- “Any Professional” could require new domain orchestration and alter the current specific-Professional contract.
 
 ## Technical Discovery Requirements
 
@@ -358,8 +345,7 @@ Future Discovery must investigate, without assuming a solution:
 - Availability/time-selection architecture using SPEC-004 authority.
 - Customer matching, creation, privacy and duplicate behavior.
 - CreateAppointment integration and public transport validation.
-- Confirmed-versus-approval business decision and cross-SPEC impact.
-- Public identifiers and any future self-service authorization.
+- Safe success response without requiring a public lookup identifier.
 - Anonymous session, CSRF, rate limits, abuse controls and enumeration protection.
 - Duplicate-submission/idempotency behavior and persistence impact.
 - Business timezone, UTC transport and DST presentation.
