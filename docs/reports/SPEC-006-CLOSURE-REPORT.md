@@ -2,9 +2,10 @@
 
 ## Closure Status
 
-- SPEC-006: `CLOSED / READY FOR MERGE`.
+- SPEC-006: `CLOSED / MERGED`.
 - Human acceptance: `APPROVED` for Definition, Checkpoints A-F and formal closure.
-- Merge to `main`: `NOT AUTHORIZED`.
+- Merge to `main`: `COMPLETED / APPROVED`.
+- Merge commit: `c37e5baa79cb7cf4aca918fb80cd5ecacb8e60b4`.
 - Branch deletion: `NOT AUTHORIZED / NOT PERFORMED`.
 - SPEC-007: `NOT AUTHORIZED`.
 
@@ -148,13 +149,13 @@ SPEC-003, SPEC-004, SPEC-005 and ADR-003 remain unchanged.
 - `main`: unchanged.
 - `origin/main`: unchanged.
 - Branch deletion: not performed.
-- Merge: not performed.
-- Feature branch remains ready for separately authorized merge.
+- Merge: completed with `--no-ff`.
+- Feature branch remains preserved at `62a6435f6cba38c6b2b5e4a0f949378705ff0ec0`.
 
 ## Final State
 
 ```text
-SPEC-006: CLOSED / READY FOR MERGE
+SPEC-006: CLOSED / MERGED
 Definition: COMPLETED / APPROVED
 Technical Discovery: COMPLETED / APPROVED
 Checkpoint A: COMPLETED / APPROVED
@@ -164,7 +165,8 @@ Checkpoint D: COMPLETED / APPROVED
 Checkpoint E: COMPLETED / APPROVED
 Checkpoint F: COMPLETED / APPROVED
 Closure: COMPLETED / APPROVED
-Merge: NOT AUTHORIZED
+Merge: COMPLETED / APPROVED
+Merge commit: c37e5baa79cb7cf4aca918fb80cd5ecacb8e60b4
 SPEC-007: NOT AUTHORIZED
 ```
 
@@ -178,8 +180,8 @@ Final implementation acceptance: 34 / 34 PASS
 Blocking defects: NONE
 Scope leakage: NONE
 Closed-SPEC changes: NONE
-Merge readiness: READY FOR MERGE
-Merge authorization: NOT AUTHORIZED
+Merge readiness: MERGED
+Merge authorization: COMPLETED / APPROVED
 ```
 
-STOP. Submit closure evidence for review and wait for explicit merge authorization.
+STOP. Preserve the feature branch; do not delete it or start SPEC-007 without separate authorization.

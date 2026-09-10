@@ -10,9 +10,9 @@ Public Booking
 
 ## Status
 
-`CLOSED / READY FOR MERGE`
+`CLOSED / MERGED`
 
-This Definition and its Technical Discovery describe the public booking consumer identified as roadmap item `06`. Checkpoints A-F and formal closure are complete. Merge remains separately unauthorized.
+This Definition and its Technical Discovery describe the public booking consumer identified as roadmap item `06`. Checkpoints A-F and formal closure are complete, and the feature was merged into `main` with `--no-ff`. No further implementation or SPEC-007 work is authorized by this document.
 
 ## Roadmap Source
 
@@ -377,7 +377,7 @@ Technical Discovery is documented in `docs/reports/SPEC-006-DISCOVERY-REPORT.md`
 ## Definition State
 
 ```text
-SPEC-006: CLOSED / READY FOR MERGE
+SPEC-006: CLOSED / MERGED
 Canonical name: Public Booking
 Roadmap item: 06
 Definition: COMPLETED / APPROVED
@@ -390,6 +390,7 @@ Checkpoint D: COMPLETED / APPROVED
 Checkpoint E: COMPLETED / APPROVED
 Checkpoint F: COMPLETED / APPROVED
 Closure: COMPLETED / APPROVED
-Merge: NOT AUTHORIZED
+Merge: COMPLETED / APPROVED
+Merge commit: c37e5baa79cb7cf4aca918fb80cd5ecacb8e60b4
 SPEC-007+: NOT AUTHORIZED
 ```
