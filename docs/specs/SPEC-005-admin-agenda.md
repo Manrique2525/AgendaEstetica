@@ -10,9 +10,9 @@ Admin Agenda
 
 ## Status
 
-`APPROVED FOR DEVELOPMENT / IN PROGRESS`
+`IMPLEMENTATION COMPLETED / AWAITING FINAL HUMAN ACCEPTANCE`
 
-This document defines the approved Admin Agenda consumer from roadmap item 05. Technical Discovery is complete and Checkpoints A-D are implemented; later checkpoints require separate approval.
+This document defines the approved Admin Agenda consumer from roadmap item 05. Technical Discovery is complete and Checkpoints A-E are implemented; formal Closure and merge require separate approval.
 
 ## Roadmap Source
 
@@ -326,12 +326,14 @@ If human approval is granted, a separate Technical Discovery must investigate:
 SPEC-005: APPROVED FOR DEVELOPMENT / IN PROGRESS
 Definition: APPROVED
 Technical Discovery: COMPLETED
-Development: CHECKPOINTS A-D
+Development: CHECKPOINTS A-E
 SPEC-004: CLOSED
 Checkpoint A: COMPLETED / APPROVED
 Checkpoint B: COMPLETED
 Checkpoint C: COMPLETED
-Checkpoint D: COMPLETED / READY FOR HUMAN APPROVAL
-Checkpoint E: NOT AUTHORIZED
+Checkpoint D: COMPLETED / APPROVED
+Checkpoint E: COMPLETED / READY FOR HUMAN APPROVAL
+Closure: NOT AUTHORIZED
+Merge: NOT AUTHORIZED
 SPEC-006+: NOT STARTED
 ```

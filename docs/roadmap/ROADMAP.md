@@ -38,6 +38,6 @@ Cada etapa requiere SPEC, discovery, plan aprobado, implementación, pruebas, au
 
 `SPEC-004 - Appointment Engine` está en estado `CLOSED` en `docs/specs/SPEC-004-appointment-engine.md`. Checkpoints A-F están completados y aceptados; merge a main y SPEC-005 no están autorizados.
 
-`SPEC-005 - Admin Agenda` está en estado `APPROVED FOR DEVELOPMENT / IN PROGRESS` en `docs/specs/SPEC-005-admin-agenda.md`. Checkpoints A-D están completados; Checkpoint D queda listo para aprobación humana y Checkpoint E no está autorizado.
+`SPEC-005 - Admin Agenda` está en estado `IMPLEMENTATION COMPLETED / AWAITING FINAL HUMAN ACCEPTANCE` en `docs/specs/SPEC-005-admin-agenda.md`. Checkpoints A-E están completados; queda pendiente la aceptación humana final. Closure, merge y SPEC-006 no están autorizados.
 
 Target de Foundation: Laravel 13, PHP 8.3+, MySQL 8.4 LTS, Vue 3, TypeScript, Vite, Tailwind CSS, Sanctum y Pest.
