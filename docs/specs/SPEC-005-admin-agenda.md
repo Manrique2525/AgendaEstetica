@@ -1,0 +1,338 @@
+# SPEC-005 - Admin Agenda
+
+## SPEC ID
+
+`SPEC-005`
+
+## Title
+
+Admin Agenda
+
+## Status
+
+`DEFINITION COMPLETED / AWAITING HUMAN APPROVAL`
+
+This document defines the proposed Admin Agenda consumer from the approved roadmap item 05. Technical Discovery, development authorization and implementation are not started.
+
+## Roadmap Source
+
+The approved provisional roadmap identifies item `05. Admin agenda` immediately after `04. Appointment engine` and before Public Booking, Notification Engine, CMS and ecommerce. SPEC-004 is closed and provides the authoritative Appointment Engine consumed by this SPEC.
+
+## Purpose
+
+Provide an internal administrative surface for Yaris to understand and operate the salon agenda using the already-approved Core and Appointment Engine contracts.
+
+The Admin Agenda is a consumer of backend/domain capabilities. It must not become a second availability engine, a second appointment state machine or a replacement for SPEC-004 Actions.
+
+## Business Problem
+
+After the Appointment Engine is available, the administrator needs a controlled operational view of appointments and resource availability. Without an Admin Agenda consumer, appointment records and lifecycle operations remain technically available but are not organized into an internal workflow for daily salon operation.
+
+## Actors
+
+### Primary administrator
+
+Yaris, authenticated through the existing administrative Sanctum session, can view agenda information and perform explicitly approved administrative operations.
+
+### Future administrators
+
+Future additional administrator accounts remain subject to a separate authorization/permission decision. This Definition does not create roles or permissions.
+
+### Professionals
+
+Professionals remain operational resources, not authenticated users. This SPEC does not create Professional login or a Professional portal.
+
+### Customers
+
+Customers remain business identities without application accounts. Customer information is displayed only where required for an authenticated administrative operation and must follow data minimization.
+
+## Goals
+
+- Give the administrator a reliable agenda view backed by persisted Appointments.
+- Make appointment status, time, Service, Customer and Professional context understandable.
+- Expose only availability and lifecycle decisions authorized by SPEC-004.
+- Preserve AppointmentHistory for every mutation.
+- Keep backend validation and concurrency authoritative.
+- Make schedule and TimeOff context understandable without duplicating their rules.
+- Provide safe loading, empty, validation, conflict and authorization states.
+
+## Non-Goals
+
+- Public Booking.
+- Customer self-service or customer accounts.
+- Professional accounts or a Professional portal.
+- A second availability, capacity or status engine.
+- Candidate-slot generation as a new domain concept.
+- Automatic Professional selection or ranking.
+- Notifications, WhatsApp, email or reminders.
+- Deposits, payments, refunds or financial workflows.
+- BusinessSpecialHours, holiday calendars or buffers.
+- CMS, ecommerce, inventory, checkout or orders.
+- Production business data or invented catalog data.
+- SPEC-006 or any later SPEC.
+
+## Proposed Scope
+
+This scope is `PROPOSED / REQUIRES HUMAN APPROVAL`. It is based only on the roadmap and the closed SPEC-003/SPEC-004 contracts.
+
+### Agenda view
+
+- Show persisted appointments in an administrative day/week-oriented view.
+- Represent the selected date or date range using the business timezone at the consumer boundary.
+- Distinguish `confirmed`, `cancelled`, `completed` and `no_show` appointments.
+- Make Professional assignment and temporal boundaries visible.
+- Show empty and unavailable states without inventing appointments or availability.
+
+### Agenda filtering and navigation
+
+- Navigate approved date ranges.
+- Filter by Professional.
+- Filter by approved Appointment status.
+- Filter by Service or ServiceCategory when useful for the approved consumer workflow.
+- Search or identify a Customer only within the authenticated administrative boundary and only when a concrete UX decision justifies it.
+- Preserve server authority for all filter semantics and resource visibility.
+
+### Appointment detail
+
+- Show Customer, Service, Professional, UTC-backed temporal values rendered in the business timezone and duration snapshot.
+- Show focused AppointmentHistory events in chronological order.
+- Show the distinction between current Service data and the historical Appointment duration.
+- Do not present deferred price, notes, source, public ID or unsupported status data.
+
+### Appointment operations
+
+The consumer may expose only approved operations whose UX and authorization are confirmed during Discovery:
+
+- Create a confirmed Appointment through `CreateAppointment`.
+- Reschedule through `RescheduleAppointment`.
+- Cancel through `CancelAppointment`.
+- Complete through `CompleteAppointment`.
+- Mark no-show through `MarkAppointmentNoShow`.
+
+The consumer must never write Appointment or AppointmentHistory directly. Availability, status, duration, capacity, locking and history remain delegated to SPEC-004.
+
+### Resource context
+
+- Present ProfessionalSchedule, ProfessionalTimeOff and BusinessHours context where it helps explain an unavailable interval.
+- Treat the Appointment Engine as authoritative for availability outcomes.
+- Do not expose raw database locking, internal exception details or implementation-specific query state.
+
+## Domain Boundaries
+
+### Owned by SPEC-003
+
+- BusinessProfile and business configuration.
+- BusinessHours.
+- ServiceCategory and Service.
+- Professional and ProfessionalService.
+- Customer identity.
+
+### Owned by SPEC-004
+
+- Appointment and AppointmentHistory persistence.
+- Appointment statuses and transitions.
+- ProfessionalSchedule and ProfessionalTimeOff domain data.
+- Requested-interval availability.
+- Professional overlap and global capacity.
+- Duration snapshot and historical integrity.
+- Transaction boundaries, lock order and concurrency behavior.
+
+### Owned by SPEC-005
+
+- Authenticated administrative agenda presentation.
+- Administrative navigation/filtering/detail workflows.
+- Consumer-level loading, empty, validation, conflict and authorization presentation.
+- Consumer authorization decisions only after an approved permission boundary exists.
+
+### Deferred to later scopes
+
+- Public Booking.
+- Notification Engine.
+- Payments/deposits.
+- CMS, ecommerce and reporting.
+- Professional self-service.
+
+## Dependencies
+
+- SPEC-003 Business Core is closed and authoritative for Core concepts.
+- SPEC-004 Appointment Engine is closed and authoritative for appointment behavior.
+- Existing Foundation admin Sanctum session and same-origin SPA boundary.
+- Existing Vue, TypeScript, Tailwind and Vite frontend foundation.
+- Existing Laravel modular monolith and `/api/v1` conventions.
+- MySQL 8.4 persistence and dedicated testing database.
+
+## Functional Requirements
+
+### FR-01 Authenticated access
+
+The Admin Agenda is available only inside the existing administrative authentication boundary. Unauthenticated access must remain a safe JSON `401` at any future API boundary and must not expose agenda data.
+
+### FR-02 Authoritative appointment reads
+
+Agenda reads must use backend-owned queries/Actions and must not infer appointment state from frontend-only state.
+
+### FR-03 Date and timezone handling
+
+The consumer must define how a business-local date/range is converted to the UTC query boundary. The official business timezone remains business-data dependent and must not be invented.
+
+### FR-04 Appointment presentation
+
+The user must be able to identify the selected date/range, Professional, Service, Customer context, duration snapshot and status for each displayed appointment.
+
+### FR-05 History visibility
+
+Appointment details must expose the focused history needed to understand creation, rescheduling and terminal transitions without creating a generic audit log.
+
+### FR-06 Approved mutations
+
+Any enabled mutation must invoke the corresponding SPEC-004 Action and must preserve its transaction, validation, capacity, locking and history behavior.
+
+### FR-07 Conflict handling
+
+The consumer must present domain unavailability, stale state, validation, authorization and unexpected failure states distinctly enough for an administrator to act safely without receiving internal implementation details.
+
+### FR-08 No direct persistence
+
+Controllers, API Resources and Vue components must not contain appointment business rules or direct Appointment/AppointmentHistory writes.
+
+### FR-09 Resource context
+
+Where schedule or TimeOff context is presented, it must be read from the authoritative backend models and must not become an alternate availability calculation.
+
+### FR-10 Data minimization
+
+Only Customer and operational fields required by an authenticated agenda workflow may be exposed. No public representation is implied.
+
+### FR-11 Responsive operation
+
+The approved consumer must remain usable on mobile, tablet and desktop ranges without requiring a separate mobile product or new UI framework.
+
+### FR-12 Accessibility
+
+The consumer must provide semantic navigation, keyboard operation, visible focus, status announcements where needed, usable error association and reduced-motion behavior consistent with the closed design system.
+
+## Security Boundary
+
+- Existing Sanctum same-origin authentication remains the entry boundary.
+- Authorization must be backend-owned.
+- Any permission/role expansion requires a separate approved decision; this Definition does not add roles.
+- Agenda data must not be exposed through public routes.
+- Errors must not disclose SQL, stack traces, credentials, internal IDs beyond the approved administrative contract or unrelated Customer data.
+- No browser storage token authentication is introduced.
+
+## API/UI Boundary
+
+The Admin Agenda is expected to require an administrative consumer boundary, but exact endpoints, Resources, Form Requests and Vue pages are Technical Discovery decisions. This Definition does not approve endpoint signatures, migration changes, controller structure or component tree.
+
+If a later Discovery confirms an API is needed, it must use `/api/v1/admin/*`, preserve the existing error contract and delegate business behavior to Actions/domain services.
+
+## Data Ownership
+
+- Appointment facts: SPEC-004.
+- Core identity/catalog/resource facts: SPEC-003.
+- Authentication/session: Foundation.
+- Agenda presentation/filter state: SPEC-005 consumer.
+- No duplicated authoritative appointment, capacity, duration or status data is owned by SPEC-005.
+
+## Concurrency and Transactions
+
+Read views may become stale and must communicate that limitation where relevant. Mutations must reuse SPEC-004 Actions and therefore inherit:
+
+- BusinessProfile-first locking.
+- Professional IDs ascending.
+- Appointment locking when applicable.
+- Post-lock current reads and authoritative revalidation.
+- Atomic Appointment/History writes.
+
+SPEC-005 must not introduce a second retry, locking, reservation or capacity abstraction.
+
+## API/UI and Implementation Decisions Deferred to Discovery
+
+- Whether the first consumer needs a dedicated Admin Agenda API or can use an approved existing boundary.
+- Exact date-range query contract and pagination strategy.
+- Exact filters and search behavior.
+- Exact mutation forms and confirmation flows.
+- Authorization granularity if more than one administrator is introduced.
+- Mobile agenda interaction pattern.
+- Calendar visualization versus list/timeline presentation.
+- Loading/cache strategy and invalidation after mutations.
+- Error code mapping for domain conflicts.
+- Query/index needs based on actual usage and EXPLAIN evidence.
+
+## Business Open Questions
+
+- Which agenda views are operationally required first: day, week, list or timeline?
+- Should Yaris manage schedule and TimeOff from Admin Agenda or a later administrative scope?
+- What customer fields are necessary for daily operation?
+- Which lifecycle actions should be available to the administrator and under what policy?
+- Is a cancellation window or no-show operational policy approved?
+- Which official business timezone and working-date rules should the consumer use?
+- Are historical appointment details subject to retention or anonymization rules?
+
+## Architecture Open Questions
+
+- Is an Admin Agenda API required immediately, or can the first consumer use a narrowly approved server boundary?
+- Does the existing Foundation auth model need explicit permission policy for multiple administrators?
+- What query/read model is sufficient without introducing CQRS, repositories or a reporting subsystem?
+- Are additional indexes justified after representative EXPLAIN plans?
+- Does a calendar library provide enough value to justify a new dependency, or is a focused list/timeline sufficient?
+
+## UX Open Questions
+
+- Which agenda density is usable for salon operations?
+- How should overlapping Professionals and global capacity context be communicated?
+- How should reschedule and terminal-action confirmations work?
+- How should stale data/conflict states be presented after another worker changes an appointment?
+- What responsive interaction is required for small phones without inventing a separate mobile workflow?
+
+## Security Open Questions
+
+- Is single-administrator access sufficient for the first Admin Agenda consumer?
+- Which fields are sensitive enough to require additional masking or audit treatment?
+- What rate limits or session policies apply to future administrative agenda endpoints?
+- Is a focused administrative audit beyond AppointmentHistory required, and if so, in which approved scope?
+
+## Acceptance Criteria
+
+1. The Admin Agenda Definition has an approved canonical name and roadmap position.
+2. The Definition clearly distinguishes SPEC-003 ownership, SPEC-004 ownership and SPEC-005 consumer ownership.
+3. The Definition does not introduce API, UI, migration, dependency or production-code implementation.
+4. Appointment reads and mutations are explicitly delegated to the authoritative SPEC-004 boundary.
+5. The Definition does not duplicate availability, capacity, status, duration, locking or history rules.
+6. Actors and authenticated administrative boundaries are documented.
+7. Primary agenda, filtering, detail and mutation workflows are stated as proposed functional scope.
+8. Customer and operational data minimization boundaries are explicit.
+9. Deferred workflows and later modules are explicitly listed.
+10. Security, API/UI, data ownership and concurrency boundaries are documented.
+11. Business, architecture, UX and security open questions are separated.
+12. Technical Discovery topics required to resolve HOW are listed.
+13. No real business data, prices, people, images, policies or testimonials are invented.
+14. The Definition has observable, testable Acceptance Criteria for its eventual implementation.
+15. SPEC-005 remains `DEFINITION COMPLETED / AWAITING HUMAN APPROVAL` and development is not authorized.
+
+## Technical Discovery Requirements
+
+If human approval is granted, a separate Technical Discovery must investigate:
+
+- Current API/SPA consumer conventions and the smallest Admin Agenda boundary.
+- Authenticated authorization requirements.
+- Read query shape, date/timezone boundaries, filters and pagination.
+- Appointment detail/history representation.
+- Mutation form contracts and Action integration.
+- Stale-read/conflict UX and response mapping.
+- Schedule/TimeOff presentation ownership.
+- MySQL indexes and representative EXPLAIN plans.
+- Responsive/accessibility interaction design.
+- Security/privacy review for administrative Customer data.
+- Test strategy for reads, mutations, authorization, conflicts and responsive frontend behavior.
+- Dependency impact if a calendar visualization is proposed.
+
+## Definition State
+
+```text
+SPEC-005: DEFINITION COMPLETED / AWAITING HUMAN APPROVAL
+Technical Discovery: NOT STARTED
+Development: NOT STARTED
+SPEC-004: CLOSED
+SPEC-006+: NOT STARTED
+```
