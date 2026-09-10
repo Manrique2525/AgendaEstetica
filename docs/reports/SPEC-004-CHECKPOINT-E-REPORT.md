@@ -100,7 +100,7 @@ The dedicated suite was also rerun in isolation after one intentionally parallel
 ## Regression Evidence
 
 - Concurrency suite: 17 tests, 212 assertions locally, PASS; remote Quality: 17 passed.
-- Full Pest: 113 tests, 547 assertions locally, PASS; remote Quality: 113 passed (545 assertions in run 34427643414).
+- Full Pest: 113 tests, 547 assertions locally, PASS; remote Quality: 113 passed (547 assertions in run 34427983370).
 - Frontend: 10 files, 24 tests, PASS.
 - Composer, Pint, PHPStan, ESLint, TypeScript, build and audits: PASS.
 - Migration lifecycle on `agenda_estetica_test`: PASS.
