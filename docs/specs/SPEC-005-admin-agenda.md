@@ -323,14 +323,14 @@ If human approval is granted, a separate Technical Discovery must investigate:
 ## Definition State
 
 ```text
-SPEC-005: APPROVED FOR DEVELOPMENT / IN PROGRESS
+SPEC-005: IMPLEMENTATION COMPLETED / AWAITING FINAL HUMAN ACCEPTANCE
 Definition: APPROVED
-Technical Discovery: COMPLETED
+Technical Discovery: APPROVED
 Development: CHECKPOINTS A-E
 SPEC-004: CLOSED
 Checkpoint A: COMPLETED / APPROVED
-Checkpoint B: COMPLETED
-Checkpoint C: COMPLETED
+Checkpoint B: COMPLETED / APPROVED
+Checkpoint C: COMPLETED / APPROVED
 Checkpoint D: COMPLETED / APPROVED
 Checkpoint E: COMPLETED / READY FOR HUMAN APPROVAL
 Closure: NOT AUTHORIZED

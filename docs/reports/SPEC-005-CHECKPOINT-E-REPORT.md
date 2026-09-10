@@ -12,8 +12,8 @@
 8. Local/remote synchronization: verified after final push.
 9. Checkpoint E objective: final acceptance, security, timezone, performance, scope and documentation audit only.
 10. Feature additions during E: no production feature additions; only this audit, current SPEC status and roadmap status.
-11. Accepted-scope defects found: none.
-12. Accepted-scope defects fixed: none.
+11. Accepted-scope defects found: one documentation inconsistency in the current Definition State block.
+12. Accepted-scope defects fixed: the current SPEC state block was aligned with the approved E lifecycle (`0cd1c3f`), with no production-code change.
 13. Remaining blocking defects: none.
 
 ## Acceptance Criteria
@@ -173,13 +173,13 @@
 147. Deferred-scope audit: Customer CRUD, Schedule/TimeOff/BusinessHours CRUD, Public Booking, notifications, WhatsApp, payments, slots, auto-assignment, calendar dependency, week/month grids, RBAC, actor attribution and retention automation remain deferred.
 148. Accepted V1 limitations: existing Customer required for Create; no actor attribution; no retention automation; future volume may require a justified index review.
 149. Remaining risks: only the accepted V1 limitations above; none block final human acceptance.
-150. Documentation consistency: current SPEC and roadmap updated; historical checkpoint reports remain historical evidence.
+150. Documentation consistency: current SPEC and roadmap updated; the stale Definition State values were corrected; historical checkpoint reports remain historical evidence.
 151. Checkpoint-E report path: `docs/reports/SPEC-005-CHECKPOINT-E-REPORT.md`.
 152. Closure report created: NO.
 
 ## Git and Remote Evidence
 
-153. Commits: backend, frontend, tests, D documentation/evidence, and E documentation/status audit commits.
+153. Commits: backend, frontend, tests, D documentation/evidence, E documentation/status audit, and this accepted-scope documentation correction.
 154. Commit hashes: `d4807b8`, `5a85eaf`, `dde4ff8`, `8afa0c9`, `b0b6275`, `9a91796`, `9f04ebf`, plus the final E audit publication commit.
 155. Push result: normal push only; no force push.
 156. Remote Quality workflow: `Quality`.
