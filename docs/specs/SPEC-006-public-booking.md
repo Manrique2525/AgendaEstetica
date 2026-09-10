@@ -167,9 +167,17 @@ Public cancellation, rescheduling and appointment lookup are out of V1. The publ
 
 ## Pricing, Payments and Notifications
 
-Public Booking may present existing approved Service pricing semantics without inventing prices or turning booking into checkout. Payments and deposits are out of scope.
+Public Booking displays Service pricing information according to the authoritative `pricing_type` already defined by SPEC-003:
+
+- `fixed`: exact configured Service price.
+- `starting_from`: `Desde $X`, using the configured Service amount and not implying a guaranteed final price.
+- `variable`: `Precio variable`, without inventing an amount, showing `$0` or presenting an arbitrary minimum.
+
+Pricing is informational only. It creates no payment obligation and does not turn booking into checkout. Payments, deposits and checkout are out of scope.
 
 The required success experience is on-screen only. WhatsApp, email, SMS, reminders and notification jobs are out of scope.
+
+Pricing text must be understandable without relying only on color or styling to distinguish the three pricing types.
 
 ## Security and Abuse Goals
 
@@ -256,6 +264,10 @@ The public booking flow is operable with keyboard and assistive technology, incl
 
 The flow remains usable on mobile, tablet and desktop without requiring a separate product.
 
+### FR-17 Pricing presentation
+
+The public flow presents existing Service pricing information as exact price for `fixed`, `Desde $X` for `starting_from`, and `Precio variable` for `variable`, without inventing amounts. Pricing is informational only and does not add payment or checkout behavior.
+
 ## Non-Functional Requirements
 
 - Backend authority: all eligibility, availability, duration, lifecycle and persistence decisions are server/domain-owned.
@@ -265,6 +277,8 @@ The flow remains usable on mobile, tablet and desktop without requiring a separa
 - Concurrency safety: booking races inherit SPEC-004 transaction and locking behavior; SPEC-006 adds no competing concurrency model.
 - Performance: public reads and availability interactions must be bounded and assessed with representative volume during Discovery.
 - Accessibility and responsive design are acceptance concerns, not implementation-library decisions.
+
+Functional requirement count: `17`.
 
 ## Acceptance Criteria
 
@@ -282,16 +296,18 @@ The flow remains usable on mobile, tablet and desktop without requiring a separa
 12. The Definition excludes public cancellation, rescheduling and appointment lookup from V1.
 13. The Definition keeps payments, deposits and outbound notifications out of V1 and requires on-screen confirmation.
 14. The Definition identifies security, abuse, rate-limit and duplicate-submission requirements without selecting mechanisms.
-15. Functional and non-functional requirements are business-observable, testable and implementation-independent, including mobile/accessibility goals.
-16. Technical Discovery topics needed to resolve public API, availability, Customer resolution, security, UX, privacy, performance and testing are listed.
-17. No routes, controllers, Actions, models, migrations, Vue implementation, tests or dependencies are introduced by this Definition.
-18. SPEC-006 remains `DEFINITION COMPLETED / AWAITING HUMAN APPROVAL`; Technical Discovery and Development are not started.
+15. The Definition freezes public Service pricing presentation: exact configured price for `fixed`, `Desde $X` for `starting_from`, and `Precio variable` without an invented amount for `variable`.
+16. The Definition keeps pricing informational and excludes payment, deposits and checkout.
+17. Functional and non-functional requirements are business-observable, testable and implementation-independent, including mobile/accessibility goals.
+18. Technical Discovery topics needed to resolve public API, availability, Customer resolution, security, UX, privacy, performance and testing are listed.
+19. No routes, controllers, Actions, models, migrations, Vue implementation, tests or dependencies are introduced by this Definition.
+20. SPEC-006 remains `DEFINITION COMPLETED / AWAITING HUMAN APPROVAL`; Technical Discovery and Development are not started.
 
 ## Open Questions
 
 ### Business
 
-- Should public Service pricing always be shown during booking?
+NONE. Public Service pricing visibility and presentation are finalized for V1.
 
 ### Architecture
 
@@ -317,6 +333,8 @@ The flow remains usable on mobile, tablet and desktop without requiring a separa
 - What operational monitoring is needed without introducing external providers?
 
 ## Future Cross-SPEC Changes Requiring Human Approval
+
+Current SPEC-006 V1 cross-SPEC changes required: `NONE`.
 
 The following must not be resolved silently in SPEC-006:
 
