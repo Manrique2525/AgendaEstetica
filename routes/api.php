@@ -21,6 +21,9 @@ Route::prefix('public/booking')->group(function (): void {
     Route::get('/professionals', [PublicBookingController::class, 'professionals'])
         ->middleware('throttle:public-booking-professionals')
         ->name('public.booking.professionals');
+    Route::get('/availability', [PublicBookingController::class, 'availability'])
+        ->middleware('throttle:public-booking-availability')
+        ->name('public.booking.availability');
 });
 
 Route::prefix('admin/auth')->group(function (): void {

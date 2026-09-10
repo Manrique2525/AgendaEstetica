@@ -36,5 +36,7 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('public-booking-catalog', fn (Request $request): Limit => Limit::perMinute(120)->by('ip:'.(string) $request->ip()));
 
         RateLimiter::for('public-booking-professionals', fn (Request $request): Limit => Limit::perMinute(60)->by('ip:'.(string) $request->ip()));
+
+        RateLimiter::for('public-booking-availability', fn (Request $request): Limit => Limit::perMinute(30)->by('ip:'.(string) $request->ip()));
     }
 }
