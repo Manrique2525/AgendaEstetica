@@ -163,15 +163,15 @@
 - Frontend: `5a85eaf` — `feat: add SPEC-005 terminal action experience`.
 - Tests: `dde4ff8` — `test: complete SPEC-005 checkpoint D coverage`.
 - Documentation commit: `8afa0c9` — `docs: report SPEC-005 checkpoint D`.
-- Final evidence synchronization commit: `b0b6275` — `docs: sync final SPEC-005 checkpoint D evidence`.
-- Final HEAD at report update: `b0b6275`.
+- Final evidence synchronization commits: `b0b6275`, `9a91796`.
+- Final HEAD at the last functional evidence point: `9a91796`.
 - Report path: `docs/reports/SPEC-005-CHECKPOINT-D-REPORT.md`.
 
 ## Remote Quality
 
 - Workflow: `Quality`.
-- Run ID: `34505190603`.
-- Commit: `b0b6275`.
+- Run ID: `34505437096`.
+- Commit: `9a91796`.
 - Branch: `feat/spec-005-admin-agenda`.
 - Backend: PASS.
 - SPEC-004 concurrency: PASS, not skipped.
