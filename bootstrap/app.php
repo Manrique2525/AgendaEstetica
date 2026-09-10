@@ -5,6 +5,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
@@ -33,7 +34,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (Throwable $exception, Request $request) {
             if (! $request->is('api/*')
                 || $exception instanceof ValidationException
-                || $exception instanceof HttpResponseException) {
+                || $exception instanceof HttpResponseException
+                || $exception instanceof ThrottleRequestsException) {
                 return null;
             }
 
@@ -45,5 +47,16 @@ return Application::configure(basePath: dirname(__DIR__))
             $message = $status >= 500 ? 'Server error.' : $exception->getMessage();
 
             return response()->json(['message' => $message], $status);
+        });
+
+        $exceptions->render(function (ThrottleRequestsException $exception, Request $request) {
+            if (! $request->is('api/*')) {
+                return null;
+            }
+
+            return response()->json([
+                'message' => 'No pudimos procesar tantas solicitudes. Intenta más tarde.',
+                'code' => 'too_many_requests',
+            ], 429, $exception->getHeaders());
         });
     })->create();

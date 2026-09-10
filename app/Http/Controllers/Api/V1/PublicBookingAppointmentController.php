@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Actions\CreatePublicBooking;
 use App\Exceptions\PublicBookingIdempotencyConflict;
 use App\Exceptions\PublicBookingIdempotencyInProgress;
+use App\Exceptions\PublicBookingRateLimitExceeded;
 use App\Http\Requests\PublicBookingAppointmentRequest;
 use Illuminate\Http\JsonResponse;
 use InvalidArgumentException;
@@ -36,6 +37,11 @@ final class PublicBookingAppointmentController
                 'message' => 'La solicitud de reserva sigue en proceso. Intenta nuevamente.',
                 'code' => 'idempotency_request_in_progress',
             ], 409);
+        } catch (PublicBookingRateLimitExceeded) {
+            return response()->json([
+                'message' => 'No pudimos procesar tantas solicitudes. Intenta más tarde.',
+                'code' => 'too_many_requests',
+            ], 429);
         } catch (InvalidArgumentException) {
             return response()->json([
                 'message' => 'El horario seleccionado ya no está disponible.',

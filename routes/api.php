@@ -26,6 +26,7 @@ Route::prefix('public/booking')->group(function (): void {
         ->middleware('throttle:public-booking-availability')
         ->name('public.booking.availability');
     Route::post('/appointments', [PublicBookingAppointmentController::class, 'store'])
+        ->middleware('throttle:public-booking-appointments')
         ->name('public.booking.appointments.store');
 });
 

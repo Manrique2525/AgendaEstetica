@@ -6,6 +6,7 @@ namespace App\Actions;
 
 use App\Exceptions\PublicBookingIdempotencyConflict;
 use App\Exceptions\PublicBookingIdempotencyInProgress;
+use App\Exceptions\PublicBookingRateLimitExceeded;
 use App\Models\Appointment;
 use App\Models\BusinessProfile;
 use App\Models\Customer;
@@ -18,6 +19,7 @@ use Carbon\CarbonInterface;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\RateLimiter;
 use InvalidArgumentException;
 
 final class CreatePublicBooking
@@ -57,6 +59,11 @@ final class CreatePublicBooking
                         'fingerprint' => $fingerprint,
                         'replayed' => true,
                     ];
+                }
+
+                $phoneLimitKey = self::phoneLimitKey($normalizedPhone);
+                if (! RateLimiter::attempt($phoneLimitKey, 3, static fn (): bool => true, 3600)) {
+                    throw new PublicBookingRateLimitExceeded;
                 }
 
                 $appointment = DB::transaction(function () use ($data, $normalizedPhone, $startsAt, $canonicalName): Appointment {
@@ -137,5 +144,10 @@ final class CreatePublicBooking
         } catch (LockTimeoutException) {
             throw new PublicBookingIdempotencyInProgress;
         }
+    }
+
+    public static function phoneLimitKey(string $normalizedPhone): string
+    {
+        return 'public-booking:phone:'.hash_hmac('sha256', $normalizedPhone, (string) config('app.key'));
     }
 }
