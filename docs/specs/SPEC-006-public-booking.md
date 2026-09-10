@@ -10,9 +10,9 @@ Public Booking
 
 ## Status
 
-`DEFINITION COMPLETED / AWAITING HUMAN APPROVAL`
+`DEFINITION COMPLETED / TECHNICAL DISCOVERY COMPLETED / AWAITING HUMAN APPROVAL`
 
-This Definition describes the public booking consumer identified as roadmap item `06`. It does not authorize Technical Discovery, Development, Checkpoint A, migrations, routes, dependencies or implementation code.
+This Definition and its Technical Discovery describe the public booking consumer identified as roadmap item `06`. Discovery is complete but does not authorize Development, Checkpoint A, migrations, routes, dependencies or implementation code.
 
 ## Roadmap Source
 
@@ -377,15 +377,19 @@ Future Discovery must investigate, without assuming a solution:
 
 This Definition introduces no application implementation, routes, controllers, Actions, Vue components, migrations, tests, dependencies, production data, Customer CRUD, schedule administration, notification delivery, payment behavior or SPEC-007+ work.
 
+## Technical Discovery Reference
+
+Technical Discovery is documented in `docs/reports/SPEC-006-DISCOVERY-REPORT.md`. The report defines the recommended public contracts, authority boundaries, Customer resolution, availability strategy, abuse controls and Development checkpoint plan. It does not implement or authorize code.
+
 ## Definition State
 
 ```text
-SPEC-006: DEFINITION COMPLETED / AWAITING HUMAN APPROVAL
+SPEC-006: DEFINITION COMPLETED / APPROVED
 Canonical name: Public Booking
 Roadmap item: 06
 Definition: COMPLETED
-Technical Discovery: NOT STARTED
+Technical Discovery: COMPLETED / AWAITING HUMAN APPROVAL
 Development: NOT STARTED
-Checkpoint A: NOT STARTED
+Checkpoint A: NOT AUTHORIZED
 SPEC-007+: NOT AUTHORIZED
 ```
