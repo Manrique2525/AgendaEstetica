@@ -10,9 +10,9 @@ Admin Agenda
 
 ## Status
 
-`TECHNICAL DISCOVERY COMPLETED / AWAITING HUMAN APPROVAL`
+`APPROVED FOR DEVELOPMENT / IN PROGRESS`
 
-This document defines the approved Admin Agenda consumer from roadmap item 05. Technical Discovery is complete; development authorization and implementation are not started.
+This document defines the approved Admin Agenda consumer from roadmap item 05. Technical Discovery is complete and Checkpoint A is implemented; later checkpoints require separate approval.
 
 ## Roadmap Source
 
@@ -323,10 +323,12 @@ If human approval is granted, a separate Technical Discovery must investigate:
 ## Definition State
 
 ```text
-SPEC-005: TECHNICAL DISCOVERY COMPLETED / AWAITING HUMAN APPROVAL
+SPEC-005: APPROVED FOR DEVELOPMENT / IN PROGRESS
 Definition: APPROVED
 Technical Discovery: COMPLETED
-Development: NOT AUTHORIZED
+Development: CHECKPOINT A ONLY
 SPEC-004: CLOSED
+Checkpoint A: COMPLETED
+Checkpoint B: NOT AUTHORIZED
 SPEC-006+: NOT STARTED
 ```
