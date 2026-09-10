@@ -1,5 +1,6 @@
 <?php
 
+use App\Actions\CreateAppointment;
 use App\Enums\AppointmentHistoryEventType;
 use App\Enums\AppointmentStatus;
 use App\Models\Appointment;
@@ -208,9 +209,102 @@ it('returns active compatible Service and Professional lookups only', function (
         ->assertJsonMissing(['id' => $inactiveProfessional->id]);
 });
 
-it('does not expose mutation routes in Checkpoint A', function (): void {
+it('creates an Appointment through the authoritative Action and returns detail', function (): void {
     $fixture = adminAgendaFixture();
-    $this->actingAs($fixture['admin']);
 
-    $this->postJson('/api/v1/admin/agenda/appointments')->assertStatus(405);
+    $this->actingAs($fixture['admin'])
+        ->postJson('/api/v1/admin/agenda/appointments', [
+            'customer_id' => $fixture['customer']->id,
+            'service_id' => $fixture['service']->id,
+            'professional_id' => $fixture['professional']->id,
+            'starts_at' => '2026-01-05T10:00:00Z',
+            'ends_at' => '2026-01-05T11:00:00Z',
+            'status' => 'cancelled',
+            'duration_minutes' => 1,
+        ])
+        ->assertCreated()
+        ->assertJsonPath('data.status', 'confirmed')
+        ->assertJsonPath('data.duration_minutes', 60);
+});
+
+it('rejects ambiguous mutation timestamps before reaching the domain Action', function (): void {
+    $fixture = adminAgendaFixture();
+
+    $this->actingAs($fixture['admin'])
+        ->postJson('/api/v1/admin/agenda/appointments', [
+            'customer_id' => $fixture['customer']->id,
+            'service_id' => $fixture['service']->id,
+            'professional_id' => $fixture['professional']->id,
+            'starts_at' => '2026-01-05T10:00:00',
+            'ends_at' => '2026-01-05T11:00:00',
+        ])
+        ->assertStatus(422)
+        ->assertJsonValidationErrors('starts_at');
+});
+
+it('maps create domain availability conflicts to 409 without partial persistence', function (): void {
+    $fixture = adminAgendaFixture();
+    $create = new CreateAppointment;
+    $create->execute($fixture['customer'], $fixture['service'], $fixture['professional'], CarbonImmutable::parse('2026-01-05 10:00:00', 'UTC'), CarbonImmutable::parse('2026-01-05 11:00:00', 'UTC'));
+
+    $this->actingAs($fixture['admin'])
+        ->postJson('/api/v1/admin/agenda/appointments', [
+            'customer_id' => Customer::factory()->create()->id,
+            'service_id' => $fixture['service']->id,
+            'professional_id' => $fixture['professional']->id,
+            'starts_at' => '2026-01-05T10:30:00Z',
+            'ends_at' => '2026-01-05T11:30:00Z',
+        ])
+        ->assertStatus(409)
+        ->assertJsonPath('code', 'appointment_unavailable');
+
+    expect(Appointment::query()->count())->toBe(1);
+});
+
+it('reschedules through the authoritative Action using historical duration', function (): void {
+    $fixture = adminAgendaFixture();
+    $appointment = (new CreateAppointment)->execute(
+        $fixture['customer'],
+        $fixture['service'],
+        $fixture['professional'],
+        CarbonImmutable::parse('2026-01-05 10:00:00', 'UTC'),
+        CarbonImmutable::parse('2026-01-05 11:00:00', 'UTC'),
+    );
+    $fixture['service']->update(['duration_minutes' => 90]);
+
+    $this->actingAs($fixture['admin'])
+        ->postJson("/api/v1/admin/agenda/appointments/{$appointment->id}/reschedule", [
+            'professional_id' => $fixture['professional']->id,
+            'starts_at' => '2026-01-05T12:00:00Z',
+            'ends_at' => '2026-01-05T13:00:00Z',
+            'customer_id' => Customer::factory()->create()->id,
+            'service_id' => Service::factory()->create()->id,
+            'duration_minutes' => 90,
+            'status' => 'cancelled',
+        ])
+        ->assertOk()
+        ->assertJsonPath('data.status', 'confirmed')
+        ->assertJsonPath('data.duration_minutes', 60)
+        ->assertJsonPath('data.history.1.event_type', 'rescheduled');
+});
+
+it('maps terminal reschedule conflicts to 409', function (): void {
+    $fixture = adminAgendaFixture();
+    $appointment = (new CreateAppointment)->execute(
+        $fixture['customer'],
+        $fixture['service'],
+        $fixture['professional'],
+        CarbonImmutable::parse('2026-01-05 10:00:00', 'UTC'),
+        CarbonImmutable::parse('2026-01-05 11:00:00', 'UTC'),
+    );
+    $appointment->update(['status' => AppointmentStatus::CANCELLED]);
+
+    $this->actingAs($fixture['admin'])
+        ->postJson("/api/v1/admin/agenda/appointments/{$appointment->id}/reschedule", [
+            'professional_id' => $fixture['professional']->id,
+            'starts_at' => '2026-01-05T12:00:00Z',
+            'ends_at' => '2026-01-05T13:00:00Z',
+        ])
+        ->assertStatus(409)
+        ->assertJsonPath('code', 'appointment_state_conflict');
 });
