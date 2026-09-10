@@ -9,6 +9,7 @@ use App\Models\Professional;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Models\User;
+use App\Support\AdminAgendaRange;
 use Carbon\CarbonImmutable;
 
 function adminAgendaFixture(string $timezone = 'UTC'): array
@@ -93,6 +94,63 @@ it('resolves business-local date ranges against UTC appointments', function (): 
     $this->actingAs($fixture['admin'])
         ->getJson('/api/v1/admin/agenda/appointments?from=2026-01-05&to=2026-01-06')
         ->assertOk()->assertJsonPath('data.0.id', $included->id);
+});
+
+it('resolves a spring-forward business day as a 23-hour UTC range and filters appointments', function (): void {
+    $fixture = adminAgendaFixture('America/New_York');
+    $included = adminAgendaAppointment($fixture, '2026-03-08 04:30:00', '2026-03-08 05:30:00');
+    $excluded = adminAgendaAppointment($fixture, '2026-03-09 04:00:00', '2026-03-09 04:30:00');
+    $range = (new AdminAgendaRange)->resolve('2026-03-08', '2026-03-09');
+
+    expect((int) $range['from']->diffInHours($range['to']))->toBe(23);
+
+    $response = $this->actingAs($fixture['admin'])
+        ->getJson('/api/v1/admin/agenda/appointments?from=2026-03-08&to=2026-03-09')
+        ->assertOk();
+
+    expect(collect($response->json('data'))->pluck('id')->all())
+        ->toContain($included->id)
+        ->not->toContain($excluded->id);
+});
+
+it('resolves a fall-back business day as a 25-hour UTC range and filters appointments', function (): void {
+    $fixture = adminAgendaFixture('America/New_York');
+    $included = adminAgendaAppointment($fixture, '2026-11-01 04:30:00', '2026-11-01 05:30:00');
+    $excluded = adminAgendaAppointment($fixture, '2026-11-02 05:00:00', '2026-11-02 05:30:00');
+    $range = (new AdminAgendaRange)->resolve('2026-11-01', '2026-11-02');
+
+    expect((int) $range['from']->diffInHours($range['to']))->toBe(25);
+
+    $response = $this->actingAs($fixture['admin'])
+        ->getJson('/api/v1/admin/agenda/appointments?from=2026-11-01&to=2026-11-02')
+        ->assertOk();
+
+    expect(collect($response->json('data'))->pluck('id')->all())
+        ->toContain($included->id)
+        ->not->toContain($excluded->id);
+});
+
+it('orders same-start agenda appointments by id after starts_at', function (): void {
+    $fixture = adminAgendaFixture();
+    $first = adminAgendaAppointment($fixture, '2026-01-05 10:00:00', '2026-01-05 11:00:00');
+    $second = Appointment::factory()->create([
+        'customer_id' => Customer::factory()->create()->id,
+        'service_id' => $fixture['service']->id,
+        'professional_id' => $fixture['professional']->id,
+        'starts_at' => '2026-01-05 10:00:00',
+        'ends_at' => '2026-01-05 11:00:00',
+        'duration_minutes' => 60,
+        'status' => AppointmentStatus::CONFIRMED,
+    ]);
+
+    $ids = $this->actingAs($fixture['admin'])
+        ->getJson('/api/v1/admin/agenda/appointments?from=2026-01-05&to=2026-01-06')
+        ->assertOk()
+        ->json('data');
+
+    expect(collect($ids)->pluck('id')->all())->toContain($first->id, $second->id)
+        ->and(array_search($first->id, array_column($ids, 'id'), true))
+        ->toBeLessThan(array_search($second->id, array_column($ids, 'id'), true));
 });
 
 it('returns detail with phone and ordered focused history', function (): void {
