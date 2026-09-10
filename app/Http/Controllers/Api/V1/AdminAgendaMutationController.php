@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Actions\CancelAppointment;
+use App\Actions\CompleteAppointment;
 use App\Actions\CreateAppointment;
+use App\Actions\MarkAppointmentNoShow;
 use App\Actions\RescheduleAppointment;
 use App\Http\Requests\AdminAgendaCreateAppointmentRequest;
 use App\Http\Requests\AdminAgendaRescheduleAppointmentRequest;
@@ -71,6 +74,53 @@ final class AdminAgendaMutationController
         }
 
         return new AdminAgendaAppointmentDetailResource($this->loadDetail($updated));
+    }
+
+    public function cancel(
+        Appointment $appointment,
+        CancelAppointment $cancelAppointment,
+    ): AdminAgendaAppointmentDetailResource|JsonResponse {
+        try {
+            $updated = $cancelAppointment->execute($appointment);
+        } catch (InvalidArgumentException) {
+            return $this->stateConflictResponse();
+        }
+
+        return new AdminAgendaAppointmentDetailResource($this->loadDetail($updated));
+    }
+
+    public function complete(
+        Appointment $appointment,
+        CompleteAppointment $completeAppointment,
+    ): AdminAgendaAppointmentDetailResource|JsonResponse {
+        try {
+            $updated = $completeAppointment->execute($appointment);
+        } catch (InvalidArgumentException) {
+            return $this->stateConflictResponse();
+        }
+
+        return new AdminAgendaAppointmentDetailResource($this->loadDetail($updated));
+    }
+
+    public function noShow(
+        Appointment $appointment,
+        MarkAppointmentNoShow $markAppointmentNoShow,
+    ): AdminAgendaAppointmentDetailResource|JsonResponse {
+        try {
+            $updated = $markAppointmentNoShow->execute($appointment);
+        } catch (InvalidArgumentException) {
+            return $this->stateConflictResponse();
+        }
+
+        return new AdminAgendaAppointmentDetailResource($this->loadDetail($updated));
+    }
+
+    private function stateConflictResponse(): JsonResponse
+    {
+        return response()->json([
+            'message' => 'La cita ya no puede procesarse en su estado actual.',
+            'code' => 'appointment_state_conflict',
+        ], 409);
     }
 
     private function loadDetail(Appointment $appointment): Appointment

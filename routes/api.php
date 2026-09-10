@@ -38,4 +38,10 @@ Route::prefix('admin/agenda')->middleware('auth:sanctum')->group(function (): vo
         ->name('admin.agenda.appointments.store');
     Route::post('/appointments/{appointment}/reschedule', [AdminAgendaMutationController::class, 'reschedule'])
         ->name('admin.agenda.appointments.reschedule');
+    Route::post('/appointments/{appointment}/cancel', [AdminAgendaMutationController::class, 'cancel'])
+        ->name('admin.agenda.appointments.cancel');
+    Route::post('/appointments/{appointment}/complete', [AdminAgendaMutationController::class, 'complete'])
+        ->name('admin.agenda.appointments.complete');
+    Route::post('/appointments/{appointment}/no-show', [AdminAgendaMutationController::class, 'noShow'])
+        ->name('admin.agenda.appointments.no-show');
 });
