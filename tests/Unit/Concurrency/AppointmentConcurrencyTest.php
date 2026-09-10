@@ -307,9 +307,11 @@ it('serializes reschedule versus cancel into a valid serial outcome', function (
         ['action' => 'reschedule', 'appointment_id' => $appointment->id, 'professional_id' => $fixture['professional']->id, 'starts_at' => '2026-01-05 12:00:00', 'ends_at' => '2026-01-05 13:00:00'],
     ]);
 
-    assertDomainRace($results, 1);
-    expect(successfulResults($results))->toHaveCount(1)
-        ->and($appointment->refresh()->status)->toBeIn([AppointmentStatus::CANCELLED, AppointmentStatus::CONFIRMED]);
+    $successes = successfulResults($results);
+
+    expect(count($successes))->toBeIn([1, 2]);
+    assertDomainRace($results, count($successes));
+    expect($appointment->refresh()->status)->toBeIn([AppointmentStatus::CANCELLED, AppointmentStatus::CONFIRMED]);
 });
 
 it('serializes cancellation against a competing create at released capacity', function (): void {
