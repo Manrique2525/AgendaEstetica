@@ -51,7 +51,7 @@ The system needs one notification boundary that consumes authoritative appointme
 
 ### SPEC-003 Business Core
 
-SPEC-007 may consume Customer identity and approved business configuration. Customer data, contact channels, normalization and any consent model remain governed by SPEC-003 or a separately approved decision. Notification Engine must not become Customer CRUD or identity management.
+SPEC-007 may consume Customer identity and approved business configuration. Customer identity/contact data and phone normalization remain governed by SPEC-003; contact-channel and consent semantics require SPEC-007 Technical Discovery or a separately approved decision. Notification Engine must not become Customer CRUD or identity management.
 
 ### SPEC-004 Appointment Engine
 
@@ -215,7 +215,7 @@ No Vue page, component, store or public notification UI is authorized by this De
 
 ## Integration Expectations
 
-- SPEC-003 supplies Customer identity and approved communication data.
+- SPEC-003 supplies Customer identity/contact data and phone normalization; communication-channel and consent semantics remain Discovery-required.
 - SPEC-004 supplies authoritative Appointment lifecycle and committed event facts.
 - SPEC-005 remains the operational appointment consumer and is not redesigned.
 - SPEC-006 remains the public booking consumer and is not changed.
@@ -307,7 +307,7 @@ Run complete regression, reliability, privacy, scope and acceptance audit before
 2. The Definition states the business problem and objective without inventing provider, consent, timing or production data.
 3. The Definition distinguishes administrators, Customers, Professionals, the engine, queue workers and delivery providers.
 4. The Definition preserves the one-business modular-monolith architecture and approved database queue boundary.
-5. The Definition preserves SPEC-003 authority for Customer identity, phone normalization and communication data.
+5. The Definition preserves SPEC-003 authority for Customer identity, contact data and phone normalization without claiming notification-consent authority.
 6. The Definition preserves SPEC-004 authority for Appointment lifecycle, status, time, history, duration, availability, capacity and concurrency.
 7. The Definition preserves SPEC-005 Admin Agenda and SPEC-006 Public Booking as downstream/upstream consumers without redesigning them.
 8. The Definition includes eligibility, committed-event processing, idempotency, stale-work suppression, provider isolation and safe failure handling as V1 capabilities.
