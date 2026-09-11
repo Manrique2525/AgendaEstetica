@@ -10,9 +10,9 @@ Notification Engine
 
 ## Status
 
-`DEFINITION COMPLETED / READY FOR HUMAN REVIEW`
+`TECHNICAL DISCOVERY COMPLETED / BLOCKED FOR DEVELOPMENT`
 
-This Definition covers roadmap item `07. Notification engine`, immediately after the merged Public Booking consumer and before Fake WhatsApp. Technical Discovery, Development and all implementation checkpoints are not authorized.
+This Definition and its Technical Discovery cover roadmap item `07. Notification engine`, immediately after the merged Public Booking consumer and before Fake WhatsApp. Development and all implementation checkpoints remain unauthorized.
 
 ## Roadmap Reference
 
@@ -332,11 +332,11 @@ Run complete regression, reliability, privacy, scope and acceptance audit before
 ## Definition State
 
 ```text
-SPEC-007: DEFINITION COMPLETED / READY FOR HUMAN REVIEW
+SPEC-007: TECHNICAL DISCOVERY COMPLETED / BLOCKED FOR DEVELOPMENT
 Canonical name: Notification Engine
 Roadmap item: 07
-Definition: COMPLETED / READY FOR HUMAN REVIEW
-Technical Discovery: NOT AUTHORIZED
+Definition: COMPLETED / APPROVED
+Technical Discovery: COMPLETED / BLOCKED FOR DEVELOPMENT
 Development: NOT AUTHORIZED
 Checkpoint A: NOT AUTHORIZED
 Checkpoint B: NOT AUTHORIZED
@@ -352,9 +352,9 @@ SPEC-008+: NOT AUTHORIZED
 ## Final Definition Decision
 
 ```text
-SPEC-007 - Notification Engine: DEFINITION COMPLETED
-Definition: READY FOR HUMAN REVIEW
-Technical Discovery: NOT AUTHORIZED
+SPEC-007 - Notification Engine: TECHNICAL DISCOVERY COMPLETED
+Definition: COMPLETED / APPROVED
+Technical Discovery: BLOCKED FOR DEVELOPMENT
 Development: NOT AUTHORIZED
 Application changes: NONE
 Schema/dependency changes: NONE
