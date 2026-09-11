@@ -2,383 +2,345 @@
 
 ## Discovery Status
 
-- SPEC-007: `TECHNICAL DISCOVERY COMPLETED / BLOCKED FOR DEVELOPMENT`.
+- SPEC-007: `TECHNICAL DISCOVERY COMPLETED / READY FOR HUMAN REVIEW`.
 - Definition: `COMPLETED / APPROVED`.
-- Discovery branch: `docs/spec-007-discovery`.
-- Development, Checkpoint A and SPEC-008 remain unauthorized.
-- Draft ADR: `docs/architecture/adr/ADR-004-notification-intent-after-commit.md`.
+- Branch: `docs/spec-007-discovery`.
+- Development: `NOT AUTHORIZED`.
+- Checkpoint A: `NOT AUTHORIZED`.
+- SPEC-008: `NOT AUTHORIZED`.
+- ADR-004: `DRAFT / REQUIRES HUMAN APPROVAL`.
 
-## Documents and Application Areas Reviewed
+## Documents and Code Reviewed
 
-- Governance, context, Master Technical Specification, Architecture, Domain Rules, Test Plan and Roadmap.
-- SPEC-003 through SPEC-007 and SPEC-004/SPEC-005/SPEC-006 closure reports.
-- ADR-001, ADR-002, ADR-003 and draft ADR-004.
-- Appointment Actions: `CreateAppointment`, `RescheduleAppointment`, `CancelAppointment`, `CompleteAppointment`, `MarkAppointmentNoShow`.
-- `Appointment`, `AppointmentHistory`, `Customer`, `BusinessProfile` and `CustomerPhoneNormalizer`.
-- `routes/api.php`, `routes/console.php`, `bootstrap/app.php`, `config/queue.php`, `config/cache.php`, `config/app.php`, `.env.example`, Composer and npm manifests.
-- Existing application logging/search results, queue/scheduler surfaces, public/admin boundaries and transaction patterns.
+- `AGENTS.md`, context, Master Technical Specification, Architecture, Domain Rules, Test Plan and Roadmap.
+- SPEC-003, SPEC-004, SPEC-005, SPEC-006 and SPEC-007.
+- SPEC-004 Discovery/Closure, SPEC-005 Closure and SPEC-006 Closure reports.
+- ADR-001, ADR-002, ADR-003 and ADR-004.
+- `CreateAppointment`, `RescheduleAppointment`, `CancelAppointment`, `CompleteAppointment`, `MarkAppointmentNoShow`.
+- `Appointment`, `AppointmentHistory`, `Customer`, `BusinessProfile`, `CustomerPhoneNormalizer`.
+- Queue/cache/app configuration, `.env.example`, `routes/console.php`, API routes, logging search and transaction patterns.
 
-No application implementation, temporary experiment, schema change, dependency change, test or production configuration change was made during Discovery.
+No application code, migration, table, job, event, listener, provider, route, Vue change, dependency, production configuration or test was added. No temporary experiment was performed.
 
-## Current Infrastructure Findings
+## Current Framework Capabilities
 
-- Default queue connection: `database`.
-- Queue table: `jobs`; default queue: `default`.
-- Queue retry baseline: 90 seconds.
-- `database.after_commit`: configurable through `DB_QUEUE_AFTER_COMMIT`, default `true` and `.env.example` sets `DB_QUEUE_AFTER_COMMIT=true`.
+- Queue default: database, queue `default`, table `jobs`.
+- Queue `retry_after`: 90 seconds.
+- `database.after_commit`: configurable and defaults to `true`; `.env.example` sets `DB_QUEUE_AFTER_COMMIT=true`.
 - Existing queue tables: `jobs`, `job_batches`, `failed_jobs`.
-- Worker foundation: `php artisan queue:work --once` and documented persistent worker strategy; no business jobs exist.
-- Scheduler: `routes/console.php` contains only the framework `inspire` command; `php artisan schedule:list` has no business tasks.
-- Scheduler foundation: `schedule:run`/`schedule:work` are available; no reminder schedule currently exists.
-- Cache: database-backed cache is the default and existing `cache_locks` infrastructure is used by SPEC-006 idempotency.
-- Transactions: appointment Actions use Laravel `DB::transaction`; SPEC-004 acquires BusinessProfile, Professional and Appointment locks in ADR-003 order and writes AppointmentHistory in the same transaction.
-- Logging: no SPEC-007 notification logging, provider interface or notification-specific exception mapping exists.
-- Current public/admin API has no notification route and must remain unchanged by Discovery.
+- Worker foundation exists through `php artisan queue:work --once`; no business jobs exist.
+- `routes/console.php` has no business scheduler. `schedule:list` has no business tasks.
+- Database cache and `cache_locks` exist and are already used by SPEC-006 idempotency.
+- Appointment mutations use Laravel `DB::transaction()`.
+- SPEC-004 writes AppointmentHistory in the same transaction as Appointment mutations.
+- No notification interfaces, jobs, events, listeners, provider implementations or notification persistence exist.
 
-## Notification-Event Analysis
+## Primary Architecture Contradiction
 
-| Event | Initial classification | Discovery recommendation | Development status |
-| --- | --- | --- | --- |
-| Appointment created/confirmed | V1 candidate | Immediate transactional confirmation if channel, consent and copy are approved. Use the created AppointmentHistory identity. | Blocked by event/channel/consent approval |
-| Appointment rescheduled | V1 candidate | Immediate transactional update and invalidate obsolete reminders. Each reschedule must be a distinct event occurrence. | Blocked by event/channel/consent approval |
-| Appointment cancelled | V1 candidate | Immediate transactional cancellation message may be useful, but must be explicitly approved; suppress pending reminders. | Business approval required |
-| Appointment completed | OUT by default | No customer notification is recommended without a concrete business use case. | Deferred/out |
-| Appointment no-show | OUT by default | No customer notification is recommended without an explicit policy and approved copy. | Deferred/out |
-| Scheduled reminder | V1 candidate | Use the same intent/delivery pipeline with a scheduled occurrence and current-state stale check. | Blocked by timing/consent/channel approval |
+### Would the original transactional-intent proposal modify SPEC-004?
 
-Not every AppointmentHistory row should automatically become a notification. Eligibility must be an explicit policy, not an event-type catch-all.
+**YES.** The original ADR-004 recommendation would require an integration change to the closed Appointment mutation transactions. At minimum, the following existing classes would need to create NotificationIntent records or emit an approved transactional integration event:
 
-## Immediate and Scheduled Models
+- `app/Actions/CreateAppointment.php` - Appointment and created History are written inside its transaction.
+- `app/Actions/RescheduleAppointment.php` - Appointment update and rescheduled History are written inside its transaction.
+- `app/Actions/CancelAppointment.php` - status update and History are written inside its transaction.
+- `app/Actions/CompleteAppointment.php` - status update and History are written inside its transaction.
+- `app/Actions/MarkAppointmentNoShow.php` - status update and History are written inside its transaction.
 
-Immediate event-driven notifications and temporal reminders should share:
+`AppointmentHistory` creation itself would not necessarily need a schema change, but the producer transaction or a shared transactional integration boundary would. Hiding this behind an Event/Listener would not remove the cross-SPEC coupling if the event must be guaranteed atomically with the closed transaction.
 
-- provider-neutral Notification Intent;
-- deduplication identity;
-- queue processing and provider abstraction;
-- safe status, retry and failure semantics;
-- privacy and operational redaction rules.
+### Strategy A - Transactional NotificationIntent
 
-They should differ in trigger and eligibility:
+```text
+Appointment mutation transaction
+  -> Appointment / History / NotificationIntent
+  -> COMMIT
+  -> queue intent ID
+```
 
-- Immediate events are created from a committed approved mutation and are eligible for post-commit dispatch.
-- Reminders have a `scheduled_for` occurrence, are discovered by a due-intent scheduler and must re-read current Appointment state before delivery.
+Advantages: strongest atomicity, smallest commit-to-intent loss window and immediate intent creation. Costs: requires modifying the five relevant Appointment Actions or an approved shared transactional boundary, couples closed SPEC-004 transaction ownership to SPEC-007 persistence, and requires cross-SPEC approval, schema and extensive transaction tests. It is not authorized by this Discovery.
 
-## Channel and SPEC-008 Boundary
+### Strategy B - AppointmentHistory-driven ingestion
 
-SPEC-007 should define a generic channel concept only. It should not select or ship WhatsApp, SMS, email, Meta, Twilio, WABA or another provider. Roadmap item 08 owns Fake WhatsApp implementation, delivery simulation and provider-specific tests/demo behavior. SPEC-007 owns intent, eligibility, timing, deduplication, queue orchestration, stale suppression, provider-neutral outcomes and privacy/security rules.
+```text
+SPEC-004 writes Appointment / History
+  -> COMMIT
+SPEC-007 ingestor reads committed History
+  -> idempotently creates NotificationIntent
+  -> queues intent ID
+```
 
-## Consent Assessment
+The current History schema has a durable auto-increment ID, `appointment_id`, `event_type`, nullable old/new status, nullable old/new UTC intervals, nullable old/new Professional IDs and `created_at`. It is sufficient to identify created/confirmed, rescheduled and cancellation/status-change events without modifying SPEC-004.
 
-SPEC-003 explicitly defines Customer identity, display phone and normalized phone, and explicitly defers marketing consent, WhatsApp promotional opt-in, notification preferences, campaign consent and opt-out workflows to Notification/Meta WhatsApp scopes. SPEC-003 is not notification-consent authority.
+Recommended reliability model: process History IDs in ascending order using a durable ingestion high-water mark, create intents and advance the mark in one SPEC-007 transaction, and advance only after intent creation commits. A crash before mark advancement safely reprocesses the source row; a crash after intent commit is safe through the unique dedupe identity. A bounded replay/reconciliation scan is required for recovery.
 
-Recommended distinction:
+Costs: bounded scheduler/ingestor latency and a commit-to-ingestion window. These are preferable to changing closed SPEC-004 because the source is durable and replayable.
 
-- Transactional appointment messages and marketing/promotional messages must be separate policy categories.
-- Marketing/promotional messaging is OUT of this V1 Definition unless separately approved.
-- Whether transactional appointment notifications require explicit consent is a BUSINESS DECISION REQUIRED before Development.
-- The absence of consent should not be treated as permission until the business/legal policy is approved; the safe implementation default is suppression when the required state is absent.
-- Channel-specific consent, origin, persistence, revocation and opt-out semantics require Discovery/business approval.
+### Reconciled recommendation
 
-Consent decisions are Development blockers because they affect eligibility, data shape, privacy and delivery behavior.
+Recommend **Strategy B** for immediate lifecycle notifications. Use a separate current-Appointment query for scheduled reminders. This preserves SPEC-004 exactly.
 
-## Reminder Timing, Quiet Hours and Timezone
+Closed-SPEC modification required: **NO** for the recommended event-source architecture.
 
-The repository defines `BusinessProfile.timezone` as the business temporal authority and stores concrete Appointment instants in UTC. No notification timing or quiet-hour value is defined.
+## Event Sources and Identity
 
-Recommendation:
-
-- Store Appointment instants in UTC and derive due reminder occurrences using `BusinessProfile.timezone` at the temporal boundary.
-- Persist the resolved occurrence identity/scheduled time so a reschedule creates a distinct reminder occurrence.
-- Use business-local calendar semantics for reminder policy and UTC instants for queue execution.
-- Revalidate DST transitions using the existing temporal authority; do not use the server timezone as business authority.
-- Do not invent same-day, 24-hour, multi-reminder or quiet-hour values.
-
-Required decisions: reminder lead times, number of reminders, quiet hours, holidays/closures, late reschedule/cancellation behavior and provider delay tolerance.
-
-## Notification Persistence Decision
-
-### Alternatives
-
-| Option | Assessment |
-| --- | --- |
-| Queue-only fire-and-forget | Rejected for the recommended V1 because work can be lost between commit and dispatch and there is no durable deduplication/stale-work state. |
-| AppointmentHistory polling | Rejected as the primary source because it is delayed, couples notification timing to operational history and still needs a durable cursor/intent. |
-| Durable Notification Intent | Recommended, pending approval; supports deduplication, retries, stale suppression, crash recovery and safe operational status. |
-| Generic transactional outbox | Not recommended for V1; broader than the single notification consumer. A focused Notification Intent can serve as the bounded notification outbox. |
-
-### Recommendation
-
-Use a durable, provider-neutral Notification Intent created transactionally with the originating approved appointment event, then processed after commit. This is a cross-cutting integration decision and is captured in draft ADR-004. It requires human approval before Development.
-
-### Conceptual Fields
-
-| Concept | Classification | Reason |
+| Notification class | Source | Identity |
 | --- | --- | --- |
-| intent ID | Required | Stable worker and operational reference. |
-| appointment ID | Required | Re-read authoritative current state. |
-| event/history ID | Required | Distinguishes creation and every reschedule/status event. |
-| notification type | Required | Confirmation, reminder or approved event category. |
-| channel | Required | Provider-neutral channel identity. |
-| scheduled occurrence/version | Required for reminders | Distinguishes original and rescheduled reminder occurrences. |
-| deduplication key | Required | Database-enforced duplicate suppression. |
-| recipient reference | Required/pending | Customer reference or protected destination strategy requires decision. |
-| recipient raw phone | Rejected by default | Avoid durable raw PII unless a protected snapshot is approved. |
-| normalized phone | Rejected in logs/keys; persistence pending | Existing normalization authority must not become an exposed identifier. |
-| template identifier/version | Required/pending | Prevents later template edits from changing an existing intent unexpectedly. |
-| rendered message body | Rejected by default | Avoids unnecessary durable PII; retain only if a business/legal requirement exists. |
-| minimal immutable event facts | Optional/pending | Useful for historical rendering, but must be privacy-minimized. |
-| status | Required | Minimal lifecycle and stale/failure handling. |
-| attempt count | Required | Bounded retry control. |
-| last error classification | Required | Provider-neutral diagnosis without raw provider response. |
-| provider correlation reference | Optional/pending | Useful operationally, but must contain no secret or raw provider payload. |
-| timestamps | Required | Created, scheduled, processing, completed and updated times as approved. |
-| retention metadata | Pending | Requires business/legal retention decision. |
+| Immediate confirmed/created | committed `AppointmentHistory` created row | `appointment_id + history_id + type + channel` |
+| Immediate rescheduled | committed `AppointmentHistory` rescheduled row | `appointment_id + history_id + type + channel` |
+| Immediate cancelled | committed status-change History row, if approved | `appointment_id + history_id + type + channel` |
+| Reminder | current eligible Appointment scan | `appointment_id + reminder occurrence/version + type + channel` |
 
-## Recipient Strategy
+`appointment_id + type` alone is rejected because multiple reschedules and reminder occurrences must remain distinct. History IDs are stable source-event identities without changing History semantics.
 
-The engine should carry stable Customer/Appointment references in queue payloads and re-read authoritative data at execution. A destination snapshot may be required for historical correctness if a Customer phone changes between booking and delivery, but this is a business/privacy decision.
+Ingestion idempotency requires a unique deterministic NotificationIntent identity. Repeated History scans must be safe and must not create duplicate intent or delivery work.
 
-Recommendation for approval:
+## Recommended Event Allowlist
 
-- Snapshot the approved destination at intent creation only if the business chooses historical recipient semantics.
-- Protect any persisted destination and never place raw phone in dedupe keys, log correlation keys or exception context.
-- If the destination is absent or invalid, suppress safely rather than falsely report delivery.
-- Define whether a phone update before a reminder uses the original approved destination or current Customer contact.
+| Event | Recommendation | Approval state |
+| --- | --- | --- |
+| Appointment confirmed/created | IN | Human approval required |
+| Appointment rescheduled | IN | Human approval required |
+| Appointment cancelled | IN | Human approval required |
+| Scheduled reminder | IN | Human approval required |
+| Appointment completed | OUT by default | Explicit use case required |
+| Appointment no-show | OUT by default | Explicit policy required |
+| Marketing/promotional | OUT | Separate scope required |
 
-## Message and Template Strategy
+Not every History row automatically generates a notification.
 
-Notification Engine should own provider-neutral template identifiers and a rendering contract, not provider-specific wording. A Notification Intent should reference a template/version and minimal immutable event facts. Rendered message storage is rejected by default because it increases PII retention; if later required, it needs explicit privacy and retention approval. Real message copy, language, sender identity and templates are business data pending.
+## NotificationIntent Role
 
-## Event Source and Commit Ordering
+NotificationIntent is a focused durable notification work record, idempotency boundary, provider-independent delivery request and operational status record. It is not a generic system-wide outbox. It may act as a bounded notification outbox for this consumer only.
 
-### Alternatives
+Recommended conceptual fields:
 
-- Provider calls from Appointment Actions: rejected because it couples domain mutations to delivery and can send before commit.
-- Notification orchestration directly in Controllers: rejected by architecture and bypasses domain authority.
-- Polling AppointmentHistory: rejected as primary source; can remain a reconciliation fallback only if later justified.
-- Provider-neutral domain event after commit: useful for decoupling, but has a crash window before durable intent creation.
-- Transactional Notification Intent: recommended for durable correctness, with a narrow approved integration point around appointment mutations.
-
-### Recommended Boundary
-
-The originating Appointment transaction creates the provider-neutral Notification Intent for approved events. Commit succeeds first. Only then does an after-commit queue path enqueue stable intent IDs. The worker re-reads the intent and current Appointment before provider dispatch. Provider success/failure updates notification state only; it never mutates Appointment state.
-
-This requires a cross-SPEC integration decision because SPEC-004 Actions currently own the appointment transaction. No SPEC-004 file is modified by this Discovery.
-
-## Outbox Assessment
-
-A separate generic outbox is not justified for one Notification Engine consumer at current single-business scale. A durable Notification Intent can provide the focused outbox properties needed here. The recommendation is not accepted architecture until ADR-004 and the event integration point receive human approval.
-
-## Idempotency and Event Identity
-
-The deduplication unit should include:
-
-```text
-appointment_id
-event/history_id
-notification_type
-channel
-scheduled_occurrence/version
-```
-
-`appointment_id + type` alone is insufficient because multiple reschedules and reminder occurrences must remain distinct. Existing `AppointmentHistory` IDs provide a stable event identity for created, rescheduled and status-change events without changing SPEC-004 semantics. The specific event-type policy remains pending.
-
-## Stale Work and Cancellation/Rescheduling
-
-Do not delete queued database jobs directly as the primary strategy. Keep the intent/job addressable and suppress at execution:
-
-- Re-read current Appointment status, `starts_at`, Professional and relevant Service/Customer state.
-- Re-read the intent status and event/history identity.
-- A cancelled Appointment suppresses pending reminders.
-- A rescheduled Appointment suppresses the old reminder occurrence and creates a distinct new occurrence only if the approved policy requires it.
-- Rapid reschedules are handled by event identity and current-state checks; an obsolete queued intent cannot send solely because it was once valid.
-- Provider delivery must occur only after all current checks pass.
-
-Recommended status is `suppressed` with a safe reason category such as obsolete, cancelled, ineligible or missing destination. Avoid an oversized separate `obsolete` lifecycle unless Discovery evidence requires it.
-
-## Notification Status Model
-
-Recommended minimal states:
-
-```text
-pending       intent exists and is awaiting due/dispatch work
-processing    one worker owns the current attempt
-delivered     provider-neutral delivery success recorded
-suppressed    eligibility/staleness/channel policy prevents delivery
-failed        terminal failure after the approved retry policy
-```
-
-Transient failures remain retryable while the intent is pending/queued; they do not need a second status unless implementation evidence requires it. `failed` must mean terminal or operator-review state, not an ambiguous temporary error.
-
-## Retry and Failure Semantics
-
-| Failure | Recommendation |
+| Field/concept | Classification |
 | --- | --- |
-| Provider timeout/network failure | Retry with bounded approved backoff. |
-| Provider rate limit | Retry only with provider-neutral bounded delay and no amplification. |
-| Invalid destination | Suppress or terminal-fail; do not retry unchanged data indefinitely. |
-| Permanent provider rejection | Terminal `failed`; preserve safe classification only. |
-| Appointment cancelled/rescheduled stale intent | Suppress immediately before delivery. |
-| Application bug/serialization failure | Terminal failure plus safe operational signal; no raw payload logging. |
-| Worker restart/lease expiry | Reclaim safely using attempt/processing timestamps and idempotent state transition. |
+| intent ID | Required |
+| Appointment ID | Required |
+| source History ID or reminder occurrence | Required according to source |
+| notification type | Required |
+| logical channel | Required |
+| scheduled occurrence/version | Required for reminders |
+| deterministic dedupe key | Required and database-unique |
+| Customer reference | Required/pending privacy decision |
+| protected destination snapshot | Pending business/privacy decision |
+| raw phone in logs/keys | Rejected |
+| normalized phone persistence | Pending; never exposed/logged as identity |
+| template identifier/version | Required/pending |
+| rendered message body | Rejected by default |
+| minimal immutable event facts | Optional/pending |
+| status | Required |
+| attempt count | Required |
+| provider-neutral error classification | Required |
+| provider reference | Optional/pending |
+| timestamps | Required |
+| retention metadata | Pending |
 
-Retry counts, backoff, lease duration and operator recovery are Development-blocking decisions unless approved by business/architecture evidence.
+## Immediate Events and Scheduled Reminders
 
-## Queue and Scheduler Architecture
+Both classes share intent persistence, deduplication, provider abstraction, queue processing, statuses, retries, stale checks and privacy rules.
 
-- Keep the existing `database` queue, `default` queue and `after_commit=true` configuration.
-- Queue jobs should carry `notification_intent_id`, not Customer phone, full Appointment payload or rendered message body.
-- Immediate intents can be enqueued after commit.
-- Scheduled reminders should use a periodic scheduler that selects due durable intents and dispatches stable IDs. This is more restart-resilient than one delayed job per reminder and makes rescheduling/stale suppression explicit.
-- A delayed job may be reconsidered only if due-query cost or operational evidence justifies it.
-- Existing `retry_after=90` is infrastructure baseline, not an approved notification retry policy.
-- Worker and scheduler process requirements remain operational documentation, not new infrastructure.
+Immediate events are ingested from committed History and have bounded ingestion latency. Reminders are derived from current Appointments and must use current `status`, current `starts_at` and `BusinessProfile.timezone` immediately before intent creation and delivery.
 
-## Provider Abstraction
+Reminder timing options for human decision:
 
-Conceptual provider responsibilities:
+- same-day reminder;
+- 24 hours before;
+- 2 hours before;
+- multiple reminders;
+- custom business policy.
 
-- Accept an already-approved provider-neutral message request.
-- Return a provider-neutral success/failure result.
-- Return an optional provider correlation reference.
-- Classify provider errors as transient or permanent without deciding business eligibility.
+No timing is selected here. Exact cadence is a later technical decision unless an approved business SLA makes it a prerequisite.
 
-Provider must not:
+## Channel and Consent Decision Gate
 
-- Load or mutate Appointment domain state.
-- Decide eligibility, consent or retry policy.
-- Create Customer or Appointment records.
-- Own business message wording or public API behavior.
+`channel != provider`.
 
-Fake WhatsApp implementation, simulation and provider-specific tests belong to SPEC-008.
+Recommended logical channel model:
 
-## Operational Visibility and Boundaries
+```text
+channel: whatsapp
+provider: FakeWhatsAppProvider (SPEC-008, later)
+```
 
-Recommended minimum V1 observability is durable safe status plus redacted application-level outcome signals. A dedicated Admin Agenda indicator/dashboard is not required for delivery correctness and should remain deferred unless Yaris identifies a support need. No public notification status, unsubscribe, preference, webhook or lookup endpoint is recommended for SPEC-007 V1.
+SPEC-007 may define the logical channel contract without implementing WhatsApp. SPEC-008 owns Fake WhatsApp behavior, simulation and provider-specific tests. No Meta, Twilio, WABA, SMS, email or real provider is selected.
 
-Real provider webhooks and delivery receipts are deferred. Fake provider behavior belongs to SPEC-008.
+SPEC-003 is not consent authority. It defines Customer identity/contact data and phone normalization, while explicitly deferring marketing consent, notification preferences and opt-in/opt-out workflows.
 
-## Security and Privacy Threat Model
+Business decision options:
 
-- PII leakage: minimize intent, queue, logs and errors; never log raw phone, provider credentials or full message bodies by default.
-- Provider-secret leakage: keep credentials server-side and outside queue payloads/public responses.
-- Duplicate messages: database dedupe identity plus worker state transition.
-- Notification amplification: explicit event allowlist, bounded retries and no recursive Appointment mutation.
-- Queue poisoning: stable opaque intent IDs, authorization at creation and current-state revalidation.
-- Unauthorized triggering: no public endpoint; future admin surface must use existing auth boundary.
-- Template injection: constrain template variables and separate provider payload encoding from message content.
-- Stale delivery: current Appointment/intent checks immediately before dispatch.
-- Replay: dedupe key and terminal state transitions must be atomic.
+| Decision | Option A | Option B | Recommended default | Architecture impact | Blocks Checkpoint A |
+| --- | --- | --- | --- | --- | --- |
+| BD-01 Event allowlist | confirmations/reschedules/cancellations/reminders | narrower allowlist | approve baseline IN/OUT table | Defines History ingestion policy | YES |
+| BD-02 Delivery channel | generic logical channel only | approve logical WhatsApp channel for SPEC-008 handoff | generic channel plus logical WhatsApp name, no provider | Defines intent/channel uniqueness | YES |
+| BD-03 Transactional consent | appointment phone may receive transactional messages generated from that appointment | explicit notification opt-in required | BUSINESS/LEGAL DECISION REQUIRED; safe absent-state suppression | Affects eligibility and data fields | YES |
+| BD-04 Reminder timing | same-day / 24h / 2h / multiple / custom | no reminders in V1 | BUSINESS DECISION REQUIRED | Affects reminder occurrence and scheduler | YES if reminders are IN |
+| BD-05 Quiet hours | explicit quiet-hours policy | no independent quiet-hours engine; timing avoids undesirable hours | no values selected; prefer no separate engine initially | Affects scheduler/late events | NO for immediate-only A |
+| BD-06 Phone changes | current Customer phone at delivery | protected destination snapshot | choose before intent schema; snapshot is safer historical semantics but increases PII | Affects recipient fields/privacy | NO for event allowlist; YES for intent schema checkpoint |
+| BD-07 Retention | business/legal duration | minimal duration after operational need | BUSINESS/LEGAL DECISION REQUIRED | Affects cleanup and PII retention | NO if schema omits duration field; YES before production |
 
-## Retention and Logging
+Transactional appointment communication and promotional communication must remain separate. Marketing/promotional communication is OUT. No legal conclusion is made by this Discovery.
 
-Retention period for intents, provider references, error classes, payload snapshots and redacted logs is a BUSINESS/LEGAL DECISION REQUIRED. Distinguish operational history from provider payload and PII. Store provider-neutral error classifications, not raw provider responses or request bodies. Use safe correlation identifiers; never use raw phone or secrets as identifiers.
+## Recipient and Template Strategy
 
-## Performance and Concurrency
+Recommended V1 default is to keep stable Customer/Appointment references in queue payloads and re-read authoritative data at execution. Whether the notification intent stores a protected destination snapshot or resolves the current Customer phone remains a business/privacy decision.
 
-No production traffic number is assumed. Analyze synthetic technical scales of 10, 100 and 1000 appointments only for query/queue behavior. A due-intent query will likely need a composite status/scheduled-time index if schema is approved; this is not a migration decision yet.
+Current-phone-at-delivery honors corrections and stores less duplicate PII, but can redirect a historical event. A protected snapshot fixes the intended destination, but can become stale and increases retention obligations. No raw phone may be used in dedupe keys, log correlation or exception context.
 
-Concurrency scenarios requiring MySQL integration tests:
+The engine should own provider-neutral template identifiers and versions. Providers do not own business wording. Store minimal immutable event facts; reject rendered message-body persistence by default. Copy, language, sender identity and template versions remain pending business data.
 
-- Two workers claim the same intent.
-- A retry overlaps the original provider attempt.
-- Reschedule races reminder delivery.
-- Cancellation races reminder delivery.
-- Duplicate publication of one appointment event.
-- Worker restart during processing.
+## Commit, Queue and Outbox Strategy
 
-The notification path must not acquire or reorder SPEC-004 Appointment locks. Intent uniqueness/claim transitions should be local to notification persistence.
+Strategy B avoids changing the closed Appointment transactions. Appointment/History commit first; the ingestor then creates NotificationIntent in its own transaction. Only after that transaction commits is a stable intent ID queued. Worker dispatch re-reads intent and current Appointment.
 
-## Database and Deletion Strategy
+A separate generic transactional outbox is **not required**. The focused NotificationIntent is a bounded notification outbox for this module. This recommendation is captured in draft ADR-004 and requires human approval because the durable intent/high-water-mark design is cross-cutting.
 
-If durable persistence is approved, use database FKs and uniqueness constraints for Appointment relation and deduplication. Appointment lifecycle/history currently restricts deletion; notification records must not weaken that behavior. Customer relation and destination snapshot deletion semantics require a privacy/business decision. Do not cascade in a way that removes required operational evidence without retention approval.
+## Stale Work, Cancellation and Rescheduling
+
+Before delivery, re-read NotificationIntent and current Appointment. Suppress when:
+
+- Appointment is cancelled;
+- Appointment is no longer confirmed for a reminder;
+- current `starts_at` differs from the reminder occurrence;
+- the intent is already delivered, suppressed or failed terminally;
+- the source event/intent has been superseded;
+- channel, consent or recipient eligibility is no longer valid.
+
+Do not delete database queue rows as the primary cancellation mechanism. Leave work addressable and suppress at execution. A reschedule creates a new reminder occurrence only if the approved reminder policy includes it.
+
+## Status and Retry Model
+
+Recommended minimal statuses:
+
+```text
+pending     intent awaits due/dispatch work
+processing  one worker owns the current attempt
+delivered   provider-neutral delivery success
+suppressed  policy, eligibility or staleness prevents delivery
+failed      terminal failure after approved retry policy
+```
+
+`failed` is terminal. Transient failures remain retryable while work is pending/claimed; no additional public status is needed by default. Retry count, backoff, lease and operator recovery are technical Development decisions, not business blockers unless an approved SLA depends on them.
+
+Failure recommendations:
+
+- timeout/network/provider rate limit: bounded retry;
+- invalid destination: suppress or terminal-fail, no infinite retry;
+- permanent provider rejection: terminal `failed`;
+- stale cancellation/reschedule: `suppressed`;
+- worker restart/lease expiry: safe reclaim using intent timestamps and atomic claim.
+
+## Scheduler Recommendation
+
+Use a periodic scheduler to find due durable reminder intents or eligible current Appointments, then enqueue stable intent IDs. This is preferred over one delayed job per reminder for restart, reschedule and stale-work behavior. Scheduler cadence is a **NON-BLOCKING TECHNICAL DECISION** unless a human-approved reminder SLA requires precision. Existing `retry_after=90` is infrastructure baseline, not notification retry policy.
+
+## Provider Boundary
+
+Provider responsibilities are accepting an approved provider-neutral message, returning a provider-neutral result/reference and classifying transient/permanent provider errors. Providers must not decide eligibility, consent or retry policy, mutate Appointment/Customer state, create records or own business wording. Fake WhatsApp remains SPEC-008.
+
+## Operational Visibility and Public Boundary
+
+Recommended V1 minimum is durable NotificationIntent status plus safe structured/redacted logs. No new Admin Agenda UI is required for delivery correctness; operational UI is a later checkpoint decision. No public notification status, unsubscribe, preference, lookup or webhook endpoint is recommended. Real provider webhooks and receipts are deferred.
+
+## Security and Privacy Analysis
+
+- PII leakage: minimize persisted fields, queue payloads, logs and errors.
+- Provider secrets: server-side only, never in queue payloads or public responses.
+- Duplicate delivery: unique dedupe identity and atomic intent claiming.
+- Amplification: explicit event allowlist, bounded retries and no recursive Appointment mutation.
+- Queue poisoning: stable opaque intent IDs and current-state revalidation.
+- Unauthorized triggering: no public endpoint; future admin surfaces use existing auth.
+- Template injection: constrained variables and provider-neutral rendering boundary.
+- Stale messages: current Appointment/intent checks immediately before send.
+- Replay: unique identity and terminal state transitions.
+
+## Performance, Concurrency and Database Assessment
+
+No production traffic is invented. Use synthetic 10, 100 and 1000 appointment scenarios for later query/queue benchmarking. A due-intent query will likely need a status/scheduled-time index if schema is approved; no index is authorized now.
+
+Required later MySQL scenarios include two workers claiming one intent, retry overlap, reschedule/cancel versus reminder delivery, duplicate History ingestion and worker restart. Notification processing must not acquire or reorder SPEC-004 BusinessProfile/Professional/Appointment locks.
+
+If persistence is approved, use Appointment FKs and a database-unique dedupe key. Preserve existing restrictive Appointment/History deletion behavior. Customer FK and destination-snapshot deletion semantics remain privacy/business decisions.
 
 ## Testing Strategy
 
-Later approved Development should test:
-
-- Eligibility for each approved event type.
-- Post-commit dispatch.
-- Rollback produces no executable notification intent.
-- Deduplication and repeated event publication.
-- Two workers claiming one intent.
-- Reschedule stale suppression.
-- Cancellation stale suppression.
-- Transient retry and terminal failure classification.
-- Provider isolation and provider-neutral result mapping.
-- Privacy/log safety and secret redaction.
-- Business timezone reminder calculation and DST cases where applicable.
-- Queue restart/delay behavior.
-- Customer phone-change semantics after business approval.
-- No Appointment or AppointmentHistory mutation from delivery.
-- No duplicate message delivery under the approved provider contract.
-
-Use MySQL integration tests for transaction, uniqueness, queue persistence and concurrency behavior. Use the dedicated `agenda_estetica_test` database and existing test isolation conventions. Do not add tests or implementation during this Discovery branch.
-
-## Safe Experiments
-
-No temporary experiments were performed. Framework findings came from read-only inspection of installed configuration and source. Cleanup result: no temporary files, fixtures, jobs, cache entries or processes were created.
+Later Development must cover event eligibility, History ingestion, post-commit intent execution, rollback behavior, deduplication, concurrent workers, stale reschedule/cancel suppression, transient/terminal failures, provider isolation, privacy/log safety, timezone/DST reminders, queue restart/delay, approved phone-change semantics, no Appointment mutation and no duplicate messages. Use MySQL integration tests for transactions, uniqueness, queue persistence and concurrency. No new tests were added in Discovery.
 
 ## ADR Assessment
 
-ADR required: `YES` for the recommended durable Notification Intent/post-commit integration because it is a durable cross-cutting boundary involving SPEC-004 transaction integration and future persistence. Draft only:
+ADR-004 is required because the durable NotificationIntent/high-water-mark and SPEC-004 ingestion boundary are durable cross-cutting architecture decisions.
 
 ```text
-docs/architecture/adr/ADR-004-notification-intent-after-commit.md
+Path: docs/architecture/adr/ADR-004-notification-intent-after-commit.md
 Status: DRAFT / REQUIRES HUMAN APPROVAL
 ```
 
-No ADR is accepted automatically and no implementation is authorized by the draft.
+It must be accepted or replaced before Development. No SPEC-004 modification is recommended under Strategy B.
 
-## Development Blockers
+## Final Decision Classification
 
-- Business approval of V1 notification event types and whether cancellation/reschedule messages are required.
-- Business/legal decision on transactional consent, absent consent behavior, channel-specific consent, revocation and opt-out.
-- Approved delivery channel concept and handoff boundary to SPEC-008 Fake WhatsApp.
-- Reminder lead times, number of reminders, quiet hours, holiday behavior and timezone policy.
-- Recipient current-versus-snapshot semantics when Customer contact data changes.
-- Message/template ownership, language, variables and snapshot policy.
-- Durable Notification Intent schema, dedupe identity, retention and FK/deletion behavior.
-- Event-source integration point with SPEC-004 and acceptance of the transactional intent/ADR-004 recommendation.
-- Retry/backoff, lease, terminal failure and operator recovery policy.
-- Minimum operational visibility and authorization boundary.
+### BLOCKS DEVELOPMENT
 
-## Non-Blocking Pending Decisions
+- BD-01 event allowlist.
+- BD-02 logical channel and SPEC-008 handoff.
+- BD-03 transactional consent policy and absent-state behavior.
+- BD-04 reminder inclusion and timing if reminders are V1.
+- Acceptance of Strategy B and draft ADR-004 integration boundary.
+- NotificationIntent schema/dedupe identity and recipient strategy before the schema checkpoint.
 
-- Exact provider-neutral error vocabulary after event/channel policy is approved.
-- Whether a separate attempt-history record is justified beyond intent attempt counters.
-- Due-query cadence and worker process sizing after a synthetic benchmark.
+### BLOCKS ONLY LATER CHECKPOINT
+
+- Exact recipient snapshot/current-phone implementation.
+- Template version/rendering snapshot details.
+- Durable status reason categories.
+- Admin operational visibility.
+- Detailed retry/lease/worker recovery behavior.
+
+### MUST RESOLVE BEFORE PRODUCTION/CLOSURE
+
+- Retention duration and cleanup policy.
+- Provider credentials/sender identity.
+- Final message copy/language.
+- Consent record origin, revocation and privacy/legal policy.
+
+### NON-BLOCKING TECHNICAL DECISION
+
+- Scheduler cadence without an approved SLA.
+- Exact retry seconds/counts while finite/transient-only/terminal semantics are preserved.
+- Queue worker process sizing after synthetic benchmark.
 - Optional provider correlation reference format.
 
-## Deferred Decisions
+### DEFERRED
 
 - Fake WhatsApp implementation and simulation in SPEC-008.
-- Real WhatsApp, Meta, SMS, email providers and webhooks.
-- Customer consent-management UI and notification history UI.
-- Marketing campaigns, bulk messaging and analytics.
-- Generic outbox beyond the focused Notification Intent.
-- SPEC-008+ and all later roadmap items.
+- Real WhatsApp/Meta/SMS/email providers and webhooks.
+- Consent-management UI, notification history UI, marketing and bulk messaging.
+- Generic outbox beyond focused NotificationIntent.
+- SPEC-008+.
 
-## Final Recommended Checkpoints
+## Checkpoint A Minimum Prerequisites
 
-1. **Checkpoint A - Event and Eligibility Contract:** approve event allowlist, transactional/promotional boundary, consent, channel, timing and authority rules.
-2. **Checkpoint B - Durable Intent and Idempotency:** approve ADR-004, schema, event identity, dedupe, recipient/template snapshots and retention.
-3. **Checkpoint C - Queue and Failure Processing:** implement post-commit processing, due scheduling, retries, stale suppression and terminal outcomes.
-4. **Checkpoint D - Provider Boundary:** implement provider-neutral abstraction only; keep Fake WhatsApp in SPEC-008.
-5. **Checkpoint E - Operational Read and Security:** add only an approved authenticated operational outcome surface and redaction hardening.
-6. **Checkpoint F - Final Tests and Audit:** complete reliability, privacy, scope and acceptance verification before closure.
+Before Checkpoint A can begin, human approval is required for:
 
-No checkpoint is authorized by this Discovery.
+- immediate event allowlist;
+- logical channel semantics and SPEC-008 boundary;
+- transactional consent policy or explicit approved absence behavior;
+- whether reminders are in A/V1 and their policy category;
+- Strategy B/ADR-004 as the event-source boundary.
+
+Exact retry backoff, scheduler cadence and Admin UI are not prerequisites for an event/eligibility checkpoint unless an approved SLA makes them relevant.
 
 ## Development Readiness
 
 ```text
-Technical Discovery: COMPLETED / BLOCKED FOR DEVELOPMENT
+Technical Discovery: COMPLETED / READY FOR HUMAN REVIEW
 Development: NOT AUTHORIZED
 Checkpoint A: NOT AUTHORIZED
 ```
 
-The architecture recommendation is documented, but Development must not begin until the listed business and cross-SPEC blockers are resolved and human approval is granted.
+The architecture recommendation is ready for review but Development is blocked until the listed business and ADR decisions are resolved.
 
 ## Scope and Implementation Audit
 
@@ -386,31 +348,30 @@ The architecture recommendation is documented, but Development must not begin un
 new application code: NONE
 new migrations: NONE
 new tables: NONE
-new routes: NONE
 new Jobs: NONE
-new Event/Listener classes: NONE
-new provider implementation: NONE
+new Events/Listeners: NONE
+new providers: NONE
+new routes: NONE
 new Vue: NONE
 new dependencies: NONE
 new production configuration: NONE
+closed SPEC modifications: NONE
 ```
-
-SPEC-003, SPEC-004, SPEC-005, SPEC-006 and existing accepted ADRs remain unchanged. SPEC-008 was not started.
 
 ## Regression Evidence
 
-Discovery changed only documentation. Existing application regression remains the approved baseline:
+Discovery changed documentation only. Existing application regression remains:
 
 - Backend: `208 tests / 1202 assertions`, PASS.
 - SPEC-004 concurrency: `17 tests / 212 assertions`, PASS, `0 skipped`.
 - Frontend: `15 files / 55 tests`, PASS.
 - Pint, PHPStan, Composer validate/audit, ESLint, TypeScript, build and npm audit: PASS.
-- No new functionality tests were added during Discovery.
+- No new functionality tests were added.
 
 ## Final Discovery State
 
 ```text
-SPEC-007: TECHNICAL DISCOVERY COMPLETED / BLOCKED FOR DEVELOPMENT
+SPEC-007: TECHNICAL DISCOVERY COMPLETED / READY FOR HUMAN REVIEW
 Definition: COMPLETED / APPROVED
 Technical Discovery: COMPLETED / READY FOR HUMAN REVIEW
 Development: NOT AUTHORIZED
@@ -425,6 +386,4 @@ Merge: NOT AUTHORIZED
 SPEC-008+: NOT AUTHORIZED
 ```
 
-## Recommended Next Action
-
-STOP. Submit this Technical Discovery and draft ADR-004 for human review. Resolve the Development-blocking business and cross-SPEC decisions before authorizing Checkpoint A. Do not implement Notification Engine or start SPEC-008.
+STOP. Submit this Discovery and draft ADR-004 for human review. Resolve Development-blocking decisions before authorizing Checkpoint A. Do not implement Notification Engine or start SPEC-008.

@@ -10,7 +10,7 @@ Notification Engine
 
 ## Status
 
-`TECHNICAL DISCOVERY COMPLETED / BLOCKED FOR DEVELOPMENT`
+`TECHNICAL DISCOVERY COMPLETED / READY FOR HUMAN REVIEW`
 
 This Definition and its Technical Discovery cover roadmap item `07. Notification engine`, immediately after the merged Public Booking consumer and before Fake WhatsApp. Development and all implementation checkpoints remain unauthorized.
 
@@ -51,7 +51,7 @@ The system needs one notification boundary that consumes authoritative appointme
 
 ### SPEC-003 Business Core
 
-SPEC-007 may consume Customer identity and approved business configuration. Customer identity/contact data and phone normalization remain governed by SPEC-003; contact-channel and consent semantics require SPEC-007 Technical Discovery or a separately approved decision. Notification Engine must not become Customer CRUD or identity management.
+SPEC-007 may consume Customer identity and approved business configuration. Customer identity/contact data and phone normalization remain governed by SPEC-003; contact-channel and consent semantics require an approved SPEC-007 business decision. Notification Engine must not become Customer CRUD or identity management.
 
 ### SPEC-004 Appointment Engine
 
@@ -68,6 +68,8 @@ Public Booking remains the guest booking consumer. SPEC-007 may consume successf
 ### Architecture
 
 The approved architecture remains a Laravel/Vue modular monolith with a database queue and `after_commit=true`. Provider calls must be isolated behind an approved abstraction and must not occur inside Controllers or uncommitted domain transactions.
+
+Technical Discovery recommends reading committed `AppointmentHistory` for immediate lifecycle-event ingestion and scanning current eligible Appointments for reminders. This preserves closed SPEC-004 transaction boundaries; the recommendation is recorded in draft ADR-004 and is not yet approved for Development.
 
 ## In Scope for V1 Definition
 
@@ -327,16 +329,16 @@ Run complete regression, reliability, privacy, scope and acceptance audit before
 - Technical Discovery questions and business blockers are listed without premature implementation decisions.
 - No application code, routes, models, migrations, tests, dependencies, infrastructure or production data are introduced.
 - Documentation diff contains only the SPEC-007 Definition and the required roadmap status reference.
-- Human review is required before Technical Discovery or Development.
+- Human review is required before Development.
 
 ## Definition State
 
 ```text
-SPEC-007: TECHNICAL DISCOVERY COMPLETED / BLOCKED FOR DEVELOPMENT
+SPEC-007: TECHNICAL DISCOVERY COMPLETED / READY FOR HUMAN REVIEW
 Canonical name: Notification Engine
 Roadmap item: 07
 Definition: COMPLETED / APPROVED
-Technical Discovery: COMPLETED / BLOCKED FOR DEVELOPMENT
+Technical Discovery: COMPLETED / READY FOR HUMAN REVIEW
 Development: NOT AUTHORIZED
 Checkpoint A: NOT AUTHORIZED
 Checkpoint B: NOT AUTHORIZED
@@ -354,11 +356,11 @@ SPEC-008+: NOT AUTHORIZED
 ```text
 SPEC-007 - Notification Engine: TECHNICAL DISCOVERY COMPLETED
 Definition: COMPLETED / APPROVED
-Technical Discovery: BLOCKED FOR DEVELOPMENT
+Technical Discovery: COMPLETED / READY FOR HUMAN REVIEW
 Development: NOT AUTHORIZED
 Application changes: NONE
 Schema/dependency changes: NONE
 SPEC-008+: NOT AUTHORIZED
 ```
 
-STOP. Submit the SPEC-007 Definition for human review. Do not start Technical Discovery, Development, Checkpoint A or SPEC-008+.
+STOP. Submit the SPEC-007 Technical Discovery for human review. Do not start Development, Checkpoint A or SPEC-008+.

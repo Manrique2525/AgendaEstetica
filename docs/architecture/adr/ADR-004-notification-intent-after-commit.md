@@ -1,52 +1,99 @@
-# ADR-004 - Notification Intent and Post-Commit Delivery Direction
+# ADR-004 - Notification Intent and Durable Event Ingestion
 
 ## Status
 
 `DRAFT / REQUIRES HUMAN APPROVAL`
 
-This ADR records the Technical Discovery recommendation for SPEC-007. It does not authorize implementation, schema changes, queue jobs, providers or changes to SPEC-003 through SPEC-006.
+This ADR records the reconciled Technical Discovery recommendation for SPEC-007. It does not authorize implementation, schema changes, queue jobs, providers or changes to SPEC-003 through SPEC-006.
 
 ## Context
 
-The Notification Engine must process committed appointment events, suppress stale work, prevent duplicate delivery and survive queue retries or worker restarts. The current application has a database queue with `after_commit=true`, but no notification jobs, events, listeners, providers or notification persistence. Appointment lifecycle remains authoritative in SPEC-004.
+SPEC-004 is closed and owns the Appointment transaction, lifecycle and AppointmentHistory writes. Its Actions currently create or mutate Appointment and History records inside `DB::transaction()` and do not create notification work. SPEC-007 needs reliable event ingestion, duplicate suppression and stale-work handling without hiding a reverse dependency inside a listener or provider.
+
+The application already has a database queue with `after_commit=true`, but no notification jobs, events, listeners, providers or notification persistence. AppointmentHistory is durable, append-only and committed with the originating mutation.
+
+## Decision Under Review
+
+Use two provider-neutral ingestion paths:
+
+1. **Immediate lifecycle events:** a SPEC-007 ingestor reads committed eligible `AppointmentHistory` rows, records a durable high-water mark only after idempotent intent creation, and queues stable Notification Intent IDs. It does not modify SPEC-004 Actions or History.
+2. **Scheduled reminders:** a scheduler queries current eligible Appointments, derives a business-local reminder occurrence using `BusinessProfile.timezone`, creates an idempotent Notification Intent and queues its stable ID.
+
+Both paths share Notification Intent persistence, deduplication, queue processing, stale checks, provider abstraction and status/retry semantics.
 
 ## Options Considered
 
-1. Queue-only fire-and-forget dispatch after an appointment action.
-2. Poll AppointmentHistory without a durable notification intent.
-3. A durable Notification Intent record created transactionally with the originating appointment mutation, then processed through the database queue after commit.
-4. A generic transactional outbox subsystem for all future domains.
+### Strategy A - Transactional Notification Intent
 
-## Provisional Recommendation
+```text
+Appointment mutation transaction
+  -> Appointment / History
+  -> NotificationIntent
+  -> commit
+  -> queue intent ID
+```
 
-Use a focused Notification Intent as the bounded notification outbox for SPEC-007. The intent should be created in the same transaction as the authoritative appointment mutation, carry a provider-neutral event identity and protected minimum data, and become executable only after commit through the existing database queue. A due-intent scheduler should enqueue stable intent IDs, and the worker should re-read current authoritative state before delivery.
+This provides strong atomicity and minimizes event-loss windows, but requires modifying `CreateAppointment`, `RescheduleAppointment`, `CancelAppointment` and any other Appointment mutation that emits notifications. It creates a reverse integration from closed SPEC-004 into SPEC-007 persistence or an approved shared event boundary.
 
-Do not introduce a generic cross-domain outbox or Redis. Do not let a provider decide appointment eligibility, consent, retry policy or Appointment state.
+### Strategy B - AppointmentHistory-Driven Ingestion
 
-## Rationale
+```text
+SPEC-004 writes Appointment / History
+  -> commit
+SPEC-007 ingestor reads committed History
+  -> idempotently creates NotificationIntent
+  -> queues intent ID
+```
 
-- Queue-only dispatch can lose work in the process window after commit and before dispatch, and has no durable stale-work or deduplication record.
-- History polling is delayed, couples notification timing to operational history and still requires a durable deduplication cursor.
-- A focused intent supports idempotency, stale suppression, retry state, safe operational visibility and provider replacement at the scale of one business.
-- A generic outbox is broader than the current need and would create an architecture not justified by the single notification consumer.
+The current AppointmentHistory schema contains an auto-incrementing row ID, Appointment ID, event type, status changes, old/new UTC interval values, old/new Professional IDs and `created_at`. It provides stable source identity for created, rescheduled and status-change events without modifying SPEC-004.
 
-## Required Constraints
+Strategy B introduces bounded delivery latency and a small commit-to-ingestion window, but supports crash recovery through replay from a durable high-water mark and a unique Notification Intent deduplication identity. Re-reading an already ingested history row is safe because intent creation is idempotent.
 
-- The integration point must preserve SPEC-004 lock order and Appointment transaction authority.
-- Notification dispatch must never occur before commit.
-- Intent uniqueness must distinguish appointment event/history identity, notification type, channel and scheduled occurrence/version.
-- Worker payloads should carry stable identifiers rather than raw Customer phone or rendered message bodies.
-- Consent/channel rules, event coverage, recipient snapshot semantics, retention and schema require human/business approval before Development.
+## Reconciled Recommendation
+
+Select **Strategy B for immediate lifecycle notifications** and current-Appointment scanning for scheduled reminders. Preserve SPEC-004 exactly as the Appointment/History authority.
+
+The ingestor must:
+
+- read only committed AppointmentHistory rows;
+- process history IDs in deterministic ascending order;
+- create intents and advance its high-water mark in one Notification Engine persistence transaction;
+- advance the mark only after the corresponding intents are committed;
+- safely reprocess the same history row after a crash using the unique dedupe key;
+- never call a provider or mutate Appointment state;
+- use a bounded overlap/replay strategy if a high-water mark is unavailable or recovery is required.
+
+For reminders, the scheduler must query current Appointment status and `starts_at`, derive occurrences through `BusinessProfile.timezone`, and create an intent keyed by the Appointment plus approved reminder occurrence/version. A reschedule creates a new occurrence; cancelled or no-longer-confirmed appointments suppress old work.
 
 ## Consequences
 
-- A later approved Development checkpoint may require a durable notification intent migration and a narrowly scoped integration with appointment mutations.
-- The worker and scheduler must revalidate current Appointment state and intent identity immediately before provider dispatch.
-- Provider-specific code remains behind a separate abstraction; Fake WhatsApp stays in roadmap item 08.
-- This ADR must be accepted or replaced before any implementation relying on the recommendation.
+- No changes to `CreateAppointment`, `RescheduleAppointment`, `CancelAppointment`, `CompleteAppointment`, `MarkAppointmentNoShow` or AppointmentHistory are required for the recommended initial event source.
+- Immediate notifications have scheduler/ingestor latency and need a documented processing cadence.
+- A durable NotificationIntent model remains recommended for dedupe, retries, stale suppression and safe status.
+- The ingestion high-water mark and intent unique identity must be durable and transactionally safe within SPEC-007.
+- A separate generic outbox is not introduced.
+- Provider-specific code remains behind a separate abstraction; Fake WhatsApp remains SPEC-008.
+
+## Required Constraints
+
+- SPEC-004 lock order and transaction boundaries remain unchanged.
+- AppointmentHistory is read-only to SPEC-007.
+- Notification dispatch occurs only after the Notification Intent transaction commits.
+- Worker payloads carry stable intent IDs, not raw Customer phone or rendered message bodies.
+- The worker re-reads the intent and current Appointment before delivery.
+- Consent, event allowlist, channels, recipient semantics, retention and retry policy require human/business approval before Development.
+
+## Rejected Alternatives
+
+- Provider calls from Appointment Actions: couples domain mutation to delivery and risks pre-commit sends.
+- Notification orchestration in Controllers: violates the architecture and bypasses domain authority.
+- Queue-only fire-and-forget: lacks durable dedupe/stale state and can lose work after commit.
+- AppointmentHistory polling without a durable high-water mark and unique intent: can skip or duplicate events.
+- Generic cross-domain outbox: broader than the single notification consumer.
+- Redis/distributed locks: outside the approved architecture and unnecessary for this bounded design.
 
 ## Open Approval Questions
 
-- Is the transactional Notification Intent integration with SPEC-004 acceptable as the V1 event source?
-- Is the proposed focused outbox sufficient, or is a broader outbox justified by evidence?
+- Is AppointmentHistory-driven ingestion acceptable for immediate lifecycle notifications despite bounded scheduler latency?
+- Is the focused NotificationIntent plus durable ingestion mark sufficient, without a generic outbox?
 - Which event, consent, channel, recipient, retention and retry decisions are approved for Development?
