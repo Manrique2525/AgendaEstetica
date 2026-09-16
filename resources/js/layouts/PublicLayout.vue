@@ -72,7 +72,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeydown));
             <main id="main-content" tabindex="-1" class="py-8 outline-none sm:py-12">
                 <slot />
             </main>
-            <footer id="contacto" class="border-t border-white/15 py-8" aria-label="Información de contacto">
+            <footer class="border-t border-white/15 py-8" aria-label="Información de contacto">
                 <div class="grid gap-6 font-body text-sm text-white/80 sm:grid-cols-2">
                     <div>
                         <p class="font-display text-2xl text-text-inverse">{{ publicSite.business.name }}</p>

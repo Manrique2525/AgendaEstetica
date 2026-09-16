@@ -2,9 +2,9 @@
 
 ## Status
 
-`DEVELOPMENT IN PROGRESS - CHECKPOINT A ONLY`
+`DEVELOPMENT IN PROGRESS - CHECKPOINT B ONLY`
 
-Definition is approved. Development, Checkpoints A-C and implementation are not authorized. This
+Definition is approved. Development is authorized for Checkpoints A and B only. Checkpoint C and further implementation are not authorized. This
 Definition covers only the public landing/storefront foundation. It does not
 implement a generic CMS editor, ecommerce, booking changes or academic
 presentation features.
@@ -189,12 +189,13 @@ signature, invoice, provider or Fake WhatsApp behavior is included.
 
 ## Proposed Checkpoints
 
-These checkpoints are not authorized:
+Checkpoint A and B are implemented under their respective authorizations.
+Checkpoint C remains unauthorized:
 
 - Checkpoint A: public shell, centralized business data, header, navigation and
   footer.
-- Checkpoint B: hero, business/contact content and optional approved services
-  preview.
+- Checkpoint B: hero, business/contact content and preparation-only store
+  categories.
 - Checkpoint C: responsive, accessibility, SEO and visual QA.
 
 Generic CMS editing is deferred unless a later approved requirement establishes
@@ -215,11 +216,11 @@ SPEC-009 - CMS / landing: DEVELOPMENT IN PROGRESS
 Definition: APPROVED
 Technical Discovery: APPROVED
 Development: IN PROGRESS - CHECKPOINT A ONLY
-Checkpoint A: IMPLEMENTED / READY FOR HUMAN REVIEW
-Checkpoint B: NOT AUTHORIZED
+Checkpoint A: COMPLETED / APPROVED
+Checkpoint B: IMPLEMENTED / READY FOR HUMAN REVIEW
 Checkpoint C: NOT AUTHORIZED
 SPEC-007: PAUSED / UNCHANGED
 SPEC-008: FAKE WHATSAPP / UNCHANGED / NOT AUTHORIZED
 ```
 
-STOP. Submit Checkpoint A for human review. Do not start Checkpoint B.
+STOP. Submit Checkpoint B for human review. Do not start Checkpoint C.
