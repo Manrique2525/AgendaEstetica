@@ -42,4 +42,6 @@ Cada etapa requiere SPEC, discovery, plan aprobado, implementación, pruebas, au
 
 `SPEC-006 - Public Booking` está en estado `CLOSED / MERGED` en `docs/specs/SPEC-006-public-booking.md`. La implementación, aceptación, cierre y merge están aprobados. SPEC-007 no está autorizado.
 
+`EPIC-STOREFRONT-ACADEMIC-PHASE-1` está en estado `AUDITED / DEFINITION READY FOR HUMAN REVIEW`. Esta agrupación documental consume los roadmap items 09-13 sin renombrarlos, mantiene SPEC-007 pausada y SPEC-008 reservada para Fake WhatsApp, y no autoriza Development. Appointment Request y Academic Phase 1 quedan recomendados después del roadmap como SPEC-021 y SPEC-022, sujetos a aprobación separada. Ver `docs/epics/EPIC-STOREFRONT-ACADEMIC-PHASE-1.md`, `docs/specs/SPEC-009-cms-landing.md` y `docs/reports/STOREFRONT-ECOMMERCE-INTEGRATION-AUDIT-REPORT.md`.
+
 Target de Foundation: Laravel 13, PHP 8.3+, MySQL 8.4 LTS, Vue 3, TypeScript, Vite, Tailwind CSS, Sanctum y Pest.
