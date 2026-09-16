@@ -52,7 +52,7 @@ Human-readable results: `/tmp/spec009-browser-qa/report.txt`.
 ## Automated Evidence
 
 - Backend: `208 tests / 1202 assertions PASS`.
-- Frontend: `18 files / 62 tests PASS`.
+- Frontend: `18 files / 63 tests PASS`.
 - Composer validate/audit: PASS.
 - Pint: PASS.
 - PHPStan: PASS.

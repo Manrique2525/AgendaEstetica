@@ -2,7 +2,7 @@
 
 ## Status
 
-`DEVELOPMENT IMPLEMENTATION COMPLETE / READY FOR CLOSURE REVIEW`
+`DEVELOPMENT COMPLETE / CLOSURE REVIEW COMPLETED / READY FOR MERGE AUTHORIZATION`
 
 Definition is approved. Development for Checkpoints A-C is complete and ready for closure review. This
 Definition covers only the public landing/storefront foundation. It does not
@@ -212,15 +212,15 @@ digital signature, academic screens, providers and Fake WhatsApp.
 ## State
 
 ```text
-SPEC-009 - CMS / landing: DEVELOPMENT IN PROGRESS
+SPEC-009 - CMS / landing: DEVELOPMENT COMPLETE / CLOSURE REVIEW COMPLETED / READY FOR MERGE AUTHORIZATION
 Definition: APPROVED
 Technical Discovery: APPROVED
 Development: COMPLETE - READY FOR CLOSURE REVIEW
 Checkpoint A: COMPLETED / APPROVED
 Checkpoint B: COMPLETED / APPROVED
-Checkpoint C: IMPLEMENTED / READY FOR HUMAN APPROVAL
+Checkpoint C: COMPLETED / APPROVED
 SPEC-007: PAUSED / UNCHANGED
 SPEC-008: FAKE WHATSAPP / UNCHANGED / NOT AUTHORIZED
 ```
 
-STOP. Submit Checkpoint C for human approval and SPEC-009 closure review. Do not start SPEC-010.
+STOP. Submit SPEC-009 for explicit merge authorization. Do not mark CLOSED/MERGED or start SPEC-010.
