@@ -2,9 +2,9 @@
 
 ## Status
 
-`DRAFT / REQUIRES HUMAN APPROVAL`
+`ACCEPTED`
 
-This ADR records the reconciled Technical Discovery recommendation for SPEC-007. It does not authorize implementation, schema changes, queue jobs, providers or changes to SPEC-003 through SPEC-006.
+This ADR records the human-approved Technical Discovery recommendation for SPEC-007. It does not authorize implementation, schema changes, queue jobs, providers or changes to SPEC-003 through SPEC-006.
 
 ## Context
 
@@ -12,12 +12,12 @@ SPEC-004 is closed and owns the Appointment transaction, lifecycle and Appointme
 
 The application already has a database queue with `after_commit=true`, but no notification jobs, events, listeners, providers or notification persistence. AppointmentHistory is durable, append-only and committed with the originating mutation.
 
-## Decision Under Review
+## Decision
 
 Use two provider-neutral ingestion paths:
 
-1. **Immediate lifecycle events:** a SPEC-007 ingestor reads committed eligible `AppointmentHistory` rows, records a durable high-water mark only after idempotent intent creation, and queues stable Notification Intent IDs. It does not modify SPEC-004 Actions or History.
-2. **Scheduled reminders:** a scheduler queries current eligible Appointments, derives a business-local reminder occurrence using `BusinessProfile.timezone`, creates an idempotent Notification Intent and queues its stable ID.
+1. **Immediate lifecycle events:** a SPEC-007 ingestor repeatedly discovers eligible committed `AppointmentHistory` rows, uses a History-ID cursor only as a performance optimization, checks for missing NotificationIntent identity, and creates/queues stable Notification Intent IDs idempotently. It does not modify SPEC-004 Actions or History.
+2. **Scheduled reminders:** a scheduler queries current eligible Appointments, derives the approved one-time occurrence at `appointment.starts_at - 24 hours` using `BusinessProfile.timezone`, creates an idempotent Notification Intent and queues its stable ID.
 
 Both paths share Notification Intent persistence, deduplication, queue processing, stale checks, provider abstraction and status/retry semantics.
 
@@ -47,11 +47,11 @@ SPEC-007 ingestor reads committed History
 
 The current AppointmentHistory schema contains an auto-incrementing row ID, Appointment ID, event type, status changes, old/new UTC interval values, old/new Professional IDs and `created_at`. It provides stable source identity for created, rescheduled and status-change events without modifying SPEC-004.
 
-Strategy B introduces bounded delivery latency and a small commit-to-ingestion window, but supports crash recovery through replay from a durable high-water mark and a unique Notification Intent deduplication identity. Re-reading an already ingested history row is safe because intent creation is idempotent.
+Strategy B introduces bounded delivery latency and a small commit-to-ingestion window, but supports crash recovery through repeatable reconciliation, optional cursor replay and a unique Notification Intent deduplication identity. Re-reading an already ingested history row is safe because intent creation is idempotent. A naive `id > last_seen_id` scan is not a correctness boundary because auto-increment IDs and `created_at` are not commit ordered.
 
-## Reconciled Recommendation
+## Approved Recommendation
 
-Select **Strategy B for immediate lifecycle notifications** and current-Appointment scanning for scheduled reminders. Preserve SPEC-004 exactly as the Appointment/History authority.
+Select **Strategy B for immediate lifecycle notifications** and current-Appointment scanning for scheduled reminders. Preserve SPEC-004 exactly as the Appointment/History authority. Human approval was granted for this ADR decision and does not authorize Development.
 
 The ingestor must:
 
@@ -61,7 +61,7 @@ The ingestor must:
 - advance the mark only after the corresponding intents are committed;
 - safely reprocess the same history row after a crash using the unique dedupe key;
 - never call a provider or mutate Appointment state;
-- use a bounded overlap/replay strategy if a high-water mark is unavailable or recovery is required.
+- use repeatable NOT-EXISTS reconciliation as the correctness path; the cursor is only a fast-path optimization.
 
 For reminders, the scheduler must query current Appointment status and `starts_at`, derive occurrences through `BusinessProfile.timezone`, and create an intent keyed by the Appointment plus approved reminder occurrence/version. A reschedule creates a new occurrence; cancelled or no-longer-confirmed appointments suppress old work.
 
@@ -81,7 +81,7 @@ For reminders, the scheduler must query current Appointment status and `starts_a
 - Notification dispatch occurs only after the Notification Intent transaction commits.
 - Worker payloads carry stable intent IDs, not raw Customer phone or rendered message bodies.
 - The worker re-reads the intent and current Appointment before delivery.
-- Consent, event allowlist, channels, recipient semantics, retention and retry policy require human/business approval before Development.
+- Approved V1 decisions cover the event allowlist, logical WhatsApp channel, transactional consent Option A, one 24-hour reminder and current Customer phone at delivery. Retention remains deferred until before production/SPEC closure; retry policy remains a later technical decision.
 
 ## Rejected Alternatives
 
@@ -92,8 +92,13 @@ For reminders, the scheduler must query current Appointment status and `starts_a
 - Generic cross-domain outbox: broader than the single notification consumer.
 - Redis/distributed locks: outside the approved architecture and unnecessary for this bounded design.
 
-## Open Approval Questions
+## Approval Record
 
-- Is AppointmentHistory-driven ingestion acceptable for immediate lifecycle notifications despite bounded scheduler latency?
-- Is the focused NotificationIntent plus durable ingestion mark sufficient, without a generic outbox?
-- Which event, consent, channel, recipient, retention and retry decisions are approved for Development?
+- Strategy B AppointmentHistory ingestion: APPROVED.
+- Focused NotificationIntent without a generic outbox: APPROVED.
+- Event allowlist: confirmed/created, rescheduled, cancelled and one scheduled reminder IN; completed, no-show and marketing OUT.
+- Logical channel: `whatsapp`; provider implementation remains SPEC-008 Fake WhatsApp.
+- Transactional consent: appointment Customer phone may receive confirmation, reschedule, cancellation and reminder messages without a separate opt-in; marketing remains OUT.
+- Reminder: one occurrence at `appointment.starts_at - 24 hours`.
+- Phone changes: resolve current Customer phone at delivery.
+- Retention: DEFERRED until before production/SPEC closure.

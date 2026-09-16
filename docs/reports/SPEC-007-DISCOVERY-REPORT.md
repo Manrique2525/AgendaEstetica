@@ -2,13 +2,13 @@
 
 ## Discovery Status
 
-- SPEC-007: `TECHNICAL DISCOVERY COMPLETED / READY FOR HUMAN REVIEW`.
+- SPEC-007: `TECHNICAL DISCOVERY COMPLETED / READY FOR DEVELOPMENT APPROVAL`.
 - Definition: `COMPLETED / APPROVED`.
 - Branch: `docs/spec-007-discovery`.
 - Development: `NOT AUTHORIZED`.
 - Checkpoint A: `NOT AUTHORIZED`.
 - SPEC-008: `NOT AUTHORIZED`.
-- ADR-004: `DRAFT / REQUIRES HUMAN APPROVAL`.
+- ADR-004: `ACCEPTED` by explicit human approval; implementation remains unauthorized.
 
 ## Documents and Code Reviewed
 
@@ -72,7 +72,7 @@ SPEC-007 ingestor reads committed History
 
 The current History schema has a durable auto-increment ID, `appointment_id`, `event_type`, nullable old/new status, nullable old/new UTC intervals, nullable old/new Professional IDs and `created_at`. It is sufficient to identify created/confirmed, rescheduled and cancellation/status-change events without modifying SPEC-004.
 
-Recommended reliability model: process History IDs in ascending order using a durable ingestion high-water mark, create intents and advance the mark in one SPEC-007 transaction, and advance only after intent creation commits. A crash before mark advancement safely reprocesses the source row; a crash after intent commit is safe through the unique dedupe identity. A bounded replay/reconciliation scan is required for recovery.
+Recommended reliability model: use a History-ID cursor only as a fast-path optimization, then repeatedly reconcile eligible committed History rows for which no matching NotificationIntent exists. Create intents and advance any cursor in one SPEC-007 transaction, and advance only after intent creation commits. A crash before mark advancement safely reprocesses the source row; a crash after intent commit is safe through the unique dedupe identity. The reconciliation path is the correctness mechanism.
 
 Costs: bounded scheduler/ingestor latency and a commit-to-ingestion window. These are preferable to changing closed SPEC-004 because the source is durable and replayable.
 
@@ -81,6 +81,21 @@ Costs: bounded scheduler/ingestor latency and a commit-to-ingestion window. Thes
 Recommend **Strategy B** for immediate lifecycle notifications. Use a separate current-Appointment query for scheduled reminders. This preserves SPEC-004 exactly.
 
 Closed-SPEC modification required: **NO** for the recommended event-source architecture.
+
+### History-ID safety gate
+
+AppointmentHistory auto-increment IDs are not commit ordered. A transaction can reserve ID `N`, remain open, and allow another transaction to reserve `N+1` and commit first. If ingestion advances a sole cursor to `N+1`, the later commit of `N` is permanently missed by `WHERE id > last_seen_id`. `created_at` is also written before commit and is not a commit-order cursor.
+
+Therefore:
+
+- B1 naive monotonic watermark: REJECTED as the sole correctness mechanism.
+- B2 overlap/replay window: useful recovery optimization, but not a formal guarantee for arbitrarily long transactions.
+- B3 NOT-EXISTS reconciliation: correctness mechanism; finds eligible committed History rows without matching intent.
+- B4 cursor plus reconciliation: RECOMMENDED; cursor is only a fast path.
+- B5 separate ingestion ledger: not required beyond NotificationIntent identity plus durable cursor state.
+- B6 after-commit publication: useful optimization only, not a sole path; it would require SPEC-004 integration and retains a publication crash window.
+
+The required property is that a committed eligible History event cannot be permanently lost because a concurrent transaction committed a higher History ID first. Repeatable reconciliation plus deterministic uniqueness satisfies that property at the consumer boundary.
 
 ## Event Sources and Identity
 
@@ -99,13 +114,13 @@ Ingestion idempotency requires a unique deterministic NotificationIntent identit
 
 | Event | Recommendation | Approval state |
 | --- | --- | --- |
-| Appointment confirmed/created | IN | Human approval required |
-| Appointment rescheduled | IN | Human approval required |
-| Appointment cancelled | IN | Human approval required |
-| Scheduled reminder | IN | Human approval required |
-| Appointment completed | OUT by default | Explicit use case required |
-| Appointment no-show | OUT by default | Explicit policy required |
-| Marketing/promotional | OUT | Separate scope required |
+| Appointment confirmed/created | IN | Approved |
+| Appointment rescheduled | IN | Approved |
+| Appointment cancelled | IN | Approved |
+| Scheduled reminder | IN | Approved, one reminder at 24 hours |
+| Appointment completed | OUT | Approved OUT |
+| Appointment no-show | OUT | Approved OUT |
+| Marketing/promotional | OUT | Approved OUT |
 
 Not every History row automatically generates a notification.
 
@@ -125,10 +140,10 @@ Recommended conceptual fields:
 | scheduled occurrence/version | Required for reminders |
 | deterministic dedupe key | Required and database-unique |
 | Customer reference | Required/pending privacy decision |
-| protected destination snapshot | Pending business/privacy decision |
+| protected destination snapshot | Rejected by approved V1 default |
 | raw phone in logs/keys | Rejected |
-| normalized phone persistence | Pending; never exposed/logged as identity |
-| template identifier/version | Required/pending |
+| normalized phone persistence | Rejected by approved V1 default; never exposed/logged as identity |
+| template identifier/version | Required; final template version is later technical/content detail |
 | rendered message body | Rejected by default |
 | minimal immutable event facts | Optional/pending |
 | status | Required |
@@ -136,23 +151,20 @@ Recommended conceptual fields:
 | provider-neutral error classification | Required |
 | provider reference | Optional/pending |
 | timestamps | Required |
-| retention metadata | Pending |
+| retention metadata | Deferred until before production/SPEC closure |
 
 ## Immediate Events and Scheduled Reminders
 
 Both classes share intent persistence, deduplication, provider abstraction, queue processing, statuses, retries, stale checks and privacy rules.
 
-Immediate events are ingested from committed History and have bounded ingestion latency. Reminders are derived from current Appointments and must use current `status`, current `starts_at` and `BusinessProfile.timezone` immediately before intent creation and delivery.
+Immediate events are ingested from committed History and have bounded ingestion latency. Reminders are derived from current Appointments and must use current `status`, current `starts_at` and `BusinessProfile.timezone` immediately before intent creation and delivery. Their one approved occurrence is `appointment.starts_at - 24 hours`; if that instant has passed when the Appointment becomes eligible, no retroactive reminder is created.
 
-Reminder timing options for human decision:
+Approved reminder timing:
 
-- same-day reminder;
-- 24 hours before;
-- 2 hours before;
-- multiple reminders;
-- custom business policy.
+- one reminder at `appointment.starts_at - 24 hours`;
+- no same-day, 2-hour, multiple or custom reminder in V1.
 
-No timing is selected here. Exact cadence is a later technical decision unless an approved business SLA makes it a prerequisite.
+Scheduler cadence remains a non-blocking technical decision; no independent quiet-hours engine is included.
 
 ## Channel and Consent Decision Gate
 
@@ -173,21 +185,21 @@ Business decision options:
 
 | Decision | Option A | Option B | Recommended default | Architecture impact | Blocks Checkpoint A |
 | --- | --- | --- | --- | --- | --- |
-| BD-01 Event allowlist | confirmations/reschedules/cancellations/reminders | narrower allowlist | approve baseline IN/OUT table | Defines History ingestion policy | YES |
-| BD-02 Delivery channel | generic logical channel only | approve logical WhatsApp channel for SPEC-008 handoff | generic channel plus logical WhatsApp name, no provider | Defines intent/channel uniqueness | YES |
-| BD-03 Transactional consent | appointment phone may receive transactional messages generated from that appointment | explicit notification opt-in required | BUSINESS/LEGAL DECISION REQUIRED; safe absent-state suppression | Affects eligibility and data fields | YES |
-| BD-04 Reminder timing | same-day / 24h / 2h / multiple / custom | no reminders in V1 | BUSINESS DECISION REQUIRED | Affects reminder occurrence and scheduler | YES if reminders are IN |
-| BD-05 Quiet hours | explicit quiet-hours policy | no independent quiet-hours engine; timing avoids undesirable hours | no values selected; prefer no separate engine initially | Affects scheduler/late events | NO for immediate-only A |
-| BD-06 Phone changes | current Customer phone at delivery | protected destination snapshot | choose before intent schema; snapshot is safer historical semantics but increases PII | Affects recipient fields/privacy | NO for event allowlist; YES for intent schema checkpoint |
-| BD-07 Retention | business/legal duration | minimal duration after operational need | BUSINESS/LEGAL DECISION REQUIRED | Affects cleanup and PII retention | NO if schema omits duration field; YES before production |
+| BD-01 Event allowlist | confirmations/reschedules/cancellations/reminders | narrower allowlist | approved baseline IN/OUT table | Defines History ingestion policy | RESOLVED |
+| BD-02 Delivery channel | generic logical channel only | logical WhatsApp channel for SPEC-008 handoff | `whatsapp` logical channel, no provider | Defines intent/channel uniqueness | RESOLVED |
+| BD-03 Transactional consent | appointment phone may receive transactional messages generated from that appointment | explicit notification opt-in required | Option A approved; marketing remains OUT | Affects eligibility and data fields | RESOLVED |
+| BD-04 Reminder timing | same-day / 24h / 2h / multiple / custom | no reminders in V1 | one reminder 24 hours before | Defines reminder occurrence | RESOLVED |
+| BD-05 Quiet hours | explicit quiet-hours policy | no independent quiet-hours engine | no separate engine in V1 | Affects scheduler only if future policy changes | RESOLVED |
+| BD-06 Phone changes | current Customer phone at delivery | protected destination snapshot | current Customer phone at delivery | Affects recipient fields/privacy | RESOLVED |
+| BD-07 Retention | business/legal duration | minimal duration after operational need | DEFERRED HUMAN DECISION | Affects cleanup and PII retention | BEFORE PRODUCTION/CLOSURE |
 
 Transactional appointment communication and promotional communication must remain separate. Marketing/promotional communication is OUT. No legal conclusion is made by this Discovery.
 
 ## Recipient and Template Strategy
 
-Recommended V1 default is to keep stable Customer/Appointment references in queue payloads and re-read authoritative data at execution. Whether the notification intent stores a protected destination snapshot or resolves the current Customer phone remains a business/privacy decision.
+Approved V1 default is to keep stable Customer/Appointment references in queue payloads and resolve the current Customer phone at delivery.
 
-Current-phone-at-delivery honors corrections and stores less duplicate PII, but can redirect a historical event. A protected snapshot fixes the intended destination, but can become stale and increases retention obligations. No raw phone may be used in dedupe keys, log correlation or exception context.
+Current-phone-at-delivery honors corrections and stores less duplicate PII. No raw phone may be used in dedupe keys, log correlation or exception context. A protected snapshot is not required by default.
 
 The engine should own provider-neutral template identifiers and versions. Providers do not own business wording. Store minimal immutable event facts; reject rendered message-body persistence by default. Copy, language, sender identity and template versions remain pending business data.
 
@@ -195,7 +207,7 @@ The engine should own provider-neutral template identifiers and versions. Provid
 
 Strategy B avoids changing the closed Appointment transactions. Appointment/History commit first; the ingestor then creates NotificationIntent in its own transaction. Only after that transaction commits is a stable intent ID queued. Worker dispatch re-reads intent and current Appointment.
 
-A separate generic transactional outbox is **not required**. The focused NotificationIntent is a bounded notification outbox for this module. This recommendation is captured in draft ADR-004 and requires human approval because the durable intent/high-water-mark design is cross-cutting.
+A separate generic transactional outbox is **not required**. The focused NotificationIntent is a bounded notification outbox for this module. ADR-004 is accepted; implementation remains separately unauthorized.
 
 ## Stale Work, Cancellation and Rescheduling
 
@@ -206,9 +218,9 @@ Before delivery, re-read NotificationIntent and current Appointment. Suppress wh
 - current `starts_at` differs from the reminder occurrence;
 - the intent is already delivered, suppressed or failed terminally;
 - the source event/intent has been superseded;
-- channel, consent or recipient eligibility is no longer valid.
+- approved channel or recipient eligibility is no longer valid.
 
-Do not delete database queue rows as the primary cancellation mechanism. Leave work addressable and suppress at execution. A reschedule creates a new reminder occurrence only if the approved reminder policy includes it.
+Do not delete database queue rows as the primary cancellation mechanism. Leave work addressable and suppress at execution. A reschedule creates a new 24-hour reminder occurrence when that occurrence is still in the future and the Appointment remains eligible.
 
 ## Status and Retry Model
 
@@ -262,7 +274,7 @@ No production traffic is invented. Use synthetic 10, 100 and 1000 appointment sc
 
 Required later MySQL scenarios include two workers claiming one intent, retry overlap, reschedule/cancel versus reminder delivery, duplicate History ingestion and worker restart. Notification processing must not acquire or reorder SPEC-004 BusinessProfile/Professional/Appointment locks.
 
-If persistence is approved, use Appointment FKs and a database-unique dedupe key. Preserve existing restrictive Appointment/History deletion behavior. Customer FK and destination-snapshot deletion semantics remain privacy/business decisions.
+If persistence is approved, use Appointment FKs and a database-unique dedupe key. Preserve existing restrictive Appointment/History deletion behavior. Resolve the current Customer phone at delivery; no destination snapshot is required by the approved V1 default.
 
 ## Testing Strategy
 
@@ -270,29 +282,24 @@ Later Development must cover event eligibility, History ingestion, post-commit i
 
 ## ADR Assessment
 
-ADR-004 is required because the durable NotificationIntent/high-water-mark and SPEC-004 ingestion boundary are durable cross-cutting architecture decisions.
+ADR-004 records the approved durable NotificationIntent/reconciliation boundary without modifying SPEC-004.
 
 ```text
 Path: docs/architecture/adr/ADR-004-notification-intent-after-commit.md
-Status: DRAFT / REQUIRES HUMAN APPROVAL
+Status: ACCEPTED
 ```
 
-It must be accepted or replaced before Development. No SPEC-004 modification is recommended under Strategy B.
+Development remains separately unauthorized. No SPEC-004 modification is recommended under Strategy B.
 
 ## Final Decision Classification
 
 ### BLOCKS DEVELOPMENT
 
-- BD-01 event allowlist.
-- BD-02 logical channel and SPEC-008 handoff.
-- BD-03 transactional consent policy and absent-state behavior.
-- BD-04 reminder inclusion and timing if reminders are V1.
-- Acceptance of Strategy B and draft ADR-004 integration boundary.
-- NotificationIntent schema/dedupe identity and recipient strategy before the schema checkpoint.
+- NONE from the approved AD/BD decision gate; Development remains separately unauthorized.
 
 ### BLOCKS ONLY LATER CHECKPOINT
 
-- Exact recipient snapshot/current-phone implementation.
+- Exact NotificationIntent schema, physical dedupe constraint and current-phone implementation.
 - Template version/rendering snapshot details.
 - Durable status reason categories.
 - Admin operational visibility.
@@ -303,7 +310,7 @@ It must be accepted or replaced before Development. No SPEC-004 modification is 
 - Retention duration and cleanup policy.
 - Provider credentials/sender identity.
 - Final message copy/language.
-- Consent record origin, revocation and privacy/legal policy.
+- Any future consent-management, revocation or privacy/legal policy beyond approved transactional Option A.
 
 ### NON-BLOCKING TECHNICAL DECISION
 
@@ -322,25 +329,25 @@ It must be accepted or replaced before Development. No SPEC-004 modification is 
 
 ## Checkpoint A Minimum Prerequisites
 
-Before Checkpoint A can begin, human approval is required for:
+Checkpoint A prerequisites are satisfied for the approved Discovery boundary:
 
-- immediate event allowlist;
-- logical channel semantics and SPEC-008 boundary;
-- transactional consent policy or explicit approved absence behavior;
-- whether reminders are in A/V1 and their policy category;
-- Strategy B/ADR-004 as the event-source boundary.
+- immediate event allowlist: SATISFIED;
+- logical channel semantics and SPEC-008 boundary: SATISFIED;
+- transactional consent policy: SATISFIED;
+- reminder inclusion and 24-hour policy: SATISFIED;
+- Strategy B/ADR-004 event-source boundary: SATISFIED.
 
 Exact retry backoff, scheduler cadence and Admin UI are not prerequisites for an event/eligibility checkpoint unless an approved SLA makes them relevant.
 
 ## Development Readiness
 
 ```text
-Technical Discovery: COMPLETED / READY FOR HUMAN REVIEW
+Technical Discovery: COMPLETED / APPROVED
 Development: NOT AUTHORIZED
 Checkpoint A: NOT AUTHORIZED
 ```
 
-The architecture recommendation is ready for review but Development is blocked until the listed business and ADR decisions are resolved.
+The architecture recommendation is approved; Development remains separately unauthorized and Checkpoint A requires separate authorization.
 
 ## Scope and Implementation Audit
 
@@ -371,9 +378,9 @@ Discovery changed documentation only. Existing application regression remains:
 ## Final Discovery State
 
 ```text
-SPEC-007: TECHNICAL DISCOVERY COMPLETED / READY FOR HUMAN REVIEW
+SPEC-007: TECHNICAL DISCOVERY COMPLETED / READY FOR DEVELOPMENT APPROVAL
 Definition: COMPLETED / APPROVED
-Technical Discovery: COMPLETED / READY FOR HUMAN REVIEW
+Technical Discovery: COMPLETED / APPROVED
 Development: NOT AUTHORIZED
 Checkpoint A: NOT AUTHORIZED
 Checkpoint B: NOT AUTHORIZED
@@ -386,4 +393,4 @@ Merge: NOT AUTHORIZED
 SPEC-008+: NOT AUTHORIZED
 ```
 
-STOP. Submit this Discovery and draft ADR-004 for human review. Resolve Development-blocking decisions before authorizing Checkpoint A. Do not implement Notification Engine or start SPEC-008.
+STOP. Submit this finalized Discovery and accepted ADR-004 for human review. Authorize Checkpoint A only through a separate human decision. Do not implement Notification Engine or start SPEC-008.

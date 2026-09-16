@@ -10,9 +10,9 @@ Notification Engine
 
 ## Status
 
-`TECHNICAL DISCOVERY COMPLETED / READY FOR HUMAN REVIEW`
+`TECHNICAL DISCOVERY COMPLETED / READY FOR DEVELOPMENT APPROVAL`
 
-This Definition and its Technical Discovery cover roadmap item `07. Notification engine`, immediately after the merged Public Booking consumer and before Fake WhatsApp. Development and all implementation checkpoints remain unauthorized.
+This Definition and its Technical Discovery cover roadmap item `07. Notification engine`, immediately after the merged Public Booking consumer and before Fake WhatsApp. Development and all implementation checkpoints remain unauthorized pending separate approval.
 
 ## Roadmap Reference
 
@@ -51,7 +51,7 @@ The system needs one notification boundary that consumes authoritative appointme
 
 ### SPEC-003 Business Core
 
-SPEC-007 may consume Customer identity and approved business configuration. Customer identity/contact data and phone normalization remain governed by SPEC-003; contact-channel and consent semantics require an approved SPEC-007 business decision. Notification Engine must not become Customer CRUD or identity management.
+SPEC-007 may consume Customer identity and approved business configuration. Customer identity/contact data and phone normalization remain governed by SPEC-003; the approved SPEC-007 decision permits transactional appointment communications through the appointment Customer phone without a separate opt-in. Marketing/promotional consent remains outside this V1 scope. Notification Engine must not become Customer CRUD or identity management.
 
 ### SPEC-004 Appointment Engine
 
@@ -69,7 +69,9 @@ Public Booking remains the guest booking consumer. SPEC-007 may consume successf
 
 The approved architecture remains a Laravel/Vue modular monolith with a database queue and `after_commit=true`. Provider calls must be isolated behind an approved abstraction and must not occur inside Controllers or uncommitted domain transactions.
 
-Technical Discovery recommends reading committed `AppointmentHistory` for immediate lifecycle-event ingestion and scanning current eligible Appointments for reminders. This preserves closed SPEC-004 transaction boundaries; the recommendation is recorded in draft ADR-004 and is not yet approved for Development.
+Technical Discovery recommends reading committed `AppointmentHistory` for immediate lifecycle-event ingestion and scanning current eligible Appointments for reminders. This preserves closed SPEC-004 transaction boundaries; the recommendation is recorded in accepted ADR-004, while Development remains separately unauthorized.
+
+The approved Discovery baseline uses repeatable History reconciliation with a cursor only as an optimization, and one reminder occurrence at `appointment.starts_at - 24 hours`. No SPEC-004 modification or generic outbox is required.
 
 ## In Scope for V1 Definition
 
@@ -101,14 +103,14 @@ These are capability boundaries, not authorization to create tables, jobs, provi
 
 ## Business Rules to Preserve
 
-- Notifications are sent only for eligible future appointments with valid current scheduling context, approved consent and an available communication channel, subject to Discovery definition of each condition.
+- Notifications are sent only for eligible future appointments with valid current scheduling context, the approved transactional policy and an available approved logical channel.
 - Notification work must not be sent before the originating appointment transaction commits.
 - Duplicate notification delivery must be prevented using an idempotency identity based on the approved appointment event, version and type contract.
 - Pending notification work must be invalidated or safely suppressed when an appointment is cancelled or rescheduled, according to the discovered event model.
 - Appointment status, time, availability, capacity, duration and history remain authoritative in SPEC-004.
 - Customer identity, phone normalization and privacy boundaries remain authoritative in SPEC-003 and existing approved consumers.
 - Provider failure must not mutate Appointment state or create a competing appointment lifecycle.
-- Unknown business data, channel policies, consent and provider credentials remain pending until explicitly confirmed.
+- Provider credentials, sender identity, final copy and retention remain pending until explicitly confirmed; the approved transactional consent, logical channel, event allowlist, reminder timing and phone-resolution decisions are recorded in Discovery.
 
 ## Functional Requirements
 
@@ -217,7 +219,7 @@ No Vue page, component, store or public notification UI is authorized by this De
 
 ## Integration Expectations
 
-- SPEC-003 supplies Customer identity/contact data and phone normalization; communication-channel and consent semantics remain Discovery-required.
+- SPEC-003 supplies Customer identity/contact data and phone normalization; SPEC-007 owns the approved transactional notification policy and logical-channel boundary without becoming Customer consent management.
 - SPEC-004 supplies authoritative Appointment lifecycle and committed event facts.
 - SPEC-005 remains the operational appointment consumer and is not redesigned.
 - SPEC-006 remains the public booking consumer and is not changed.
@@ -241,24 +243,24 @@ No Vue page, component, store or public notification UI is authorized by this De
 - MySQL transaction, locking, concurrency and idempotency tests.
 - Dependency and infrastructure impact; no new provider is approved by this Definition.
 
-## Business Questions and Blockers
+## Resolved Decisions and Remaining Questions
 
-- Which appointment events must generate notifications in V1?
-- Are notifications strictly transactional/operational, or are any marketing messages intended? Marketing is out of scope unless separately approved.
-- What communication channels are actually available and approved for the business?
-- What consent must exist before sending, and where is that consent captured and audited?
-- What exact lead times, quiet hours, timezone and holiday policies apply?
-- What should the customer experience when a provider is unavailable or delivery fails?
-- Is a notification status visible to Yaris in V1, and if so through which authenticated surface?
+- Event allowlist: confirmed/created, rescheduled, cancelled and one reminder IN; completed, no-show and marketing OUT.
+- Logical channel: `whatsapp`; provider implementation remains SPEC-008.
+- Transactional consent: the appointment Customer phone may receive confirmation, reschedule, cancellation and reminder messages without a separate opt-in; marketing remains OUT.
+- Reminder timing: one occurrence 24 hours before appointment start.
+- Quiet hours: no independent quiet-hours engine in V1.
+- Phone changes: resolve the current Customer phone at delivery.
 - What retention period applies to notification payloads, outcomes and redacted logs?
+- What provider credentials, sender identity and final business copy are approved before production?
 
-No implementation should begin while these questions affect the event, consent, channel, persistence or provider contract.
+No implementation should begin until the remaining retention, provider and copy decisions are assigned to their authorized checkpoint or production gate.
 
 ## Business Data Pending
 
-- Approved communication channels and provider availability.
-- Consent wording, capture source and retention policy.
-- Official notification timing, quiet hours and timezone policy.
+- Provider availability and sender identity.
+- Consent-management wording and capture details only if a future scope requires them; transactional Option A is approved for V1.
+- Official provider credentials and final production copy; timing is fixed at one 24-hour reminder with no independent quiet-hours engine.
 - Message templates, language and approved business copy.
 - Provider credentials, sender identity and delivery policy.
 - Customer contact data completeness and operational fallback policy.
@@ -334,11 +336,11 @@ Run complete regression, reliability, privacy, scope and acceptance audit before
 ## Definition State
 
 ```text
-SPEC-007: TECHNICAL DISCOVERY COMPLETED / READY FOR HUMAN REVIEW
+SPEC-007: TECHNICAL DISCOVERY COMPLETED / READY FOR DEVELOPMENT APPROVAL
 Canonical name: Notification Engine
 Roadmap item: 07
 Definition: COMPLETED / APPROVED
-Technical Discovery: COMPLETED / READY FOR HUMAN REVIEW
+Technical Discovery: COMPLETED / APPROVED
 Development: NOT AUTHORIZED
 Checkpoint A: NOT AUTHORIZED
 Checkpoint B: NOT AUTHORIZED
@@ -356,11 +358,11 @@ SPEC-008+: NOT AUTHORIZED
 ```text
 SPEC-007 - Notification Engine: TECHNICAL DISCOVERY COMPLETED
 Definition: COMPLETED / APPROVED
-Technical Discovery: COMPLETED / READY FOR HUMAN REVIEW
+Technical Discovery: COMPLETED / APPROVED
 Development: NOT AUTHORIZED
 Application changes: NONE
 Schema/dependency changes: NONE
 SPEC-008+: NOT AUTHORIZED
 ```
 
-STOP. Submit the SPEC-007 Technical Discovery for human review. Do not start Development, Checkpoint A or SPEC-008+.
+STOP. Submit the finalized SPEC-007 Technical Discovery for human review. Do not start Development, Checkpoint A or SPEC-008+.
