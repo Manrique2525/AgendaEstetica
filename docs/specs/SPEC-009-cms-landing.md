@@ -2,9 +2,9 @@
 
 ## Status
 
-`DEFINITION COMPLETED / READY FOR HUMAN REVIEW`
+`TECHNICAL DISCOVERY COMPLETED / READY FOR HUMAN REVIEW`
 
-Development, Checkpoints A-C and implementation are not authorized. This
+Definition is approved. Development, Checkpoints A-C and implementation are not authorized. This
 Definition covers only the public landing/storefront foundation. It does not
 implement a generic CMS editor, ecommerce, booking changes or academic
 presentation features.
@@ -211,7 +211,9 @@ digital signature, academic screens, providers and Fake WhatsApp.
 ## State
 
 ```text
-SPEC-009 - CMS / landing: DEFINITION COMPLETED / READY FOR HUMAN REVIEW
+SPEC-009 - CMS / landing: TECHNICAL DISCOVERY COMPLETED / READY FOR HUMAN REVIEW
+Definition: APPROVED
+Technical Discovery: COMPLETED / READY FOR HUMAN REVIEW
 Development: NOT AUTHORIZED
 Checkpoint A: NOT AUTHORIZED
 Checkpoint B: NOT AUTHORIZED
