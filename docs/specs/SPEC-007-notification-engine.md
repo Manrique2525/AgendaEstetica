@@ -10,9 +10,9 @@ Notification Engine
 
 ## Status
 
-`TECHNICAL DISCOVERY COMPLETED / READY FOR DEVELOPMENT APPROVAL`
+`CHECKPOINT A IMPLEMENTED / READY FOR HUMAN REVIEW`
 
-This Definition and its Technical Discovery cover roadmap item `07. Notification engine`, immediately after the merged Public Booking consumer and before Fake WhatsApp. Development and all implementation checkpoints remain unauthorized pending separate approval.
+This Definition and its Technical Discovery cover roadmap item `07. Notification engine`, immediately after the merged Public Booking consumer and before Fake WhatsApp. Checkpoint A is implemented under explicit authorization; Checkpoints B-F and closure remain unauthorized pending separate approval.
 
 ## Roadmap Reference
 
@@ -320,8 +320,8 @@ Run complete regression, reliability, privacy, scope and acceptance audit before
 11. The Definition does not authorize API routes, frontend surfaces, schema, migrations, dependencies or infrastructure.
 12. The Definition identifies the required Discovery questions for events, timing, consent, channels, persistence, queue behavior, providers, retries, privacy and testing.
 13. The Definition records business-data requirements as pending and does not invent real contacts, credentials, templates or policies.
-14. The Definition proposes bounded implementation checkpoints without authorizing Development or Checkpoint A.
-15. The Definition records an explicit human approval gate and remains `DEFINITION COMPLETED / READY FOR HUMAN REVIEW`.
+14. The Definition proposes bounded implementation checkpoints without authorizing Checkpoints B-F.
+15. The Definition records an explicit human approval gate for the remaining checkpoints.
 
 ## Definition of Done
 
@@ -329,20 +329,20 @@ Run complete regression, reliability, privacy, scope and acceptance audit before
 - Business objective, actors, dependencies, rules, V1 boundaries and acceptance criteria are explicit.
 - Existing SPEC-003 through SPEC-006 authorities are preserved.
 - Technical Discovery questions and business blockers are listed without premature implementation decisions.
-- No application code, routes, models, migrations, tests, dependencies, infrastructure or production data are introduced.
-- Documentation diff contains only the SPEC-007 Definition and the required roadmap status reference.
-- Human review is required before Development.
+- Checkpoint A adds only the event and eligibility contract plus focused tests; no routes, migrations, dependencies, infrastructure or production data are introduced.
+- Checkpoint A documentation and verification evidence are recorded in the checkpoint report.
+- Human review is required before Checkpoint B.
 
 ## Definition State
 
 ```text
-SPEC-007: TECHNICAL DISCOVERY COMPLETED / READY FOR DEVELOPMENT APPROVAL
+SPEC-007: CHECKPOINT A IMPLEMENTED / READY FOR HUMAN REVIEW
 Canonical name: Notification Engine
 Roadmap item: 07
 Definition: COMPLETED / APPROVED
 Technical Discovery: COMPLETED / APPROVED
-Development: NOT AUTHORIZED
-Checkpoint A: NOT AUTHORIZED
+Development: AUTHORIZED FOR CHECKPOINT A ONLY
+Checkpoint A: IMPLEMENTED / READY FOR HUMAN REVIEW
 Checkpoint B: NOT AUTHORIZED
 Checkpoint C: NOT AUTHORIZED
 Checkpoint D: NOT AUTHORIZED
@@ -356,13 +356,13 @@ SPEC-008+: NOT AUTHORIZED
 ## Final Definition Decision
 
 ```text
-SPEC-007 - Notification Engine: TECHNICAL DISCOVERY COMPLETED
+SPEC-007 - Notification Engine: CHECKPOINT A IMPLEMENTED
 Definition: COMPLETED / APPROVED
 Technical Discovery: COMPLETED / APPROVED
-Development: NOT AUTHORIZED
-Application changes: NONE
+Development: AUTHORIZED FOR CHECKPOINT A ONLY
+Application changes: EVENT AND ELIGIBILITY CONTRACT ONLY
 Schema/dependency changes: NONE
 SPEC-008+: NOT AUTHORIZED
 ```
 
-STOP. Submit the finalized SPEC-007 Technical Discovery for human review. Do not start Development, Checkpoint A or SPEC-008+.
+STOP. Submit Checkpoint A for human review. Do not start Checkpoint B or SPEC-008+.
