@@ -13,12 +13,12 @@ import NotFoundPage from './NotFoundPage.vue';
 const adminGlobal = { plugins: [router] };
 
 describe('technical page integration', () => {
-    it('renders the public foundation surface with the approved card primitive', () => {
+    it('renders the public Yaris homepage with the approved card primitive', () => {
         const wrapper = mount(FoundationPage);
 
         expect(wrapper.findComponent(UiCard).exists()).toBe(true);
         expect(wrapper.text()).toContain('Salón y Barbería Yaris');
-        expect(wrapper.text()).toContain('Base visual del sistema');
+        expect(wrapper.text()).not.toContain('Base visual del sistema');
     });
 
     it('renders the login form through the approved field and input primitives', () => {

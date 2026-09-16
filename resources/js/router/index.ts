@@ -7,6 +7,9 @@ import NotFoundPage from '../pages/NotFoundPage.vue';
 import FoundationPage from '../pages/public/FoundationPage.vue';
 import PublicBookingPage from '../pages/public/PublicBookingPage.vue';
 import { useAuth } from '../composables/useAuth';
+import { publicSite } from '../data/publicSite';
+
+const publicTitle = `${publicSite.business.name} | ${publicSite.business.tagline}`;
 
 const router = createRouter({
     history: createWebHistory(),
@@ -14,13 +17,13 @@ const router = createRouter({
         {
             path: '/',
             component: FoundationPage,
-            meta: { surface: 'public' },
+            meta: { surface: 'public', title: publicTitle },
         },
         {
             path: '/reservar',
             component: PublicBookingPage,
             name: 'public.booking',
-            meta: { surface: 'public' },
+            meta: { surface: 'public', title: `Solicitar cita | ${publicSite.business.name}` },
         },
         {
             path: '/admin',
@@ -66,6 +69,12 @@ router.beforeEach(async (to) => {
 
     if (to.meta.guestOnly && auth.user.value) {
         return { name: 'admin.home' };
+    }
+});
+
+router.afterEach((to) => {
+    if (typeof document !== 'undefined' && typeof to.meta.title === 'string') {
+        document.title = to.meta.title;
     }
 });
 
