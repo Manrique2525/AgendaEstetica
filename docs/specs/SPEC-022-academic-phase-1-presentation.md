@@ -2,10 +2,11 @@
 
 ## Status
 
-`DEFINITION + TECHNICAL DISCOVERY COMPLETED / READY FOR HUMAN REVIEW`
+`DEFINITION + TECHNICAL DISCOVERY INTEGRATED / COMPLETED`
 
-Definition and Discovery are complete for review. Development and all
-implementation checkpoints are **NOT AUTHORIZED**.
+Definition and Discovery are integrated into `main`. Checkpoint A is authorized
+separately but has not started; Checkpoints B-E and implementation beyond A are
+not authorized.
 
 ## Purpose
 
@@ -25,8 +26,7 @@ as production functionality.
 - Epic: `EPIC-STOREFRONT-ACADEMIC-PHASE-1`, coordination only.
 - SPEC-021: reserved for Appointment Request; not defined here.
 - SPEC-022: this Definition and Technical Discovery.
-- SPEC-009: public shell/footer dependency; it must be closed/merged before
-  SPEC-022 Development.
+- SPEC-009: public shell/footer dependency; it is now closed/merged.
 - SPEC-010 and SPEC-012: future real catalog/order authorities, not required
   for a demo-only academic presentation.
 - SPEC-008: Fake WhatsApp, unchanged and not a customer-auth mechanism.
@@ -211,11 +211,16 @@ These are planning boundaries only. No checkpoint is authorized.
 ## State
 
 ```text
-SPEC-022: DEFINITION + TECHNICAL DISCOVERY COMPLETED / READY FOR HUMAN REVIEW
-Development: NOT AUTHORIZED
-SPEC-009: MUST BE CLOSED / MERGED BEFORE DEVELOPMENT
+SPEC-022: DEFINITION + TECHNICAL DISCOVERY INTEGRATED / COMPLETED
+Development: AUTHORIZED FOR CHECKPOINT A ONLY / NOT STARTED
+Checkpoint A: AUTHORIZED / NOT IMPLEMENTED
+SPEC-009: CLOSED / MERGED / DEPENDENCY SATISFIED
 SPEC-010 / SPEC-012: NOT REQUIRED FOR DEMO IMPLEMENTATION
 SPEC-021: RESERVED / NOT AUTHORIZED / UNDEFINED
+Checkpoint B: NOT AUTHORIZED
+Checkpoint C: NOT AUTHORIZED
+Checkpoint D: NOT AUTHORIZED
+Checkpoint E: NOT AUTHORIZED
 SPEC-007: PAUSED / UNCHANGED
 SPEC-008: FAKE WHATSAPP / UNCHANGED / NOT AUTHORIZED
 ```

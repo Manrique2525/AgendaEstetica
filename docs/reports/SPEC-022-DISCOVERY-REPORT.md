@@ -3,8 +3,9 @@
 ## Decision
 
 SPEC-022 is defined as a documentation-only academic presentation scope for
-privacy/security, authentication, integrity/signature and digital invoice. It
-is `COMPLETED / READY FOR HUMAN REVIEW`; Development is not authorized.
+privacy/security, authentication, integrity/signature and digital invoice. Its
+Definition and Technical Discovery are `INTEGRATED / COMPLETED` on `main`;
+Checkpoint A is authorized separately but not started.
 
 ## Repository Evidence
 
@@ -17,7 +18,7 @@ branch was not modified. Existing contracts inspected include:
 - `PublicBookingPage.vue`, Public Booking API and existing HTTP wrapper.
 - Minimal `Customer` model, not an authentication principal.
 - Router routes `/`, `/reservar`, `/admin/*` and SPA fallback.
-- SPEC-009 public shell/footer, available only after its closure/merge.
+- SPEC-009 public shell/footer, now available because SPEC-009 is closed/merged.
 
 ## Area Findings
 
@@ -65,8 +66,8 @@ or fiscal records. SPEC-012 remains the real order authority.
 ## Dependencies and Blockers
 
 No new dependencies, routes, assets or schema are required for the Definition.
-Web Crypto is browser-native. SPEC-009 must be closed/merged before SPEC-022
-Development because its PublicLayout/footer is the integration point. SPEC-010
+Web Crypto is browser-native. SPEC-009 is now closed/merged, satisfying the
+PublicLayout/footer dependency for future SPEC-022 Development. SPEC-010
 and SPEC-012 are not blockers for demo-only planning. SPEC-021 remains reserved
 and undefined; SPEC-008 remains Fake WhatsApp.
 
@@ -78,7 +79,8 @@ and undefined; SPEC-008 remains Fake WhatsApp.
 - D: invoice-request demo and educational document.
 - E: integrated browser, accessibility, responsive and real/demo/pending audit.
 
-No checkpoint is authorized.
+Checkpoint A is authorized separately but was not started in this integration.
+Checkpoints B-E are not authorized.
 
 ## Test Handoff
 
