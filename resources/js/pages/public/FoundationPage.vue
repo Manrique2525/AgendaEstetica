@@ -5,6 +5,7 @@ import UiCard from '../../components/ui/UiCard.vue';
 
 <template>
     <PublicLayout>
+        <div id="tienda" class="scroll-mt-6" aria-hidden="true" />
         <UiCard>
             <p class="font-ui text-sm font-semibold uppercase tracking-[0.16em] text-text-secondary">Base visual del sistema</p>
             <h1 class="mt-4 font-display text-5xl leading-none text-text-primary">Salón y Barbería Yaris</h1>
@@ -13,5 +14,6 @@ import UiCard from '../../components/ui/UiCard.vue';
                 Vue SPA shell técnico. El contenido de negocio se incorporará en SPECs posteriores.
             </p>
         </UiCard>
+        <div id="servicios" class="scroll-mt-6" aria-hidden="true" />
     </PublicLayout>
 </template>

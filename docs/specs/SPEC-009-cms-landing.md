@@ -2,7 +2,7 @@
 
 ## Status
 
-`TECHNICAL DISCOVERY COMPLETED / READY FOR HUMAN REVIEW`
+`DEVELOPMENT IN PROGRESS - CHECKPOINT A ONLY`
 
 Definition is approved. Development, Checkpoints A-C and implementation are not authorized. This
 Definition covers only the public landing/storefront foundation. It does not
@@ -211,15 +211,15 @@ digital signature, academic screens, providers and Fake WhatsApp.
 ## State
 
 ```text
-SPEC-009 - CMS / landing: TECHNICAL DISCOVERY COMPLETED / READY FOR HUMAN REVIEW
+SPEC-009 - CMS / landing: DEVELOPMENT IN PROGRESS
 Definition: APPROVED
-Technical Discovery: COMPLETED / READY FOR HUMAN REVIEW
-Development: NOT AUTHORIZED
-Checkpoint A: NOT AUTHORIZED
+Technical Discovery: APPROVED
+Development: IN PROGRESS - CHECKPOINT A ONLY
+Checkpoint A: IMPLEMENTED / READY FOR HUMAN REVIEW
 Checkpoint B: NOT AUTHORIZED
 Checkpoint C: NOT AUTHORIZED
 SPEC-007: PAUSED / UNCHANGED
 SPEC-008: FAKE WHATSAPP / UNCHANGED / NOT AUTHORIZED
 ```
 
-STOP. Submit SPEC-009 Definition for human review.
+STOP. Submit Checkpoint A for human review. Do not start Checkpoint B.
