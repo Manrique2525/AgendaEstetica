@@ -2,9 +2,9 @@
 
 ## Status
 
-`DEVELOPMENT COMPLETE / CLOSURE REVIEW COMPLETED / READY FOR MERGE AUTHORIZATION`
+`CLOSED / MERGED`
 
-Definition is approved. Development for Checkpoints A-C is complete and ready for closure review. This
+Definition is approved. Development, Closure Review and merge into `main` are complete. This
 Definition covers only the public landing/storefront foundation. It does not
 implement a generic CMS editor, ecommerce, booking changes or academic
 presentation features.
@@ -212,10 +212,10 @@ digital signature, academic screens, providers and Fake WhatsApp.
 ## State
 
 ```text
-SPEC-009 - CMS / landing: DEVELOPMENT COMPLETE / CLOSURE REVIEW COMPLETED / READY FOR MERGE AUTHORIZATION
+SPEC-009 - CMS / landing: CLOSED / MERGED
 Definition: APPROVED
 Technical Discovery: APPROVED
-Development: COMPLETE - READY FOR CLOSURE REVIEW
+Development: COMPLETE
 Checkpoint A: COMPLETED / APPROVED
 Checkpoint B: COMPLETED / APPROVED
 Checkpoint C: COMPLETED / APPROVED
@@ -223,4 +223,4 @@ SPEC-007: PAUSED / UNCHANGED
 SPEC-008: FAKE WHATSAPP / UNCHANGED / NOT AUTHORIZED
 ```
 
-STOP. Submit SPEC-009 for explicit merge authorization. Do not mark CLOSED/MERGED or start SPEC-010.
+SPEC-009 is CLOSED / MERGED. Do not start SPEC-010 or any other unauthorized SPEC.

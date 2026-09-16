@@ -6,7 +6,8 @@
 - Implementation HEAD: `7d798aa585dd72f99d2500c1d13f4443fd084ab4`.
 - Browser-evidence HEAD and closure input: `aee684020453611d954bb73f2d6078b9f2db5c1e`.
 - Feature branch: `feat/spec-009-cms-landing`.
-- `main` and `origin/main`: `e87d5fcca22d7fb070ec295c9647a9a69306a52a`.
+- `main` and `origin/main` before merge: `e87d5fcca22d7fb070ec295c9647a9a69306a52a`.
+- Merge commit: `8b431f285f9c5117d17d3df867d4156fcfef6446`.
 
 The `7d798aa..aee6840` delta contains documentation/evidence finalization
 only. No application, route, schema or dependency change exists in that delta.
@@ -20,7 +21,7 @@ only. No application, route, schema or dependency change exists in that delta.
 | Checkpoint A | PASS - completed/approved |
 | Checkpoint B | PASS - completed/approved |
 | Checkpoint C | PASS - completed/approved by browser evidence |
-| Merge authorization | NO - not granted here |
+| Merge authorization | YES - explicitly authorized |
 | Branch deletion | NO - not authorized |
 
 ## Implementation
@@ -179,4 +180,35 @@ SPEC-009: READY FOR MERGE AUTHORIZATION
 Merge: NOT AUTHORIZED / NOT PERFORMED
 ```
 
-STOP. Submit this report for explicit human merge authorization.
+## Integrated Merge
+
+- Merge command: `git merge --no-ff feat/spec-009-cms-landing -m "merge: integrate SPEC-009 CMS landing"`.
+- Merge result: PASS, no conflicts.
+- Integrated Quality run: `35161901558`.
+- Integrated Quality commit: `8b431f285f9c5117d17d3df867d4156fcfef6446`.
+- Integrated backend: PASS, `208 tests / 1202 assertions`.
+- Integrated frontend: PASS, `18 files / 63 tests`.
+- Main push: PASS.
+- Feature branch: preserved.
+- QA fixture cleanup: not performed.
+
+## Final Status
+
+```text
+SPEC-009: CLOSED / MERGED
+Definition: COMPLETED / APPROVED
+Technical Discovery: COMPLETED / APPROVED
+Checkpoint A: COMPLETED / APPROVED
+Checkpoint B: COMPLETED / APPROVED
+Checkpoint C: COMPLETED / APPROVED
+Development: COMPLETE
+Closure Review: COMPLETED
+Browser QA: 45 PASS / 0 FAIL
+Merge: COMPLETED
+SPEC-010: NOT AUTHORIZED
+SPEC-022 Development: NOT AUTHORIZED
+SPEC-007: PAUSED / UNCHANGED
+SPEC-008: FAKE WHATSAPP / UNCHANGED
+```
+
+STOP. Submit this report before authorizing any next SPEC.
