@@ -110,3 +110,22 @@ Do not fix it in Checkpoint C.
 - Tester/date: __________________________________
 - Overall result: _______________________________
 - Evidence links/notes: _________________________
+
+## Recorded Playwright Evidence
+
+- Browser: Playwright Chromium `153.0.8010.12`.
+- Playwright: `1.63.0`.
+- Mode: headless.
+- Base URL: `http://127.0.0.1:8000`.
+- Machine-readable results: `/tmp/spec009-browser-qa/results.json`.
+- Human-readable results: `/tmp/spec009-browser-qa/report.txt`.
+- Screenshots: `/tmp/spec009-browser-qa/evidence/`.
+- Total checks: `45 PASS / 0 FAIL`.
+- Screenshots: 10 PNG files covering all required landing and `/reservar` viewports.
+
+The automated real-browser run verified viewport width, rendered landmarks,
+approved content, one H1, menu state/Escape/link close, root-safe hash
+navigation, direct hashes, skip link, keyboard focusability, WhatsApp
+semantics, titles, metadata, console/page errors, network behavior and
+booking shell requests. No application or repository dependency changes were
+made during QA.

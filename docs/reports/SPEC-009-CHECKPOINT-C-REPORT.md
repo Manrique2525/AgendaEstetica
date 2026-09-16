@@ -7,8 +7,8 @@
 - Technical Discovery: `COMPLETED / APPROVED`.
 - Checkpoint A: `COMPLETED / APPROVED`.
 - Checkpoint B: `COMPLETED / APPROVED`.
-- Checkpoint C: `PARTIALLY IMPLEMENTED / BROWSER QA PENDING`.
-- Browser QA: `PENDING HUMAN VERIFICATION`.
+- Checkpoint C: `IMPLEMENTED / READY FOR HUMAN APPROVAL`.
+- Browser QA: `COMPLETED / READY FOR HUMAN FINALIZATION`.
 - Branch: `feat/spec-009-cms-landing`.
 
 ## Technical Work Completed
@@ -28,10 +28,15 @@
 
 ## Browser Gate
 
-No real browser is available in this execution environment. The required
-interactive validation of `/`, `/reservar`, all specified viewports, keyboard
-behavior, direct hash URLs, console and network state remains pending human
-verification. No browser pass is claimed.
+Real browser QA was performed outside the repository with Playwright Chromium
+`153.0.8010.12`, Playwright `1.63.0`, headless mode, against
+`http://127.0.0.1:8000`. The run recorded `45 checks PASS / 0 FAIL` and created
+10 screenshots in `/tmp/spec009-browser-qa/evidence/`. It covered all required
+landing and `/reservar` viewports, menu/keyboard/skip-link interactions, hash
+navigation, titles, metadata, console, network and content scope checks.
+
+Machine-readable results: `/tmp/spec009-browser-qa/results.json`.
+Human-readable results: `/tmp/spec009-browser-qa/report.txt`.
 
 ## Scope Audit
 
@@ -59,5 +64,5 @@ verification. No browser pass is claimed.
 
 ## Decision
 
-Checkpoint C remains partial until the human completes the browser checklist.
-Do not mark SPEC-009 closed, start SPEC-010, or perform merge.
+Checkpoint C is ready for human approval. Do not mark SPEC-009 closed, start
+SPEC-010, or perform merge.

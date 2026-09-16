@@ -2,9 +2,9 @@
 
 ## Status
 
-`DEVELOPMENT IN PROGRESS - CHECKPOINT C PARTIAL / BROWSER QA PENDING`
+`DEVELOPMENT IMPLEMENTATION COMPLETE / READY FOR CLOSURE REVIEW`
 
-Definition is approved. Development is authorized for Checkpoints A, B and the technical portion of C only. Real browser QA remains pending human verification. This
+Definition is approved. Development for Checkpoints A-C is complete and ready for closure review. This
 Definition covers only the public landing/storefront foundation. It does not
 implement a generic CMS editor, ecommerce, booking changes or academic
 presentation features.
@@ -215,12 +215,12 @@ digital signature, academic screens, providers and Fake WhatsApp.
 SPEC-009 - CMS / landing: DEVELOPMENT IN PROGRESS
 Definition: APPROVED
 Technical Discovery: APPROVED
-Development: IN PROGRESS - CHECKPOINT C TECHNICAL PORTION ONLY
+Development: COMPLETE - READY FOR CLOSURE REVIEW
 Checkpoint A: COMPLETED / APPROVED
 Checkpoint B: COMPLETED / APPROVED
-Checkpoint C: PARTIALLY IMPLEMENTED / BROWSER QA PENDING
+Checkpoint C: IMPLEMENTED / READY FOR HUMAN APPROVAL
 SPEC-007: PAUSED / UNCHANGED
 SPEC-008: FAKE WHATSAPP / UNCHANGED / NOT AUTHORIZED
 ```
 
-STOP. Complete the human browser QA checklist before requesting Checkpoint C closure. Do not start SPEC-010.
+STOP. Submit Checkpoint C for human approval and SPEC-009 closure review. Do not start SPEC-010.
