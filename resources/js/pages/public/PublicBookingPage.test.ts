@@ -55,6 +55,8 @@ describe('PublicBookingPage', () => {
         const wrapper = mount(PublicBookingPage);
         await flushPromises();
         expect(wrapper.findComponent(PublicLayout).exists()).toBe(true);
+        expect(wrapper.find('aside[aria-label="Aviso de privacidad"]').text()).toContain('provisional');
+        expect(wrapper.find('aside a[href="/fase-1#privacidad-seguridad"]').exists()).toBe(true);
         await reachReview(wrapper);
         await wrapper.findAll('button').find((button) => button.text() === 'Confirmar cita')!.trigger('click');
         await flushPromises();

@@ -2,11 +2,11 @@
 
 ## Status
 
-`DEFINITION + TECHNICAL DISCOVERY INTEGRATED / COMPLETED`
+`DEVELOPMENT IN PROGRESS / CHECKPOINT E IMPLEMENTED / READY FOR HUMAN APPROVAL`
 
-Definition and Discovery are integrated into `main`. Checkpoint A is authorized
-separately but has not started; Checkpoints B-E and implementation beyond A are
-not authorized.
+Definition and Discovery are integrated into `main`. Checkpoints A-D are
+completed and approved. Checkpoint E is implemented on its feature branch,
+pending human approval; implementation beyond E is not authorized.
 
 ## Purpose
 
@@ -63,9 +63,9 @@ academic demonstrator. No new actor authentication is created here.
 - `/fase-1`: overview of the four areas, with anchors
   `#privacidad-seguridad`, `#autenticacion`, `#integridad-firma` and
   `#factura-digital`.
-- `/cliente/acceso`: customer-access demonstration.
-- `/demo/pedido`: local academic order flow with review, correction, folio,
-  summary, hash and invoice option.
+- `/cliente/acceso`: customer-access demonstration only; no real authentication.
+- `/demo/pedido`: isolated client-only academic flow with review, correction,
+  demo folio, summary and SHA-256 integrity presentation.
 
 No separate privacy, review or result route is required initially. The primary
 business navigation remains Inicio, Tienda, Servicios and Contacto; academic
@@ -88,9 +88,9 @@ without changing form semantics.
 The existing `/admin/login` is real and must be reused. It may be presented as
 “Administración Yaris - acceso real” without exposing credentials.
 
-Customer authentication is absent. `/cliente/acceso` may show a phone field,
-future WhatsApp verification step and flow diagram only when labelled
-`DEMOSTRACIÓN` and `VERIFICACIÓN DE WHATSAPP PENDIENTE`.
+Customer authentication is absent. `/cliente/acceso` shows a local-only phone
+field and future WhatsApp verification concept labelled `DEMOSTRACIÓN` and
+`VERIFICACIÓN DE WHATSAPP PENDIENTE`.
 
 Opening WhatsApp is not authentication, registration or proof of number
 ownership. No password, OTP, token, auth cookie, customer endpoint or trusted
@@ -98,7 +98,7 @@ phone shortcut is authorized.
 
 ## Academic Order Integrity
 
-The demo flow may use only `DEMO ACADÉMICA`/`DATOS DE PRUEBA` values:
+The Checkpoint C demo flow uses only `DEMO ACADÉMICA`/`DATOS DE PRUEBA` values:
 
 ```text
 demo inputs -> review -> correction/back -> review -> demo submission
@@ -112,11 +112,10 @@ appropriate. Real order ownership remains SPEC-012.
 
 ## Hash and Digital Signature
 
-A future demo may canonicalize demo order data and use browser-native Web
+Checkpoint C canonicalizes its local demo data and uses browser-native Web
 Crypto SHA-256, displayed as `Huella de integridad (SHA-256)`. This is a hash/
-integrity fingerprint, not a digital signature. A signature requires a key,
-certificate, signer identity and verification, none of which exists or is
-approved.
+integrity fingerprint, not a digital signature. A signature requires additional
+cryptographic/signing infrastructure, none of which exists or is approved.
 
 Final signature architecture depends on the academic team proposal. A checkbox
 “Acepto” must never be called a signature; prefer no checkbox, or use
@@ -156,9 +155,10 @@ RFC or certificate identifiers. No PDF runtime dependency is authorized.
 - FR-05: Never treat WhatsApp opening as authentication or verification.
 - FR-06: Provide local demo order review and correction.
 - FR-07: Provide demo submission, folio and summary with no real-order claim.
-- FR-08: Provide optional browser SHA-256 integrity demonstration.
+- FR-08: Provide browser SHA-256 integrity demonstration for confirmed demo data.
 - FR-09: Distinguish hash from digital signature and leave signature pending.
-- FR-10: Provide demo invoice request and no-fiscal-validity labeling.
+- FR-10: Provide demo invoice request, static educational document and
+  no-fiscal-validity labeling.
 - FR-11: Preserve SPEC-003, SPEC-004, SPEC-006 and SPEC-012 authority.
 
 ## Non-Functional Requirements
@@ -195,8 +195,8 @@ RFC or certificate identifiers. No PDF runtime dependency is authorized.
 - AC-16: Realistic fiscal identifiers and runtime PDF dependencies are excluded.
 - AC-17: SPEC-009 footer dependency is explicit.
 - AC-18: SPEC-012, SPEC-021 and SPEC-008 boundaries are preserved.
-- AC-19: No application implementation occurs in this phase.
-- AC-20: Human review is required before Development.
+- AC-19: No implementation occurs beyond the currently authorized checkpoint.
+- AC-20: Human review is required before advancing to another checkpoint.
 
 ## Proposed Development Checkpoints
 
@@ -206,23 +206,25 @@ RFC or certificate identifiers. No PDF runtime dependency is authorized.
 4. Invoice-request demo and static educational document.
 5. Integrated academic browser/accessibility/responsive audit.
 
-These are planning boundaries only. No checkpoint is authorized.
+Checkpoints A-E are authorized for development. Checkpoints A-D are completed
+and approved; Checkpoint E is implemented pending human approval.
 
 ## State
 
 ```text
-SPEC-022: DEFINITION + TECHNICAL DISCOVERY INTEGRATED / COMPLETED
-Development: AUTHORIZED FOR CHECKPOINT A ONLY / NOT STARTED
-Checkpoint A: AUTHORIZED / NOT IMPLEMENTED
+SPEC-022: DEVELOPMENT IN PROGRESS / CHECKPOINT E IMPLEMENTED / READY FOR HUMAN APPROVAL
+Development: AUTHORIZED FOR CHECKPOINT E ONLY
+Checkpoint A: COMPLETED / APPROVED
+Checkpoint B: COMPLETED / APPROVED
+Checkpoint C: COMPLETED / APPROVED
 SPEC-009: CLOSED / MERGED / DEPENDENCY SATISFIED
 SPEC-010 / SPEC-012: NOT REQUIRED FOR DEMO IMPLEMENTATION
 SPEC-021: RESERVED / NOT AUTHORIZED / UNDEFINED
-Checkpoint B: NOT AUTHORIZED
-Checkpoint C: NOT AUTHORIZED
-Checkpoint D: NOT AUTHORIZED
-Checkpoint E: NOT AUTHORIZED
+Checkpoint D: COMPLETED / APPROVED
+Checkpoint E: IMPLEMENTED / READY FOR HUMAN APPROVAL
 SPEC-007: PAUSED / UNCHANGED
 SPEC-008: FAKE WHATSAPP / UNCHANGED / NOT AUTHORIZED
 ```
 
-STOP. Submit SPEC-022 Definition + Discovery for human review.
+STOP. Submit SPEC-022 Checkpoint E for explicit human approval. Do not
+close SPEC-022 or auto-advance.
