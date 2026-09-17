@@ -44,4 +44,6 @@ Cada etapa requiere SPEC, discovery, plan aprobado, implementación, pruebas, au
 
 `EPIC-STOREFRONT-ACADEMIC-PHASE-1` está en estado `DEFINED / COORDINATION ONLY`. Esta agrupación documental consume los roadmap items 09-13 sin renombrarlos, mantiene SPEC-007 pausada y SPEC-008 reservada para Fake WhatsApp. SPEC-009 está `CLOSED / MERGED` después de completar A-C, Closure Review, merge `8b431f2` e Integrated Quality `35161901558`. SPEC-021 queda reservado para Appointment Request, sin Definition ni autorización. SPEC-022 Definition + Technical Discovery están integradas en main; Checkpoints A-D están completados y aprobados, Checkpoint E está implementado en su branch y listo para aprobación humana. Ver `docs/epics/EPIC-STOREFRONT-ACADEMIC-PHASE-1.md`, `docs/specs/SPEC-022-academic-phase-1-presentation.md` y `docs/reports/SPEC-022-DISCOVERY-REPORT.md`.
 
+`SPEC-023 - Automated GitHub → alwaysdata Production Deployment` está en estado `DEFINITION / NOT IMPLEMENTED` en `docs/specs/SPEC-023-automated-production-deployment.md`. Documenta el deployment real en `docs/deployment/alwaysdata-production.md`; la implementación CI/CD no está autorizada.
+
 Target de Foundation: Laravel 13, PHP 8.3+, MySQL 8.4 LTS, Vue 3, TypeScript, Vite, Tailwind CSS, Sanctum y Pest.

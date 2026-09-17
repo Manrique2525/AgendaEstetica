@@ -55,6 +55,20 @@ Para cambios de pruebas, leer también `docs/testing/TEST_PLAN.md`.
 - Trabajo técnico: `chore/nombre`.
 - Nunca reescribir historia compartida.
 
+## Producción y deployment
+
+Producción se despliega en alwaysdata según `docs/deployment/alwaysdata-production.md` y `docs/specs/SPEC-023-automated-production-deployment.md`. Reglas:
+
+- Git es la source of truth del código desplegable.
+- Nunca editar código de aplicación directamente en producción.
+- Los cambios deben versionarse y pushearse antes de desplegar.
+- Los deployments de producción se originan solo de la rama de producción aprobada (`main`).
+- Un push/merge a la rama de producción dispara o autoriza el deployment CI/CD automatizado.
+- Los quality gates de CI deben pasar antes de desplegar.
+- Nunca omitir un CI fallido.
+- Nunca exponer ni commitear secretos de producción (`APP_KEY`, `DB_PASSWORD`, claves SSH privadas).
+- Leer la documentación de deployment y la SPEC de CI/CD antes de modificar infraestructura de despliegue.
+
 ## Calidad
 
 Antes de considerar una SPEC terminada, ejecutar los comandos disponibles para el estado del proyecto:
