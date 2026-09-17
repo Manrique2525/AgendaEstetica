@@ -17,6 +17,8 @@
 - Plan de pruebas: `docs/testing/TEST_PLAN.md`
 - Roadmap: `docs/roadmap/ROADMAP.md`
 - Reportes de ejecución: `docs/reports/`
+- Producción en alwaysdata: `docs/deployment/alwaysdata-production.md`
+- SPEC de deployment automatizado: `docs/specs/SPEC-023-automated-production-deployment.md`
 
 ## Regla de actualización
 
