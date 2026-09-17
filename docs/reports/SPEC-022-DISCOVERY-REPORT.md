@@ -4,13 +4,13 @@
 
 SPEC-022 is defined as an academic presentation scope for privacy/security,
 authentication, integrity/signature and digital invoice. Its Definition and
-Technical Discovery are `INTEGRATED / COMPLETED` on `main`; Checkpoints A, B and
-C are completed and approved, and Checkpoint D is implemented on its feature
-branch awaiting human approval.
+Technical Discovery are `INTEGRATED / COMPLETED` on `main`; Checkpoints A-D are
+completed and approved, and Checkpoint E is implemented on its feature branch
+awaiting human approval.
 
 ## Repository Evidence
 
-Checkpoints A-D contain only public Vue presentation routes/content,
+Checkpoints A-E contain only public Vue presentation routes/content,
 provisional notices and secondary links. Checkpoint D contains no order,
 customer-auth or fiscal backend implementation, model, migration or runtime PDF
 dependency. The SPEC-009 feature branch was not modified. Existing contracts
@@ -82,8 +82,8 @@ and undefined; SPEC-008 remains Fake WhatsApp.
 - D: invoice-request demo and educational document.
 - E: integrated browser, accessibility, responsive and real/demo/pending audit.
 
-Checkpoints A, B and C are completed and approved. Checkpoint D is authorized
-and implemented pending human approval. Checkpoint E is not authorized.
+Checkpoints A-D are completed and approved. Checkpoint E is authorized and
+implemented pending human approval.
 
 ## Test Handoff
 
@@ -112,4 +112,4 @@ SPEC-007: PAUSED / UNCHANGED
 SPEC-008: FAKE WHATSAPP / UNCHANGED
 ```
 
-STOP. Submit SPEC-022 Checkpoint D for explicit human approval.
+STOP. Submit SPEC-022 Checkpoint E for explicit human approval.

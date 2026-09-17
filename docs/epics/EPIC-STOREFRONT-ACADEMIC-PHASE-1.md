@@ -2,11 +2,11 @@
 
 ## Status
 
-`AUDITED / CHECKPOINT D READY FOR HUMAN APPROVAL`
+`AUDITED / CHECKPOINT E READY FOR HUMAN APPROVAL`
 
-SPEC-022 Checkpoints A, B and C are completed and approved. Only Checkpoint D is
+SPEC-022 Checkpoints A-D are completed and approved. Only Checkpoint E is
 currently authorized and implemented on its feature branch; human approval is
-still required. Checkpoint E remains **NOT AUTHORIZED**.
+still required. No work beyond E is authorized.
 This is a documentation boundary for one coherent public site combining the
 Yaris salon experience with an academic storefront. It does not replace or
 renumber roadmap SPECs.
@@ -169,13 +169,12 @@ acceptance criteria, tests and a report.
 - No real catalog, payment, invoice, signature or verification claims are
   invented.
 - No production backend, schema or dependency changes are added here; the
-  authorized SPEC-022 Checkpoint A, B, C and D public presentations are the
-  only frontend implementations in progress.
-- Development remains limited to authorized SPEC-022 Checkpoint D.
+  authorized SPEC-022 Checkpoint E audit is the only current development work.
+- Development remains limited to authorized SPEC-022 Checkpoint E.
 
 ```text
 Epic: DEFINED / COORDINATION ONLY
-Development: SPEC-022 CHECKPOINT D ONLY
+Development: SPEC-022 CHECKPOINT E ONLY
 SPEC-007 Notification Engine: PAUSED / UNCHANGED
 SPEC-008 Fake WhatsApp: RESERVED / NOT AUTHORIZED
 SPEC-009 CMS / landing: CLOSED / MERGED
@@ -184,7 +183,7 @@ SPEC-011 Inventory: PRESERVED / NOT AUTHORIZED
 SPEC-012 Cart / checkout / orders: PRESERVED / NOT AUTHORIZED
 SPEC-013 Reviews / favorites: PRESERVED / NOT AUTHORIZED
 SPEC-021 Appointment Request: RESERVED / NOT AUTHORIZED / UNDEFINED
-SPEC-022 Academic Phase 1 Presentation: DEVELOPMENT IN PROGRESS / CHECKPOINT D IMPLEMENTED / READY FOR HUMAN APPROVAL
+SPEC-022 Academic Phase 1 Presentation: DEVELOPMENT IN PROGRESS / CHECKPOINT E IMPLEMENTED / READY FOR HUMAN APPROVAL
 ```
 
-STOP. Submit SPEC-022 Checkpoint D for explicit human approval.
+STOP. Submit SPEC-022 Checkpoint E for explicit human approval.

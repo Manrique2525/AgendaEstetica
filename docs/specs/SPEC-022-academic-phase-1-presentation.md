@@ -2,12 +2,11 @@
 
 ## Status
 
-`DEVELOPMENT IN PROGRESS / CHECKPOINT D IMPLEMENTED / READY FOR HUMAN APPROVAL`
+`DEVELOPMENT IN PROGRESS / CHECKPOINT E IMPLEMENTED / READY FOR HUMAN APPROVAL`
 
-Definition and Discovery are integrated into `main`. Checkpoints A, B and C are
-completed and approved. Checkpoint D is implemented on its feature branch,
-pending human approval; Checkpoint E and implementation beyond D are not
-authorized.
+Definition and Discovery are integrated into `main`. Checkpoints A-D are
+completed and approved. Checkpoint E is implemented on its feature branch,
+pending human approval; implementation beyond E is not authorized.
 
 ## Purpose
 
@@ -207,25 +206,25 @@ RFC or certificate identifiers. No PDF runtime dependency is authorized.
 4. Invoice-request demo and static educational document.
 5. Integrated academic browser/accessibility/responsive audit.
 
-Checkpoints A, B, C and D are authorized for development. Checkpoints A, B and
-C are completed and approved; Checkpoint D is implemented pending human
-approval. Checkpoint E remains unauthorized.
+Checkpoints A-E are authorized for development. Checkpoints A-D are completed
+and approved; Checkpoint E is implemented pending human approval.
 
 ## State
 
 ```text
-SPEC-022: DEVELOPMENT IN PROGRESS / CHECKPOINT D IMPLEMENTED / READY FOR HUMAN APPROVAL
-Development: AUTHORIZED FOR CHECKPOINT D ONLY
+SPEC-022: DEVELOPMENT IN PROGRESS / CHECKPOINT E IMPLEMENTED / READY FOR HUMAN APPROVAL
+Development: AUTHORIZED FOR CHECKPOINT E ONLY
 Checkpoint A: COMPLETED / APPROVED
 Checkpoint B: COMPLETED / APPROVED
 Checkpoint C: COMPLETED / APPROVED
 SPEC-009: CLOSED / MERGED / DEPENDENCY SATISFIED
 SPEC-010 / SPEC-012: NOT REQUIRED FOR DEMO IMPLEMENTATION
 SPEC-021: RESERVED / NOT AUTHORIZED / UNDEFINED
-Checkpoint E: NOT AUTHORIZED
+Checkpoint D: COMPLETED / APPROVED
+Checkpoint E: IMPLEMENTED / READY FOR HUMAN APPROVAL
 SPEC-007: PAUSED / UNCHANGED
 SPEC-008: FAKE WHATSAPP / UNCHANGED / NOT AUTHORIZED
 ```
 
-STOP. Submit SPEC-022 Checkpoint D for explicit human approval. Do not
-auto-advance to Checkpoint E.
+STOP. Submit SPEC-022 Checkpoint E for explicit human approval. Do not
+close SPEC-022 or auto-advance.
