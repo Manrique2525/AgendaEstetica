@@ -21,9 +21,15 @@ self-approved and Checkpoint E was not started.
 - Clearly qualified the option as `DEMOSTRACIÓN`.
 - Added no fiscal-data fields.
 - Included `requestInvoice` in the canonical integrity payload.
-- Incremented the explicit demo payload version from `1` to `2` because the
+- Added explicit unchecked-by-default Terms and Privacy acceptance required
+  before demo confirmation.
+- Included `termsAccepted` in the canonical integrity payload.
+- Incremented the explicit demo payload version from `2` to `3` because the
   canonical schema changed.
+- The acceptance boolean is included because Checkpoint C/D protects the
+  confirmed final demo state; `false` and `true` produce different digests.
 - Preserved SHA-256 stability and changed-preference digest behavior.
+- Acceptance remains frontend-only and is not persisted as legal consent.
 - Added invoice preference to edit, review and final demo summary states.
 - Added a static educational PDF at
   `public/demo/factura-demostracion-sin-validez-fiscal.pdf`.
@@ -50,8 +56,10 @@ Invoice API: NONE
 Payment: NOT IMPLEMENTED
 ```
 
-The checkbox is a demo preference only. It is not a digital signature, legal
-consent, identity verification or fiscal request.
+The invoice checkbox is a demo preference only. The Terms/Privacy checkbox is
+an explicit academic acceptance interaction required before confirmation; it is
+not production legal-consent persistence, a digital signature, identity
+verification or a fiscal request.
 
 ## Static PDF
 
@@ -100,7 +108,7 @@ Changed/added frontend test files:
 - `resources/js/pages/public/AcademicPhaseOnePage.test.ts`
 - `resources/js/utils/demoIntegrity.test.ts`
 
-Focused Checkpoint D tests: `3 files / 13 tests PASS`.
+Focused Checkpoint D tests: `3 files / 15 tests PASS`.
 
 The tests cover the checkbox, review/correction, final requested state,
 download link, no fiscal fields, static warning, no invoice request, and
@@ -109,7 +117,7 @@ invoice-preference SHA change.
 Full quality results:
 
 - Backend: `208 tests / 1202 assertions PASS`
-- Frontend: `22 files / 82 tests PASS`
+- Frontend: `22 files / 84 tests PASS`
 - `composer validate --strict`: PASS
 - `composer audit`: PASS, no advisories
 - `vendor/bin/pint --test`: PASS
@@ -120,6 +128,11 @@ Full quality results:
 - `npm run build`: PASS
 - `npm audit`: PASS, 0 vulnerabilities
 - `git diff --check`: PASS
+
+The final local backend rerun encountered the pre-existing shared MySQL test
+database singleton collision (`business_profiles_singleton_key_unique`), with
+no backend files changed in this correction. Fresh remote Quality is the
+authoritative backend verification for the final feature HEAD.
 
 ## Browser and Database QA
 
