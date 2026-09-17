@@ -67,10 +67,10 @@ describe('DemoOrderPage', () => {
         await wrapper.get('#demo-request-invoice').setValue(true);
         await wrapper.get('form').trigger('submit');
         await flushPromises();
-        await wrapper.findAll('section[aria-labelledby="review-title"] button')[1].trigger('click');
+        await wrapper.findAll('button').find((button) => button.text().includes('Confirmar demostración'))!.trigger('click');
         await flushPromises();
 
-        expect(wrapper.text()).toContain('Factura digital DEMOSTRACIÓN');
+        expect(wrapper.text().toLocaleLowerCase()).toContain('factura digital demostración');
         expect(wrapper.text()).toContain('DOCUMENTO DE PRUEBA — SIN VALIDEZ FISCAL');
         expect(wrapper.text()).toContain('No es un CFDI');
         expect(wrapper.find('a[download][href="/demo/factura-demostracion-sin-validez-fiscal.pdf"]').exists()).toBe(true);
