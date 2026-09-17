@@ -1,6 +1,11 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import PublicLayout from '../../layouts/PublicLayout.vue';
 import UiCard from '../../components/ui/UiCard.vue';
+
+type TermsDecision = 'none' | 'accepted' | 'rejected';
+
+const termsDecision = ref<TermsDecision>('none');
 
 const areas = [
     { id: 'privacidad-seguridad', title: 'Privacidad y seguridad', status: 'PENDIENTE DE REVISIÓN', summary: 'Presentación provisional de los controles y datos mínimos del flujo público.' },
@@ -111,6 +116,21 @@ const areas = [
                     <h2 id="mary-kay-title" class="mt-2 font-display text-4xl text-text-inverse">Mary Kay a domicilio</h2>
                     <p class="mt-3 max-w-2xl font-body leading-relaxed text-white/75">Visita la tienda externa de Mary Kay para conocer su oferta. Las compras, pagos y atención de esa tienda ocurren fuera de esta aplicación.</p>
                     <a href="https://www.marykay.com.mx/yaris" target="_blank" rel="noopener noreferrer" class="mt-5 inline-flex min-h-11 items-center justify-center rounded-md border border-white/40 px-4 py-2 font-ui text-sm font-bold text-text-inverse hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 focus:ring-offset-brand-black">Visitar tienda externa de Mary Kay</a>
+                </UiCard>
+            </section>
+
+            <section id="terminos-privacidad" class="scroll-mt-6 border-t border-brand-pink/40 pt-8" aria-labelledby="terms-title">
+                <UiCard class="!border-brand-pink/40 !bg-white/5 !text-text-inverse !shadow-none sm:!p-10">
+                    <p class="font-ui text-xs font-bold uppercase tracking-[0.18em] text-brand-pink">Responsabilidad de la demostración</p>
+                    <h2 id="terms-title" class="mt-2 font-display text-4xl text-text-inverse">Términos y Condiciones y Aviso de Privacidad</h2>
+                    <p class="mt-4 max-w-3xl font-body leading-relaxed text-white/75">Revisa la información provisional aplicable a esta experiencia académica y decide si aceptas o rechazas este alcance. Esta interacción no registra consentimiento legal en backend.</p>
+                    <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+                        <button type="button" class="inline-flex min-h-11 items-center justify-center rounded-md border border-white/40 px-4 py-2 font-ui text-sm font-bold text-text-inverse hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 focus:ring-offset-brand-black" :aria-pressed="termsDecision === 'rejected'" @click="termsDecision = 'rejected'">Rechazar</button>
+                        <button type="button" class="inline-flex min-h-11 items-center justify-center rounded-md bg-action-primary px-4 py-2 font-ui text-sm font-bold text-action-primary-foreground hover:bg-action-primary-hover focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 focus:ring-offset-brand-black" :aria-pressed="termsDecision === 'accepted'" @click="termsDecision = 'accepted'">Aceptar</button>
+                    </div>
+                    <p v-if="termsDecision === 'accepted'" role="status" class="mt-4 font-body text-sm font-semibold text-brand-gold">Términos y condiciones aceptados para esta demostración.</p>
+                    <p v-else-if="termsDecision === 'rejected'" role="status" class="mt-4 font-body text-sm font-semibold text-brand-pink">Has rechazado los términos y condiciones de esta demostración.</p>
+                    <p v-else class="mt-4 font-body text-sm text-white/60">Aún no has elegido una opción.</p>
                 </UiCard>
             </section>
         </div>

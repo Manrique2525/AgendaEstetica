@@ -21,6 +21,7 @@ describe('AcademicPhaseOnePage', () => {
             'integridad-firma',
             'factura-digital',
             'mary-kay-domicilio',
+            'terminos-privacidad',
         ]);
     });
 
@@ -49,6 +50,11 @@ describe('AcademicPhaseOnePage', () => {
         expect(wrapper.find('#mary-kay-domicilio').exists()).toBe(true);
         expect(wrapper.find('#mary-kay-domicilio').text()).toContain('tienda externa de Mary Kay');
         expect(wrapper.find('#mary-kay-domicilio a[href="https://www.marykay.com.mx/yaris"]').attributes()).toMatchObject({ target: '_blank', rel: 'noopener noreferrer' });
+        expect(wrapper.find('#terminos-privacidad').exists()).toBe(true);
+        const sectionIds = wrapper.findAll('section[id]').map((section) => section.attributes('id'));
+        expect(sectionIds[sectionIds.length - 1]).toBe('terminos-privacidad');
+        expect(wrapper.find('#terminos-privacidad').find('#autenticacion').exists()).toBe(false);
+        expect(wrapper.find('#terminos-privacidad').find('#mary-kay-domicilio').exists()).toBe(false);
     });
 
     it('links the privacy anchor from the overview', () => {
@@ -56,5 +62,16 @@ describe('AcademicPhaseOnePage', () => {
 
         expect(wrapper.find('a[href="/fase-1#privacidad-seguridad"]').exists()).toBe(true);
         expect(wrapper.findAll('[id="privacidad-seguridad"]')).toHaveLength(1);
+    });
+
+    it('supports explicit undecided, accepted and rejected terms states', async () => {
+        const wrapper = mount(AcademicPhaseOnePage);
+        const terms = wrapper.find('#terminos-privacidad');
+
+        expect(terms.text()).toContain('Aún no has elegido una opción');
+        await terms.find('button[aria-pressed="false"]').trigger('click');
+        expect(terms.text()).toContain('Has rechazado los términos');
+        await terms.findAll('button')[1].trigger('click');
+        expect(terms.text()).toContain('Términos y condiciones aceptados');
     });
 });

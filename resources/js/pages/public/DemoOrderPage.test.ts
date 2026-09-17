@@ -13,8 +13,6 @@ describe('DemoOrderPage', () => {
         expect(wrapper.text()).toContain('no una compra real');
         expect(wrapper.find('#demo-order-customer').exists()).toBe(true);
         expect(wrapper.find('#demo-request-invoice').exists()).toBe(true);
-        expect(wrapper.find('#demo-terms-acceptance').element).not.toHaveProperty('checked', true);
-        expect(wrapper.text()).toContain('He leído y acepto los Términos y Condiciones y el Aviso de Privacidad.');
         expect(wrapper.text()).toContain('no se generará una factura real');
         expect(wrapper.findAll('button').find((button) => button.text().includes('Revisar demostración'))).toBeDefined();
         expect(wrapper.text()).not.toMatch(/Comprar|Pagar|Pedido realizado|Pago aprobado/i);
@@ -43,7 +41,6 @@ describe('DemoOrderPage', () => {
         const wrapper = mount(DemoOrderPage);
 
         expect(wrapper.find('h2').text()).toBe('Prepara datos de demostración');
-        await wrapper.get('#demo-terms-acceptance').setValue(true);
         await wrapper.get('form').trigger('submit');
         await flushPromises();
         await wrapper.findAll('section[aria-labelledby="review-title"] button')[1].trigger('click');
@@ -69,7 +66,6 @@ describe('DemoOrderPage', () => {
         const wrapper = mount(DemoOrderPage);
 
         await wrapper.get('#demo-request-invoice').setValue(true);
-        await wrapper.get('#demo-terms-acceptance').setValue(true);
         await wrapper.get('form').trigger('submit');
         await flushPromises();
         await nextTick();
@@ -81,32 +77,12 @@ describe('DemoOrderPage', () => {
     it('keeps the privacy notice and acceptance state visible in review', async () => {
         const wrapper = mount(DemoOrderPage);
 
-        await wrapper.get('#demo-terms-acceptance').setValue(true);
         await wrapper.get('form').trigger('submit');
         await flushPromises();
         await flushPromises();
 
         expect(wrapper.get('aside[aria-label="Aviso provisional de privacidad"]').text()).toContain('no se persisten ni se transmiten');
         expect(wrapper.find('aside a[href="/fase-1#privacidad-seguridad"]').exists()).toBe(true);
-        expect(wrapper.text()).toContain('Aceptados para esta demostración');
-    });
-
-    it('blocks final confirmation until terms and privacy are accepted', async () => {
-        const wrapper = mount(DemoOrderPage);
-
-        await wrapper.get('form').trigger('submit');
-
-        expect(wrapper.get('[data-testid="confirm-demo"]').attributes('disabled')).toBeDefined();
-        expect(wrapper.get('[role="alert"]').text()).toContain('Acepta los Términos y Condiciones');
-        await wrapper.get('[data-testid="confirm-demo"]').trigger('click');
-        expect(wrapper.find('#review-title').exists()).toBe(true);
-
-        await wrapper.findAll('button').find((button) => button.text().includes('Corregir'))!.trigger('click');
-        await wrapper.get('#demo-terms-acceptance').setValue(true);
-        await wrapper.get('form').trigger('submit');
-        await flushPromises();
-        await nextTick();
-        expect(wrapper.get('[data-testid="confirm-demo"]').attributes('disabled')).toBeUndefined();
-        expect(wrapper.find('[role="alert"]').exists()).toBe(false);
+        expect(wrapper.text()).toContain('Factura de demostraciónNo solicitada');
     });
 });

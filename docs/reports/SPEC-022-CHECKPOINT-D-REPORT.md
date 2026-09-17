@@ -21,15 +21,12 @@ self-approved and Checkpoint E was not started.
 - Clearly qualified the option as `DEMOSTRACIÓN`.
 - Added no fiscal-data fields.
 - Included `requestInvoice` in the canonical integrity payload.
-- Added explicit unchecked-by-default Terms and Privacy acceptance required
-  before demo confirmation.
-- Included `termsAccepted` in the canonical integrity payload.
-- Incremented the explicit demo payload version from `2` to `3` because the
-  canonical schema changed.
-- The acceptance boolean is included because Checkpoint C/D protects the
-  confirmed final demo state; `false` and `true` produce different digests.
+- Removed the previously misplaced Terms/Privacy control from `/demo/pedido`.
+- Restored the approved Demo Order canonical payload version `2`; the landing
+  Terms/Privacy decision is outside the Demo Order integrity payload.
 - Preserved SHA-256 stability and changed-preference digest behavior.
-- Acceptance remains frontend-only and is not persisted as legal consent.
+- Added one local-only Accept/Reject Terms and Privacy interaction at the
+  bottom of `/fase-1`; it is not persisted as legal consent.
 - Added invoice preference to edit, review and final demo summary states.
 - Added a static educational PDF at
   `public/demo/factura-demostracion-sin-validez-fiscal.pdf`.
@@ -56,10 +53,9 @@ Invoice API: NONE
 Payment: NOT IMPLEMENTED
 ```
 
-The invoice checkbox is a demo preference only. The Terms/Privacy checkbox is
-an explicit academic acceptance interaction required before confirmation; it is
-not production legal-consent persistence, a digital signature, identity
-verification or a fiscal request.
+The invoice checkbox is a demo preference only. The landing Accept/Reject
+interaction is a frontend academic demonstration, not production legal-consent
+persistence, a digital signature, identity verification or a fiscal request.
 
 ## Static PDF
 
@@ -108,7 +104,7 @@ Changed/added frontend test files:
 - `resources/js/pages/public/AcademicPhaseOnePage.test.ts`
 - `resources/js/utils/demoIntegrity.test.ts`
 
-Focused Checkpoint D tests: `3 files / 15 tests PASS`.
+Focused Checkpoint D tests: `3 files / 14 tests PASS`.
 
 The tests cover the checkbox, review/correction, final requested state,
 download link, no fiscal fields, static warning, no invoice request, and
@@ -117,7 +113,7 @@ invoice-preference SHA change.
 Full quality results:
 
 - Backend: `208 tests / 1202 assertions PASS`
-- Frontend: `22 files / 84 tests PASS`
+- Frontend: `22 files / 83 tests PASS`
 - `composer validate --strict`: PASS
 - `composer audit`: PASS, no advisories
 - `vendor/bin/pint --test`: PASS
@@ -144,6 +140,7 @@ Passed:
 - `/demo/pedido`: `390x844`, `768x1024`, `1440x900`.
 - `/fase-1` smoke: `390x844`, `1440x900`.
 - Corrective `/fase-1` hierarchy QA: `390x844`, `768x1024`, `1440x900`.
+- Landing Terms Accept/Reject QA: PASS; initial state undecided.
 - Mary Kay exact external href/target/rel QA: PASS.
 - `/cliente/acceso` smoke: `390x844`.
 - `/reservar` smoke: `390x844`.

@@ -18,7 +18,6 @@ const demoData = reactive<DemoOrderData>({
 const confirmedData = ref<DemoOrderData | null>(null);
 const confirmedInvoiceRequest = ref(false);
 const requestInvoice = ref(false);
-const termsAccepted = ref(false);
 const folio = ref('');
 const canonicalPayload = ref('');
 const digest = ref<string | null>(null);
@@ -46,13 +45,13 @@ function makeDemoFolio(): string {
 }
 
 async function confirmDemo(): Promise<void> {
-    if (step.value !== 'review' || !termsAccepted.value) return;
+    if (step.value !== 'review') return;
 
     const snapshot = normalizeDemoData(demoData);
     const generatedFolio = makeDemoFolio();
     let serializedPayload = '';
     try {
-        const payload = buildDemoIntegrityPayload(snapshot, generatedFolio, requestInvoice.value, termsAccepted.value);
+        const payload = buildDemoIntegrityPayload(snapshot, generatedFolio, requestInvoice.value);
         serializedPayload = serializeDemoIntegrityPayload(payload);
     } catch {
         digest.value = null;
@@ -108,10 +107,6 @@ async function confirmDemo(): Promise<void> {
                             <input id="demo-request-invoice" v-model="requestInvoice" type="checkbox" class="mt-1 size-4 shrink-0 accent-brand-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring">
                             <span><span class="font-ui font-bold">Solicitar factura</span> <span class="font-ui text-xs font-bold uppercase tracking-[0.08em] text-brand-gold">DEMOSTRACIÓN</span><br>Solo mostrará un documento educativo; no se generará una factura real ni se solicitarán datos fiscales.</span>
                         </label>
-                        <label for="demo-terms-acceptance" class="flex cursor-pointer items-start gap-3 rounded-lg border border-brand-pink/40 bg-brand-pink/10 p-4 font-body text-sm leading-relaxed text-white">
-                            <input id="demo-terms-acceptance" v-model="termsAccepted" type="checkbox" class="mt-1 size-4 shrink-0 accent-brand-pink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring">
-                            <span><span class="font-ui font-bold">He leído y acepto los Términos y Condiciones y el Aviso de Privacidad.</span><br><a href="/fase-1#privacidad-seguridad" class="font-ui font-bold text-brand-pink underline underline-offset-4" @click.stop>Revisar información provisional</a></span>
-                        </label>
                         <UiButton type="submit">Revisar demostración</UiButton>
                     </form>
                 </UiCard>
@@ -128,12 +123,10 @@ async function confirmDemo(): Promise<void> {
                         <div class="grid gap-1 px-4 py-4 sm:grid-cols-[12rem_1fr] sm:gap-4"><dt class="text-white/60">Valor</dt><dd class="font-semibold text-brand-gold">DATO DE PRUEBA</dd></div>
                         <div class="grid gap-1 px-4 py-4 sm:grid-cols-[12rem_1fr] sm:gap-4"><dt class="text-white/60">Nota</dt><dd class="break-words font-semibold text-white">{{ normalizeDemoData(demoData).note }}</dd></div>
                         <div class="grid gap-1 px-4 py-4 sm:grid-cols-[12rem_1fr] sm:gap-4"><dt class="text-white/60">Factura de demostración</dt><dd class="font-semibold text-brand-gold">{{ requestInvoice ? 'Solicitada' : 'No solicitada' }}</dd></div>
-                        <div class="grid gap-1 px-4 py-4 sm:grid-cols-[12rem_1fr] sm:gap-4"><dt class="text-white/60">Términos y privacidad</dt><dd class="font-semibold text-brand-gold">{{ termsAccepted ? 'Aceptados para esta demostración' : 'Pendientes de aceptación' }}</dd></div>
                     </dl>
-                    <p v-if="!termsAccepted" role="alert" class="mt-5 rounded-md border border-brand-pink/50 bg-brand-pink/10 p-4 font-body text-sm leading-relaxed text-white">Acepta los Términos y Condiciones y el Aviso de Privacidad para confirmar esta demostración.</p>
                     <div class="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
                         <UiButton variant="secondary" type="button" @click="correctDemo">Corregir</UiButton>
-                        <UiButton data-testid="confirm-demo" type="button" :disabled="!termsAccepted" @click="confirmDemo">Confirmar demostración</UiButton>
+                        <UiButton data-testid="confirm-demo" type="button" @click="confirmDemo">Confirmar demostración</UiButton>
                     </div>
                 </UiCard>
             </section>
