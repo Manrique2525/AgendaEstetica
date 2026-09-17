@@ -70,6 +70,14 @@ npm run build
 
 Si un comando todavía no existe, documentar la limitación en el reporte; no simular resultados.
 
+## Producción y deployment
+
+- Rama de producción: `main`.
+- Un push/merge aprobado a `main` despliega automáticamente a alwaysdata si y solo si pasan todos los quality gates del workflow `deploy-production.yml`.
+- Nunca desplegar código no commiteado; nunca bypassear un CI fallido; no aplicar cambios de aplicación manualmente en producción.
+- `DB_PASSWORD`, `APP_KEY` y llaves SSH privadas viven solo en el entorno del servidor y en los secretos del GitHub Environment `production`; nunca en el repositorio ni en la documentación.
+- El flujo y las reglas de despliegue están en `docs/deployment/alwaysdata-production.md` y en la SPEC-023.
+
 ## Alcance de OpenCode
 
 OpenCode puede modificar únicamente archivos necesarios para la SPEC activa, sus pruebas y documentación asociada. No debe eliminar migraciones, cambiar framework, cambiar base de datos, cambiar autenticación, modificar estados de negocio, agregar proveedores externos o crear microservicios sin decisión aprobada.
