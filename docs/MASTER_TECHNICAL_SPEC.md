@@ -10,9 +10,9 @@ Construir un sistema mantenible y documentado para Salón y Barbería Yaris, con
 
 ## Arquitectura aprobada
 
-- Laravel 12.
+- Laravel 13.
 - PHP 8.3+.
-- MySQL 8.
+- MySQL 8.4 LTS.
 - Vue 3, TypeScript, Tailwind CSS y Vite.
 - Sanctum para autenticación administrativa.
 - Pest para pruebas backend.
@@ -37,7 +37,7 @@ Yaris administra. Los profesionales no son usuarios. Los clientes no tienen cuen
 ## Reglas técnicas clave
 
 - Los estados de cita serán PHP backed enums y strings en base de datos, no MySQL ENUM.
-- Las reprogramaciones conservan historial y aumentan `schedule_version`.
+- Las reprogramaciones conservan historial. SPEC-004 V1 uses deterministic locking and authoritative revalidation instead of persisting `schedule_version`.
 - Las notificaciones son idempotentes por cita, versión y tipo.
 - Los pedidos guardan snapshots de los datos comerciales de sus items.
 - El inventario se audita mediante movimientos.
