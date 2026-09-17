@@ -148,8 +148,6 @@ jobs:
       DEPLOY_BASE_URL: ${{ secrets.ALWAYSDATA_BASE_URL || 'https://yaris.alwaysdata.net' }}
       ALWAYSDATA_SSH_KEY: ${{ secrets.ALWAYSDATA_SSH_KEY }}
       ALWAYSDATA_KNOWN_HOSTS: ${{ secrets.ALWAYSDATA_KNOWN_HOSTS }}
-      SSH_KEY_PATH: ${{ runner.temp }}/alwaysdata_deploy_key
-      KNOWN_HOSTS_PATH: ${{ runner.temp }}/alwaysdata_known_hosts
       DEPLOYED_SHA: ${{ github.sha }}
       RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
@@ -158,6 +156,12 @@ jobs:
         uses: actions/checkout@v7
         with:
           ref: ${{ github.sha }}
+
+      - name: Configure temporary paths
+        run: |
+          set -euo pipefail
+          printf 'SSH_KEY_PATH=%s\n' "$RUNNER_TEMP/agenda-estetica-deploy-key" >> "$GITHUB_ENV"
+          printf 'KNOWN_HOSTS_PATH=%s\n' "$RUNNER_TEMP/agenda-estetica-known-hosts" >> "$GITHUB_ENV"
 
       - name: Download frontend build
         uses: actions/download-artifact@v4
