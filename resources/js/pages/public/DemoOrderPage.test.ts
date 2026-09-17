@@ -1,6 +1,6 @@
 import { flushPromises, mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import DemoOrderPage from './DemoOrderPage.vue';
 
 describe('DemoOrderPage', () => {
