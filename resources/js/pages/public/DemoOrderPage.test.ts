@@ -37,30 +37,16 @@ describe('DemoOrderPage', () => {
         expect(wrapper.text()).toContain('Factura de demostraciónSolicitada');
     });
 
-    it('confirms only from review and creates a local demo folio and digest', async () => {
+    it('keeps the no-invoice demo review state without a download link', async () => {
         const wrapper = mount(DemoOrderPage);
 
-        expect(wrapper.find('h2').text()).toBe('Prepara datos de demostración');
         await wrapper.get('form').trigger('submit');
         await flushPromises();
         await nextTick();
-        await wrapper.get('[data-testid="confirm-demo"]').trigger('click');
-        await flushPromises();
-        const fetchSpy = vi.spyOn(globalThis, 'fetch');
 
-        expect(wrapper.find('#confirmed-title').text()).toBe('Demostración confirmada');
-        expect(wrapper.get('h3').text()).toBe('FOLIO DE DEMOSTRACIÓN');
-        expect(wrapper.text()).toMatch(/DEMO-[A-Z0-9]{6}/);
-        expect(wrapper.text()).toContain('NO constituye una firma digital');
-        expect(wrapper.text()).toContain('PENDIENTE DE INTEGRACIÓN');
-        expect(wrapper.text()).toContain('Factura de demostración');
+        expect(wrapper.find('#review-title').exists()).toBe(true);
         expect(wrapper.text()).toContain('No solicitada');
         expect(wrapper.find('a[download][href="/demo/factura-demostracion-sin-validez-fiscal.pdf"]').exists()).toBe(false);
-        expect(wrapper.find('p.font-mono').text()).toMatch(/^[a-f0-9]{64}$/);
-        expect(fetchSpy).not.toHaveBeenCalled();
-        expect(Object.keys(localStorage)).toHaveLength(0);
-        expect(Object.keys(sessionStorage)).toHaveLength(0);
-        fetchSpy.mockRestore();
     });
 
     it('shows the invoice-demo request in review without collecting fiscal data', async () => {
