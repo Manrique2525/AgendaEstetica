@@ -11,6 +11,17 @@
 Checkpoint E audited the approved Phase 1 surfaces without implementing Digital
 Signature or any new product/backend capability.
 
+## Human-Found Landing Correction
+
+- Audited the real public landing `/` in addition to `/fase-1`.
+- Integrated independent Authentication, Integrity, Digital Signature and
+  Invoice Demonstration capability cards into the main landing.
+- Added the Mary Kay external CTA inside the existing Mary Kay catalog card.
+- Moved the single local Terms/Privacy Accept/Reject interaction to the bottom
+  of `/` and retargeted the shared footer link to `/#terminos-privacidad`.
+- Removed the misplaced Demo Order Terms control; the Demo Order payload remains
+  version `2` and excludes landing Terms state.
+
 ## Authoritative Scope
 
 Repository documentation defines Checkpoint E as:
@@ -40,6 +51,7 @@ Digital Signature remains `PENDING / FUTURE WORK` and was not implemented.
 Audited outside the repository with Playwright `1.63.0` and Chromium
 `153.0.8010.12`.
 
+- `/`: `390x844`, `768x1024`, `1440x900` PASS.
 - `/fase-1`: `390x844`, `768x1024`, `1440x900` PASS.
 - `/demo/pedido`: `390x844` PASS.
 - `/cliente/acceso`: `390x844` PASS.
@@ -51,6 +63,8 @@ Audited outside the repository with Playwright `1.63.0` and Chromium
 - No horizontal overflow.
 - No console errors, Vue warnings, page errors or critical failed requests.
 - Terms initial state is `NO DECISION`; Accept and Reject both work.
+- Main landing Terms section is the final content section before the footer.
+- Main landing Mary Kay card preserves catalog context and exact external link.
 - Terms remains the final landing section and does not contain capability cards.
 - Mary Kay exact external href/target/rel verified.
 - Demo Order has no duplicate Terms control and retains version-2 integrity.
@@ -74,7 +88,7 @@ This is an application audit, not a formal WCAG certification.
 
 ## Responsive Audit
 
-- `/fase-1` at all required viewports: PASS.
+- `/` and `/fase-1` at all required viewports: PASS.
 - Capability content precedes the bottom Terms/Privacy section at mobile and
   desktop sizes: PASS.
 - No clipped text, overlapping cards or overflow found: PASS.

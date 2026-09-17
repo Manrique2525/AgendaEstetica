@@ -21,7 +21,9 @@ describe('FoundationPage', () => {
         expect(store.get('#tienda').text()).toContain('Cuidado capilar');
         expect(store.get('#tienda').text()).toContain('Catálogo en preparación');
         expect(store.get('#tienda').text()).not.toMatch(/Comprar|Agregar al carrito|Pagar|Stock|Precio/i);
-        expect(store.get('#tienda').findAll('a')).toHaveLength(0);
+        expect(store.get('#tienda').findAll('a[href="https://www.marykay.com.mx/yaris"]')).toHaveLength(1);
+        expect(store.get('#tienda').find('a[href="https://www.marykay.com.mx/yaris"]').attributes()).toMatchObject({ target: '_blank', rel: 'noopener noreferrer' });
+        expect(store.get('#tienda').text()).toContain('tienda externa de Mary Kay');
     });
 
     it('renders the services bridge and approved contact information', () => {
@@ -34,6 +36,24 @@ describe('FoundationPage', () => {
         expect(wrapper.get('#contacto').text()).toContain('Fraccionamiento Ciudad Bicentenario');
         expect(wrapper.get('#contacto').text()).toContain('C.P. 86290');
         expect(wrapper.get('#contacto a').attributes('href')).toBe('https://wa.me/529932294158');
+    });
+
+    it('renders independent academic capabilities and bottom terms decision', async () => {
+        const wrapper = mount(FoundationPage);
+
+        expect(wrapper.get('#academic-phase-1').text()).toContain('Autenticación');
+        expect(wrapper.get('#academic-phase-1').text()).toContain('Integridad');
+        expect(wrapper.get('#academic-phase-1').text()).toContain('Firma digital');
+        expect(wrapper.get('#academic-phase-1').text()).toContain('Factura digital');
+        expect(wrapper.get('#academic-phase-1').findAll('section')).toHaveLength(0);
+        const sectionIds = wrapper.findAll('section[id]').map((section) => section.attributes('id'));
+        expect(sectionIds[sectionIds.length - 1]).toBe('terminos-privacidad');
+        expect(wrapper.get('#terminos-privacidad').text()).toContain('Aún no has elegido una opción');
+
+        await wrapper.findAll('#terminos-privacidad button')[0].trigger('click');
+        expect(wrapper.get('#terminos-privacidad').text()).toContain('Has rechazado');
+        await wrapper.findAll('#terminos-privacidad button')[1].trigger('click');
+        expect(wrapper.get('#terminos-privacidad').text()).toContain('Términos y condiciones aceptados');
     });
 });
 
