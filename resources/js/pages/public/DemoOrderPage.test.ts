@@ -43,7 +43,8 @@ describe('DemoOrderPage', () => {
         expect(wrapper.find('h2').text()).toBe('Prepara datos de demostración');
         await wrapper.get('form').trigger('submit');
         await flushPromises();
-        await wrapper.findAll('section[aria-labelledby="review-title"] button')[1].trigger('click');
+        await nextTick();
+        await wrapper.get('[data-testid="confirm-demo"]').trigger('click');
         await flushPromises();
         const fetchSpy = vi.spyOn(globalThis, 'fetch');
 
