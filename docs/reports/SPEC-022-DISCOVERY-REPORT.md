@@ -4,16 +4,17 @@
 
 SPEC-022 is defined as an academic presentation scope for privacy/security,
 authentication, integrity/signature and digital invoice. Its Definition and
-Technical Discovery are `INTEGRATED / COMPLETED` on `main`; Checkpoints A and B
-are completed and approved, and Checkpoint C is implemented on its feature
+Technical Discovery are `INTEGRATED / COMPLETED` on `main`; Checkpoints A, B and
+C are completed and approved, and Checkpoint D is implemented on its feature
 branch awaiting human approval.
 
 ## Repository Evidence
 
-Checkpoints A-C contain only public Vue presentation routes/content,
-provisional notices and secondary links. Checkpoint C contains no order,
-customer-auth implementation, model, migration, asset or PDF. The SPEC-009
-feature branch was not modified. Existing contracts inspected include:
+Checkpoints A-D contain only public Vue presentation routes/content,
+provisional notices and secondary links. Checkpoint D contains no order,
+customer-auth or fiscal backend implementation, model, migration or runtime PDF
+dependency. The SPEC-009 feature branch was not modified. Existing contracts
+inspected include:
 
 - `AdminLoginPage.vue`, `useAuth.ts`, Sanctum auth and protected admin routes.
 - `AdminLayout.vue` and existing admin navigation.
@@ -81,8 +82,8 @@ and undefined; SPEC-008 remains Fake WhatsApp.
 - D: invoice-request demo and educational document.
 - E: integrated browser, accessibility, responsive and real/demo/pending audit.
 
-Checkpoints A and B are completed and approved. Checkpoint C is authorized and
-implemented pending human approval. Checkpoints D-E are not authorized.
+Checkpoints A, B and C are completed and approved. Checkpoint D is authorized
+and implemented pending human approval. Checkpoint E is not authorized.
 
 ## Test Handoff
 
@@ -103,12 +104,12 @@ Vue implementation: `/fase-1`, `/cliente/acceso`, `/demo/pedido`, notices and se
 PHP implementation: NONE
 Routes: `/fase-1`, `/cliente/acceso`, `/demo/pedido`
 Migrations/schema: NONE
-Tests: Checkpoint A, B and C frontend coverage
-Assets/PDF: NONE
+Tests: Checkpoint A, B, C and D frontend coverage
+Assets/PDF: Static educational PDF only
 Dependencies: NONE
 SPEC-009 feature: NOT TOUCHED
 SPEC-007: PAUSED / UNCHANGED
 SPEC-008: FAKE WHATSAPP / UNCHANGED
 ```
 
-STOP. Submit SPEC-022 Checkpoint C for explicit human approval.
+STOP. Submit SPEC-022 Checkpoint D for explicit human approval.

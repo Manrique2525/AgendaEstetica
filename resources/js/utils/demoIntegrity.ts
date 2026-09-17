@@ -5,9 +5,10 @@ export interface DemoOrderData {
 }
 
 export interface DemoIntegrityPayload {
-    version: 1;
+    version: 2;
     folio: string;
     demo: true;
+    requestInvoice: boolean;
     customer: {
         name: string;
     };
@@ -29,13 +30,14 @@ export function normalizeDemoData(data: DemoOrderData): DemoOrderData {
     };
 }
 
-export function buildDemoIntegrityPayload(data: DemoOrderData, folio: string): DemoIntegrityPayload {
+export function buildDemoIntegrityPayload(data: DemoOrderData, folio: string, requestInvoice = false): DemoIntegrityPayload {
     const normalized = normalizeDemoData(data);
 
     return {
-        version: 1,
+        version: 2,
         folio,
         demo: true,
+        requestInvoice,
         customer: {
             name: normalized.customerName,
         },

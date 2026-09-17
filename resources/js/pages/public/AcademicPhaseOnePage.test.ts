@@ -35,8 +35,10 @@ describe('AcademicPhaseOnePage', () => {
         expect(wrapper.get('#integridad-firma').text()).toContain('no es una firma digital');
         expect(wrapper.get('#integridad-firma').text()).toContain('PENDIENTE DE INTEGRACIÓN');
         expect(wrapper.find('#integridad-firma a[href="/demo/pedido"]').exists()).toBe(true);
-        expect(wrapper.get('#factura-digital').text()).toContain('ni genera CFDI');
-        expect(wrapper.text()).not.toMatch(/crear sesión|iniciar sesión|OTP|timbrado/i);
+        expect(wrapper.get('#factura-digital').text()).toContain('No se genera CFDI');
+        expect(wrapper.get('#autenticacion').text()).not.toMatch(/crear sesión|iniciar sesión|OTP|timbrado/i);
+        expect(wrapper.get('#factura-digital').text()).toContain('DEMOSTRACIÓN');
+        expect(wrapper.find('#factura-digital a[href="/demo/pedido"]').exists()).toBe(true);
     });
 
     it('links the privacy anchor from the overview', () => {

@@ -2,11 +2,11 @@
 
 ## Status
 
-`DEVELOPMENT IN PROGRESS / CHECKPOINT C IMPLEMENTED / READY FOR HUMAN APPROVAL`
+`DEVELOPMENT IN PROGRESS / CHECKPOINT D IMPLEMENTED / READY FOR HUMAN APPROVAL`
 
-Definition and Discovery are integrated into `main`. Checkpoints A and B are
-completed and approved. Checkpoint C is implemented on its feature branch,
-pending human approval; Checkpoints D-E and implementation beyond C are not
+Definition and Discovery are integrated into `main`. Checkpoints A, B and C are
+completed and approved. Checkpoint D is implemented on its feature branch,
+pending human approval; Checkpoint E and implementation beyond D are not
 authorized.
 
 ## Purpose
@@ -158,7 +158,8 @@ RFC or certificate identifiers. No PDF runtime dependency is authorized.
 - FR-07: Provide demo submission, folio and summary with no real-order claim.
 - FR-08: Provide browser SHA-256 integrity demonstration for confirmed demo data.
 - FR-09: Distinguish hash from digital signature and leave signature pending.
-- FR-10: Provide demo invoice request and no-fiscal-validity labeling.
+- FR-10: Provide demo invoice request, static educational document and
+  no-fiscal-validity labeling.
 - FR-11: Preserve SPEC-003, SPEC-004, SPEC-006 and SPEC-012 authority.
 
 ## Non-Functional Requirements
@@ -206,25 +207,25 @@ RFC or certificate identifiers. No PDF runtime dependency is authorized.
 4. Invoice-request demo and static educational document.
 5. Integrated academic browser/accessibility/responsive audit.
 
-Checkpoints A, B and C are authorized for development. Checkpoints A and B are
-completed and approved; Checkpoint C is implemented pending human approval.
-Checkpoints D-E remain unauthorized.
+Checkpoints A, B, C and D are authorized for development. Checkpoints A, B and
+C are completed and approved; Checkpoint D is implemented pending human
+approval. Checkpoint E remains unauthorized.
 
 ## State
 
 ```text
-SPEC-022: DEVELOPMENT IN PROGRESS / CHECKPOINT C IMPLEMENTED / READY FOR HUMAN APPROVAL
-Development: AUTHORIZED FOR CHECKPOINT C ONLY
+SPEC-022: DEVELOPMENT IN PROGRESS / CHECKPOINT D IMPLEMENTED / READY FOR HUMAN APPROVAL
+Development: AUTHORIZED FOR CHECKPOINT D ONLY
 Checkpoint A: COMPLETED / APPROVED
-Checkpoint B: IMPLEMENTED / READY FOR HUMAN APPROVAL
+Checkpoint B: COMPLETED / APPROVED
+Checkpoint C: COMPLETED / APPROVED
 SPEC-009: CLOSED / MERGED / DEPENDENCY SATISFIED
 SPEC-010 / SPEC-012: NOT REQUIRED FOR DEMO IMPLEMENTATION
 SPEC-021: RESERVED / NOT AUTHORIZED / UNDEFINED
-Checkpoint D: NOT AUTHORIZED
 Checkpoint E: NOT AUTHORIZED
 SPEC-007: PAUSED / UNCHANGED
 SPEC-008: FAKE WHATSAPP / UNCHANGED / NOT AUTHORIZED
 ```
 
-STOP. Submit SPEC-022 Checkpoint C for explicit human approval. Do not
-auto-advance to Checkpoint D.
+STOP. Submit SPEC-022 Checkpoint D for explicit human approval. Do not
+auto-advance to Checkpoint E.

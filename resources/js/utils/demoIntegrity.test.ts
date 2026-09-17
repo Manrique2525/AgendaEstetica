@@ -16,8 +16,8 @@ describe('demo integrity helper', () => {
             itemName: 'DEMO ACADÉMICA — Producto de prueba',
             note: 'Sin datos personales reales',
         });
-        expect(Object.keys(payload)).toEqual(['version', 'folio', 'demo', 'customer', 'items', 'summary']);
-        expect(serializeDemoIntegrityPayload(payload)).toBe('{"version":1,"folio":"DEMO-ABC123","demo":true,"customer":{"name":"Cliente de demostración"},"items":[{"name":"DEMO ACADÉMICA — Producto de prueba","quantity":1,"price_label":"DATO DE PRUEBA"}],"summary":{"note":"Sin datos personales reales"}}');
+        expect(Object.keys(payload)).toEqual(['version', 'folio', 'demo', 'requestInvoice', 'customer', 'items', 'summary']);
+        expect(serializeDemoIntegrityPayload(payload)).toBe('{"version":2,"folio":"DEMO-ABC123","demo":true,"requestInvoice":false,"customer":{"name":"Cliente de demostración"},"items":[{"name":"DEMO ACADÉMICA — Producto de prueba","quantity":1,"price_label":"DATO DE PRUEBA"}],"summary":{"note":"Sin datos personales reales"}}');
     });
 
     it('matches a known SHA-256 vector', async () => {
@@ -31,6 +31,13 @@ describe('demo integrity helper', () => {
 
         await expect(sha256Hex(first)).resolves.toBe(await sha256Hex(same));
         await expect(sha256Hex(first)).resolves.not.toBe(await sha256Hex(changed));
+    });
+
+    it('changes the canonical digest when the invoice-demo preference changes', async () => {
+        const withoutInvoice = serializeDemoIntegrityPayload(buildDemoIntegrityPayload(data, 'DEMO-ABC123', false));
+        const withInvoice = serializeDemoIntegrityPayload(buildDemoIntegrityPayload(data, 'DEMO-ABC123', true));
+
+        await expect(sha256Hex(withoutInvoice)).resolves.not.toBe(await sha256Hex(withInvoice));
     });
 
     it('returns no digest when Web Crypto is unavailable', async () => {
