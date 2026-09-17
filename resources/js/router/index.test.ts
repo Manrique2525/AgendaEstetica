@@ -20,11 +20,19 @@ describe('frontend router', () => {
         expect(router.resolve('/reservar').meta.title).toBe('Solicitar cita | Salón y Barbería Yaris');
     });
 
+    it('resolves the academic Phase 1 route with its public title', () => {
+        expect(router.resolve('/fase-1').name).toBe('public.academic-phase-one');
+        expect(router.resolve('/fase-1').meta.surface).toBe('public');
+        expect(router.resolve('/fase-1').meta.title).toBe('Fase 1 | Salón y Barbería Yaris');
+    });
+
     it('updates document titles for public navigation', async () => {
         await router.push('/');
         expect(document.title).toBe('Salón y Barbería Yaris | Belleza y elegancia');
-        await router.push('/reservar');
-        expect(document.title).toBe('Solicitar cita | Salón y Barbería Yaris');
+         await router.push('/reservar');
+         expect(document.title).toBe('Solicitar cita | Salón y Barbería Yaris');
+         await router.push('/fase-1');
+         expect(document.title).toBe('Fase 1 | Salón y Barbería Yaris');
         await router.push('/');
     });
 

@@ -19,6 +19,7 @@ describe('PublicLayout', () => {
         expect(wrapper.find('a[href="/#servicios"]').exists()).toBe(true);
         expect(wrapper.find('a[href="/#contacto"]').exists()).toBe(true);
         expect(wrapper.find('a[href="/reservar"]').text()).toBe('Solicitar cita');
+        expect(wrapper.find('footer a[href="/fase-1#privacidad-seguridad"]').text()).toBe('Privacidad y seguridad');
         expect(wrapper.find('a[href="https://wa.me/529932294158"]').attributes('target')).toBe('_blank');
         expect(wrapper.find('#main-content').attributes('tabindex')).toBe('-1');
     });

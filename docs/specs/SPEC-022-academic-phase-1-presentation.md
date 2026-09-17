@@ -2,11 +2,11 @@
 
 ## Status
 
-`DEFINITION + TECHNICAL DISCOVERY INTEGRATED / COMPLETED`
+`DEVELOPMENT IN PROGRESS / CHECKPOINT A IMPLEMENTED / READY FOR HUMAN APPROVAL`
 
 Definition and Discovery are integrated into `main`. Checkpoint A is authorized
-separately but has not started; Checkpoints B-E and implementation beyond A are
-not authorized.
+and implemented on its feature branch, pending human approval; Checkpoints B-E
+and implementation beyond A are not authorized.
 
 ## Purpose
 
@@ -206,14 +206,15 @@ RFC or certificate identifiers. No PDF runtime dependency is authorized.
 4. Invoice-request demo and static educational document.
 5. Integrated academic browser/accessibility/responsive audit.
 
-These are planning boundaries only. No checkpoint is authorized.
+Checkpoint A is authorized for development only. Checkpoints B-E remain
+unauthorized.
 
 ## State
 
 ```text
-SPEC-022: DEFINITION + TECHNICAL DISCOVERY INTEGRATED / COMPLETED
-Development: AUTHORIZED FOR CHECKPOINT A ONLY / NOT STARTED
-Checkpoint A: AUTHORIZED / NOT IMPLEMENTED
+SPEC-022: DEVELOPMENT IN PROGRESS / CHECKPOINT A IMPLEMENTED / READY FOR HUMAN APPROVAL
+Development: AUTHORIZED FOR CHECKPOINT A ONLY
+Checkpoint A: IMPLEMENTED / READY FOR HUMAN APPROVAL
 SPEC-009: CLOSED / MERGED / DEPENDENCY SATISFIED
 SPEC-010 / SPEC-012: NOT REQUIRED FOR DEMO IMPLEMENTATION
 SPEC-021: RESERVED / NOT AUTHORIZED / UNDEFINED
@@ -225,4 +226,5 @@ SPEC-007: PAUSED / UNCHANGED
 SPEC-008: FAKE WHATSAPP / UNCHANGED / NOT AUTHORIZED
 ```
 
-STOP. Submit SPEC-022 Definition + Discovery for human review.
+STOP. Submit SPEC-022 Checkpoint A for explicit human approval. Do not
+auto-advance to Checkpoint B.

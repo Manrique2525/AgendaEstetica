@@ -6,6 +6,7 @@ import AdminAgendaDetailPage from '../pages/admin/AdminAgendaDetailPage.vue';
 import NotFoundPage from '../pages/NotFoundPage.vue';
 import FoundationPage from '../pages/public/FoundationPage.vue';
 import PublicBookingPage from '../pages/public/PublicBookingPage.vue';
+import AcademicPhaseOnePage from '../pages/public/AcademicPhaseOnePage.vue';
 import { useAuth } from '../composables/useAuth';
 import { publicSite } from '../data/publicSite';
 
@@ -24,6 +25,12 @@ const router = createRouter({
             component: PublicBookingPage,
             name: 'public.booking',
             meta: { surface: 'public', title: `Solicitar cita | ${publicSite.business.name}` },
+        },
+        {
+            path: '/fase-1',
+            component: AcademicPhaseOnePage,
+            name: 'public.academic-phase-one',
+            meta: { surface: 'public', title: `Fase 1 | ${publicSite.business.name}` },
         },
         {
             path: '/admin',

@@ -2,14 +2,15 @@
 
 ## Decision
 
-SPEC-022 is defined as a documentation-only academic presentation scope for
-privacy/security, authentication, integrity/signature and digital invoice. Its
-Definition and Technical Discovery are `INTEGRATED / COMPLETED` on `main`;
-Checkpoint A is authorized separately but not started.
+SPEC-022 is defined as an academic presentation scope for privacy/security,
+authentication, integrity/signature and digital invoice. Its Definition and
+Technical Discovery are `INTEGRATED / COMPLETED` on `main`; Checkpoint A is
+implemented on its feature branch and awaits human approval.
 
 ## Repository Evidence
 
-The approved documentation base contains no SPEC-022 code, route, model,
+Checkpoint A contains only a public Vue route, presentation content, a
+provisional booking notice and a secondary footer link. It contains no model,
 migration, asset, PDF or customer-auth implementation. The SPEC-009 feature
 branch was not modified. Existing contracts inspected include:
 
@@ -79,23 +80,25 @@ and undefined; SPEC-008 remains Fake WhatsApp.
 - D: invoice-request demo and educational document.
 - E: integrated browser, accessibility, responsive and real/demo/pending audit.
 
-Checkpoint A is authorized separately but was not started in this integration.
-Checkpoints B-E are not authorized.
+Checkpoint A is authorized and implemented. Checkpoints B-E are not authorized.
 
 ## Test Handoff
 
-Future tests should cover statuses, provisional labels, admin link, demo auth
-without session, review correction, demo folio, SHA-256/signature distinction,
-invoice warning, no production persistence and negative claims for paid order,
-verified number, valid signature and CFDI. No tests are added now.
+Checkpoint A tests cover the public route/title, one H1, four area statuses,
+privacy anchor, provisional notice, footer integration, primary navigation
+boundary and preservation of the booking form. Future tests should cover demo
+auth without session, review correction, demo folio, SHA-256/signature
+distinction, invoice warning, no production persistence and negative claims for
+paid order, verified number, valid signature and CFDI.
 
 ## Scope Audit
 
 ```text
-Vue/PHP implementation: NONE
-Routes: NONE
+Vue implementation: `/fase-1`, privacy notice and footer link
+PHP implementation: NONE
+Routes: `/fase-1`
 Migrations/schema: NONE
-Tests: NONE
+Tests: Checkpoint A frontend coverage
 Assets/PDF: NONE
 Dependencies: NONE
 SPEC-009 feature: NOT TOUCHED
@@ -103,4 +106,4 @@ SPEC-007: PAUSED / UNCHANGED
 SPEC-008: FAKE WHATSAPP / UNCHANGED
 ```
 
-STOP. Submit SPEC-022 Definition + Discovery for human review.
+STOP. Submit SPEC-022 Checkpoint A for explicit human approval.

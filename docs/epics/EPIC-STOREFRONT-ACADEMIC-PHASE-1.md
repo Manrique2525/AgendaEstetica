@@ -2,9 +2,11 @@
 
 ## Status
 
-`AUDITED / DEFINITION READY FOR HUMAN REVIEW`
+`AUDITED / CHECKPOINT A READY FOR HUMAN APPROVAL`
 
-Development and every implementation checkpoint are **NOT AUTHORIZED**.
+Only SPEC-022 Checkpoint A is authorized and implemented on its feature branch.
+Human approval is still required. All other implementation checkpoints remain
+**NOT AUTHORIZED**.
 This is a documentation boundary for one coherent public site combining the
 Yaris salon experience with an academic storefront. It does not replace or
 renumber roadmap SPECs.
@@ -166,8 +168,10 @@ acceptance criteria, tests and a report.
 - Mary Kay purchases remain external.
 - No real catalog, payment, invoice, signature or verification claims are
   invented.
-- No production code, schema, routes, tests or dependencies are added here.
-- Development remains unauthorized.
+- No production backend, schema or dependency changes are added here; the
+  authorized SPEC-022 Checkpoint A public presentation is the only frontend
+  implementation in progress.
+- Development remains limited to authorized SPEC-022 Checkpoint A.
 
 ```text
 Epic: DEFINED / COORDINATION ONLY
@@ -180,7 +184,7 @@ SPEC-011 Inventory: PRESERVED / NOT AUTHORIZED
 SPEC-012 Cart / checkout / orders: PRESERVED / NOT AUTHORIZED
 SPEC-013 Reviews / favorites: PRESERVED / NOT AUTHORIZED
 SPEC-021 Appointment Request: RESERVED / NOT AUTHORIZED / UNDEFINED
-SPEC-022 Academic Phase 1 Presentation: DEFINITION + DISCOVERY INTEGRATED / COMPLETED
+SPEC-022 Academic Phase 1 Presentation: DEVELOPMENT IN PROGRESS / CHECKPOINT A IMPLEMENTED / READY FOR HUMAN APPROVAL
 ```
 
-STOP. Submit Audit + Definition for human review.
+STOP. Submit SPEC-022 Checkpoint A for explicit human approval.
