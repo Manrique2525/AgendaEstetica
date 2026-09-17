@@ -5,7 +5,7 @@ import UiCard from '../../components/ui/UiCard.vue';
 const areas = [
     { id: 'privacidad-seguridad', title: 'Privacidad y seguridad', status: 'PENDIENTE DE REVISIÓN', summary: 'Presentación provisional de los controles y datos mínimos del flujo público.' },
     { id: 'autenticacion', title: 'Autenticación', status: 'DEMOSTRACIÓN', summary: 'El acceso administrativo es funcional; el acceso de clientes se presenta como demostración.' },
-    { id: 'integridad-firma', title: 'Integridad y firma digital', status: 'PENDIENTE DE INTEGRACIÓN', summary: 'La diferencia entre una huella de integridad y una firma queda para trabajo futuro.' },
+    { id: 'integridad-firma', title: 'Integridad y firma digital', status: 'DEMOSTRACIÓN', summary: 'La huella SHA-256 de una demostración funciona en el navegador; la firma digital queda pendiente.' },
     { id: 'factura-digital', title: 'Factura digital', status: 'PENDIENTE DE INTEGRACIÓN', summary: 'La demostración fiscal todavía no forma parte de este checkpoint.' },
 ] as const;
 </script>
@@ -84,8 +84,12 @@ const areas = [
             </section>
 
             <section id="integridad-firma" class="scroll-mt-6 border-t border-white/15 pt-8" aria-labelledby="integrity-title">
-                <h2 id="integrity-title" class="font-display text-4xl text-text-inverse">Integridad y firma digital</h2>
-                <p class="mt-3 max-w-2xl font-body leading-relaxed text-white/75"><strong class="text-white">PENDIENTE DE INTEGRACIÓN.</strong> Una futura demostración podría usar SHA-256 como huella de integridad. Una huella no es una firma digital, y una casilla de aceptación tampoco lo es.</p>
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <h2 id="integrity-title" class="font-display text-4xl text-text-inverse">Integridad y firma digital</h2>
+                    <span class="self-start rounded-full border border-brand-gold/60 px-3 py-1 font-ui text-xs font-bold tracking-[0.08em] text-brand-gold">DEMOSTRACIÓN</span>
+                </div>
+                <p class="mt-3 max-w-2xl font-body leading-relaxed text-white/75"><strong class="text-white">Huella SHA-256: DEMOSTRACIÓN FUNCIONAL.</strong> La huella representa la integridad de datos académicos. <strong class="text-white">Firma digital: PENDIENTE DE INTEGRACIÓN.</strong> Una huella no es una firma digital, y una casilla de aceptación tampoco lo es.</p>
+                <a href="/demo/pedido" class="mt-5 inline-flex min-h-11 items-center justify-center rounded-md bg-action-primary px-4 py-2 font-ui text-sm font-bold text-action-primary-foreground hover:bg-action-primary-hover focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 focus:ring-offset-brand-black">Ver demostración de integridad</a>
             </section>
 
             <section id="factura-digital" class="scroll-mt-6 border-t border-white/15 pt-8" aria-labelledby="invoice-title">

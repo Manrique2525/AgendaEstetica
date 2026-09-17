@@ -8,6 +8,7 @@ import FoundationPage from '../pages/public/FoundationPage.vue';
 import PublicBookingPage from '../pages/public/PublicBookingPage.vue';
 import AcademicPhaseOnePage from '../pages/public/AcademicPhaseOnePage.vue';
 import CustomerAccessDemoPage from '../pages/public/CustomerAccessDemoPage.vue';
+import DemoOrderPage from '../pages/public/DemoOrderPage.vue';
 import { useAuth } from '../composables/useAuth';
 import { publicSite } from '../data/publicSite';
 
@@ -38,6 +39,12 @@ const router = createRouter({
             component: CustomerAccessDemoPage,
             name: 'public.customer-access-demo',
             meta: { surface: 'public', title: `Acceso de clientes | ${publicSite.business.name}` },
+        },
+        {
+            path: '/demo/pedido',
+            component: DemoOrderPage,
+            name: 'public.demo-order',
+            meta: { surface: 'public', title: `Pedido de demostración | ${publicSite.business.name}` },
         },
         {
             path: '/admin',

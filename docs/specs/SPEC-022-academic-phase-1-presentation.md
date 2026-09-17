@@ -2,11 +2,12 @@
 
 ## Status
 
-`DEVELOPMENT IN PROGRESS / CHECKPOINT B IMPLEMENTED / READY FOR HUMAN APPROVAL`
+`DEVELOPMENT IN PROGRESS / CHECKPOINT C IMPLEMENTED / READY FOR HUMAN APPROVAL`
 
-Definition and Discovery are integrated into `main`. Checkpoint A is completed
-and approved. Checkpoint B is implemented on its feature branch, pending human
-approval; Checkpoints C-E and implementation beyond B are not authorized.
+Definition and Discovery are integrated into `main`. Checkpoints A and B are
+completed and approved. Checkpoint C is implemented on its feature branch,
+pending human approval; Checkpoints D-E and implementation beyond C are not
+authorized.
 
 ## Purpose
 
@@ -64,8 +65,8 @@ academic demonstrator. No new actor authentication is created here.
   `#privacidad-seguridad`, `#autenticacion`, `#integridad-firma` and
   `#factura-digital`.
 - `/cliente/acceso`: customer-access demonstration only; no real authentication.
-- `/demo/pedido`: local academic order flow with review, correction, folio,
-  summary, hash and invoice option.
+- `/demo/pedido`: isolated client-only academic flow with review, correction,
+  demo folio, summary and SHA-256 integrity presentation.
 
 No separate privacy, review or result route is required initially. The primary
 business navigation remains Inicio, Tienda, Servicios and Contacto; academic
@@ -98,7 +99,7 @@ phone shortcut is authorized.
 
 ## Academic Order Integrity
 
-The demo flow may use only `DEMO ACADÉMICA`/`DATOS DE PRUEBA` values:
+The Checkpoint C demo flow uses only `DEMO ACADÉMICA`/`DATOS DE PRUEBA` values:
 
 ```text
 demo inputs -> review -> correction/back -> review -> demo submission
@@ -112,11 +113,10 @@ appropriate. Real order ownership remains SPEC-012.
 
 ## Hash and Digital Signature
 
-A future demo may canonicalize demo order data and use browser-native Web
+Checkpoint C canonicalizes its local demo data and uses browser-native Web
 Crypto SHA-256, displayed as `Huella de integridad (SHA-256)`. This is a hash/
-integrity fingerprint, not a digital signature. A signature requires a key,
-certificate, signer identity and verification, none of which exists or is
-approved.
+integrity fingerprint, not a digital signature. A signature requires additional
+cryptographic/signing infrastructure, none of which exists or is approved.
 
 Final signature architecture depends on the academic team proposal. A checkbox
 “Acepto” must never be called a signature; prefer no checkbox, or use
@@ -156,7 +156,7 @@ RFC or certificate identifiers. No PDF runtime dependency is authorized.
 - FR-05: Never treat WhatsApp opening as authentication or verification.
 - FR-06: Provide local demo order review and correction.
 - FR-07: Provide demo submission, folio and summary with no real-order claim.
-- FR-08: Provide optional browser SHA-256 integrity demonstration.
+- FR-08: Provide browser SHA-256 integrity demonstration for confirmed demo data.
 - FR-09: Distinguish hash from digital signature and leave signature pending.
 - FR-10: Provide demo invoice request and no-fiscal-validity labeling.
 - FR-11: Preserve SPEC-003, SPEC-004, SPEC-006 and SPEC-012 authority.
@@ -206,26 +206,25 @@ RFC or certificate identifiers. No PDF runtime dependency is authorized.
 4. Invoice-request demo and static educational document.
 5. Integrated academic browser/accessibility/responsive audit.
 
-Checkpoints A and B are authorized for development. Checkpoint A is completed
-and approved; Checkpoint B is implemented pending human approval. Checkpoints
-C-E remain unauthorized.
+Checkpoints A, B and C are authorized for development. Checkpoints A and B are
+completed and approved; Checkpoint C is implemented pending human approval.
+Checkpoints D-E remain unauthorized.
 
 ## State
 
 ```text
-SPEC-022: DEVELOPMENT IN PROGRESS / CHECKPOINT B IMPLEMENTED / READY FOR HUMAN APPROVAL
-Development: AUTHORIZED FOR CHECKPOINT B ONLY
+SPEC-022: DEVELOPMENT IN PROGRESS / CHECKPOINT C IMPLEMENTED / READY FOR HUMAN APPROVAL
+Development: AUTHORIZED FOR CHECKPOINT C ONLY
 Checkpoint A: COMPLETED / APPROVED
 Checkpoint B: IMPLEMENTED / READY FOR HUMAN APPROVAL
 SPEC-009: CLOSED / MERGED / DEPENDENCY SATISFIED
 SPEC-010 / SPEC-012: NOT REQUIRED FOR DEMO IMPLEMENTATION
 SPEC-021: RESERVED / NOT AUTHORIZED / UNDEFINED
-Checkpoint C: NOT AUTHORIZED
 Checkpoint D: NOT AUTHORIZED
 Checkpoint E: NOT AUTHORIZED
 SPEC-007: PAUSED / UNCHANGED
 SPEC-008: FAKE WHATSAPP / UNCHANGED / NOT AUTHORIZED
 ```
 
-STOP. Submit SPEC-022 Checkpoint B for explicit human approval. Do not
-auto-advance to Checkpoint C.
+STOP. Submit SPEC-022 Checkpoint C for explicit human approval. Do not
+auto-advance to Checkpoint D.

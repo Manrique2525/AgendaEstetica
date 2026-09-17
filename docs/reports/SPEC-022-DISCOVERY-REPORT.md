@@ -4,16 +4,16 @@
 
 SPEC-022 is defined as an academic presentation scope for privacy/security,
 authentication, integrity/signature and digital invoice. Its Definition and
-Technical Discovery are `INTEGRATED / COMPLETED` on `main`; Checkpoint A is
-completed and approved, and Checkpoint B is implemented on its feature branch
-awaiting human approval.
+Technical Discovery are `INTEGRATED / COMPLETED` on `main`; Checkpoints A and B
+are completed and approved, and Checkpoint C is implemented on its feature
+branch awaiting human approval.
 
 ## Repository Evidence
 
-Checkpoints A and B contain only public Vue presentation routes/content,
-provisional notices and secondary links. Checkpoint B contains no customer-auth
-implementation, model, migration, asset or PDF. The SPEC-009 feature branch was
-not modified. Existing contracts inspected include:
+Checkpoints A-C contain only public Vue presentation routes/content,
+provisional notices and secondary links. Checkpoint C contains no order,
+customer-auth implementation, model, migration, asset or PDF. The SPEC-009
+feature branch was not modified. Existing contracts inspected include:
 
 - `AdminLoginPage.vue`, `useAuth.ts`, Sanctum auth and protected admin routes.
 - `AdminLayout.vue` and existing admin navigation.
@@ -81,8 +81,8 @@ and undefined; SPEC-008 remains Fake WhatsApp.
 - D: invoice-request demo and educational document.
 - E: integrated browser, accessibility, responsive and real/demo/pending audit.
 
-Checkpoint A is completed and approved. Checkpoint B is authorized and
-implemented pending human approval. Checkpoints C-E are not authorized.
+Checkpoints A and B are completed and approved. Checkpoint C is authorized and
+implemented pending human approval. Checkpoints D-E are not authorized.
 
 ## Test Handoff
 
@@ -92,16 +92,18 @@ boundary and preservation of the booking form. Checkpoint B tests cover the
 customer demo route/title, local-only continuation, no auth state or request,
 admin reuse, WhatsApp semantics and `/fase-1` integration. Future tests should
 cover review correction, demo folio, SHA-256/signature distinction, invoice
-warning and no production persistence.
+warning and no production persistence. Checkpoint C tests cover the isolated
+edit/review/correction/confirmation flow, canonical serialization, known SHA
+vector, reproducibility and changed-data digest behavior.
 
 ## Scope Audit
 
 ```text
-Vue implementation: `/fase-1`, `/cliente/acceso`, notices and secondary links
+Vue implementation: `/fase-1`, `/cliente/acceso`, `/demo/pedido`, notices and secondary links
 PHP implementation: NONE
-Routes: `/fase-1`, `/cliente/acceso`
+Routes: `/fase-1`, `/cliente/acceso`, `/demo/pedido`
 Migrations/schema: NONE
-Tests: Checkpoint A and B frontend coverage
+Tests: Checkpoint A, B and C frontend coverage
 Assets/PDF: NONE
 Dependencies: NONE
 SPEC-009 feature: NOT TOUCHED
@@ -109,4 +111,4 @@ SPEC-007: PAUSED / UNCHANGED
 SPEC-008: FAKE WHATSAPP / UNCHANGED
 ```
 
-STOP. Submit SPEC-022 Checkpoint B for explicit human approval.
+STOP. Submit SPEC-022 Checkpoint C for explicit human approval.
