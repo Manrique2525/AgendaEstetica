@@ -11,27 +11,44 @@ No secret value (`APP_KEY`, `DB_PASSWORD`, private SSH keys) is documented in
 this repository. Secrets live exclusively in the server environment and in the
 alwaysdata panel / GitHub Environments.
 
+## Identity migration note
+
+```text
+Initial production identity: manrique
+Current production identity: yaris
+Changed: 2026-09-17 (alwaysdata account/site rename)
+```
+
+The alwaysdata account/site identity was renamed from `manrique` to `yaris`.
+alwaysdata automatically renamed the account-prefixed technical resources
+(SSH user/host, HOME, MySQL host/database/user, site address and effective
+DocumentRoot). This document describes the **current post-rename** values.
+Section 19 preserves the initial deployment baseline and Section 20 records the
+results obtained under the initial identity.
+
 ## 1. Hosting
 
 | Item | Value |
 | --- | --- |
 | Provider | alwaysdata |
-| Account | `manrique` |
-| Production URL | `https://manrique.alwaysdata.net` |
+| Account | `yaris` |
+| Production URL | `https://yaris.alwaysdata.net` |
 
 ## 2. SSH
 
 | Item | Value |
 | --- | --- |
-| SSH user | `manrique` |
-| SSH host | `ssh-manrique.alwaysdata.net` |
+| SSH user | `yaris` |
+| SSH host | `ssh-yaris.alwaysdata.net` |
 | SSH port | `22` |
-| HOME | `/home/manrique` |
+| HOME | `/home/yaris` |
 | Shell | `bash` |
 | Authentication | SSH key |
 
 SSH authentication with a dedicated ED25519 key against
-`ssh-manrique.alwaysdata.net` was verified during the initial deployment.
+`ssh-yaris.alwaysdata.net` was verified after the account rename. The host
+fingerprint presented by the renamed endpoint matches the alwaysdata host key
+verified during the initial deployment (same SSH server, renamed identity).
 
 Rules:
 
@@ -51,8 +68,8 @@ only; the password itself is never stored.
 
 | Item | Path |
 | --- | --- |
-| Application root | `/home/manrique/apps/agenda-estetica` |
-| Laravel public directory | `/home/manrique/apps/agenda-estetica/public` |
+| Application root | `/home/yaris/apps/agenda-estetica` |
+| Laravel public directory | `/home/yaris/apps/agenda-estetica/public` |
 
 ### WARNING — alwaysdata Root directory is RELATIVE to the account HOME
 
@@ -68,18 +85,20 @@ apps/agenda-estetica/public
 Do **NOT** enter:
 
 ```text
-/home/manrique/apps/agenda-estetica/public
+/home/yaris/apps/agenda-estetica/public
 ```
 
 An absolute path causes alwaysdata to double the prefix and produce the
 incorrect effective path:
 
 ```text
-/home/manrique/home/manrique/apps/agenda-estetica/public
+/home/yaris/home/yaris/apps/agenda-estetica/public
 ```
 
-This exact misconfiguration was encountered during the initial deployment and
-fixed by using the relative value.
+This misconfiguration was encountered during the initial deployment and fixed
+by using the relative value. The relative value is **reused unchanged** after
+the rename because HOME changed from `/home/manrique` to `/home/yaris` but the
+relative location under HOME stayed `apps/agenda-estetica/public`.
 
 ## 4. alwaysdata Web Site
 
@@ -87,20 +106,20 @@ Panel: **Web → Sites**.
 
 | Setting | Value |
 | --- | --- |
-| Address | `manrique.alwaysdata.net` |
+| Address | `yaris.alwaysdata.net` |
 | Type | PHP |
 | Root directory | `apps/agenda-estetica/public` |
-| Effective DocumentRoot | `/home/manrique/apps/agenda-estetica/public` |
+| Effective DocumentRoot | `/home/yaris/apps/agenda-estetica/public` |
 | PHP | 8.3 |
 | HTTPS | enabled |
 
 The effective `DocumentRoot` can be verified in the generated vhost config:
 
 ```text
-/home/manrique/admin/config/apache/sites.conf
+/home/yaris/admin/config/apache/sites.conf
 ```
 
-Expected line: `DocumentRoot "/home/manrique/apps/agenda-estetica/public/"`.
+Expected line: `DocumentRoot "/home/yaris/apps/agenda-estetica/public/"`.
 
 ## 5. PHP / runtime
 
@@ -126,39 +145,44 @@ excluded from file synchronization.
 | --- | --- |
 | Engine | MariaDB 11.x |
 | Laravel driver | `mysql` |
-| Host | `mysql-manrique.alwaysdata.net` |
+| Host | `mysql-yaris.alwaysdata.net` |
 | Port | `3306` |
-| Database | `manrique_agenda_estetica` |
-| User | `manrique` |
-| Permissions | all rights on `manrique_agenda_estetica` |
+| Database | `yaris_agenda_estetica` |
+| User | `yaris` |
+| Permissions | all rights on `yaris_agenda_estetica` |
 
-`DB_PASSWORD` is **never** documented. It exists only as a production secret in
-the server `.env` (and, if automation is implemented later, in the GitHub
-Environment secret store).
+The database, its name and its user were renamed automatically by alwaysdata
+from `manrique_agenda_estetica`/`manrique` to `yaris_agenda_estetica`/`yaris`.
+The stored password was preserved by alwaysdata and is **never** documented. It
+exists only as a production secret in the server `.env` (and, if automation is
+implemented later, in the GitHub Environment secret store).
 
 ## 7. Production .env
 
 The production `.env` is created **only on the server**. The local `.env` is
 **never** uploaded.
 
-Confirmed values:
+Confirmed values (post-rename):
 
 ```text
 APP_ENV=production
 APP_DEBUG=false
-APP_URL=https://manrique.alwaysdata.net
+APP_URL=https://yaris.alwaysdata.net
 
 DB_CONNECTION=mysql
-DB_HOST=mysql-manrique.alwaysdata.net
+DB_HOST=mysql-yaris.alwaysdata.net
 DB_PORT=3306
-DB_DATABASE=manrique_agenda_estetica
-DB_USERNAME=manrique
+DB_DATABASE=yaris_agenda_estetica
+DB_USERNAME=yaris
 
+SANCTUM_STATEFUL_DOMAINS=yaris.alwaysdata.net
 SESSION_SECURE_COOKIE=true
 ```
 
-- `APP_KEY`: configured; the value is **never** documented.
-- `DB_PASSWORD`: configured; the value is **never** documented.
+- `APP_KEY`: configured; the value is **never** documented. **Never** rotate it
+  during an identity/hostname migration.
+- `DB_PASSWORD`: configured; the value is **never** documented. The rename
+  preserved the password; it was **not** regenerated.
 
 Preserve the drivers defined by the current project configuration; do not
 replace them arbitrarily:
@@ -189,7 +213,7 @@ Rules:
 The first deployment used a safe synchronization into:
 
 ```text
-/home/manrique/apps/agenda-estetica
+/home/yaris/apps/agenda-estetica
 ```
 
 Never synchronized:
@@ -283,7 +307,7 @@ If scheduled tasks are required later, configure alwaysdata
 **Advanced → Scheduled tasks** with a conceptually minute-based command:
 
 ```text
-cd /home/manrique/apps/agenda-estetica && php artisan schedule:run
+cd /home/yaris/apps/agenda-estetica && php artisan schedule:run
 ```
 
 Do not configure scheduled tasks until actually required.
@@ -323,7 +347,8 @@ Plus:
 
 ## 18. Smoke tests
 
-Production verification suite (performed during the initial deployment):
+Production verification suite (performed after the initial deployment and
+re-verified after the account rename):
 
 | Check | Expected |
 | --- | --- |
@@ -338,8 +363,8 @@ Production verification suite (performed during the initial deployment):
 | static academic invoice PDF | 200 `application/pdf` |
 | Vite JS/CSS assets | 200, correct MIME |
 
-Sensitive resources (`.env`, `composer.json`, logs, `.git`, cached config)
-must never expose their actual file contents.
+Sensitive resources (`.env`, `composer.json`, `composer.lock`, logs, `.git`,
+cached config) must never expose their actual file contents.
 
 ## 19. First production deployment reference
 
@@ -347,15 +372,18 @@ must never expose their actual file contents.
 | --- | --- |
 | Branch | `feat/spec-022-academic-phase-1` |
 | Commit | `4830ab4a` |
+| Deployed under identity | `manrique` (pre-rename) |
 
 This records the initial deployed baseline **only**. It does not mean future
 production deployments should keep deploying from that feature branch.
 Production deployments originate from the approved production branch defined
-by the Git governance (see AGENTS.md and SPEC-023).
+by the Git governance (see AGENTS.md and SPEC-023). After the rename the same
+application data continued to be served by the same code under the new `yaris`
+identity without an application release.
 
 ## 20. Initial production deployment result
 
-All checks passed:
+All checks passed under the initial identity:
 
 - Quality gates: PASS.
 - Backend Pest: 208 tests / 1202 assertions.
@@ -371,3 +399,8 @@ All checks passed:
 - Migrations: 13/13 PASS.
 - HTTP smoke suite: PASS.
 - HTTPS: PASS.
+
+After the 2026-09-17 rename the same smoke suite passed again under
+`https://yaris.alwaysdata.net`, the existing production database connected
+successfully with the preserved `APP_KEY` and `DB_PASSWORD`, and no pending
+migrations appeared (13/13 `Ran`, batch 1, unchanged).

@@ -58,7 +58,7 @@ Permanent rules established by this SPEC:
 1. Every code change must be versioned in Git.
 2. Application changes are never made manually on production.
 3. Git is the source of truth for deployable code.
-4. Never develop directly inside `/home/manrique/apps/agenda-estetica`.
+4. Never develop directly inside `/home/yaris/apps/agenda-estetica`.
 5. Changes are developed locally on a branch.
 6. The flow is: tests → commit → push → PR/integration → production branch.
 7. Once an approved change enters the production branch via push/merge, the
@@ -154,11 +154,11 @@ ALWAYSDATA_PORT
 ALWAYSDATA_SSH_KEY
 ```
 
-Recommended values:
+Recommended values (verified after the 2026-09-17 account rename):
 
 ```text
-ALWAYSDATA_HOST=ssh-manrique.alwaysdata.net
-ALWAYSDATA_USER=manrique
+ALWAYSDATA_HOST=ssh-yaris.alwaysdata.net
+ALWAYSDATA_USER=yaris
 ALWAYSDATA_PORT=22
 ```
 
@@ -200,7 +200,7 @@ Required behavior:
 Deployment destination:
 
 ```text
-/home/manrique/apps/agenda-estetica/
+/home/yaris/apps/agenda-estetica/
 ```
 
 Never overwrite or delete:
@@ -266,7 +266,7 @@ Only one production deployment at a time.
 After deployment:
 
 ```text
-curl -fsS https://manrique.alwaysdata.net/api/v1/health
+curl -fsS https://yaris.alwaysdata.net/api/v1/health
 ```
 
 Must return HTTP 200 JSON. Additionally at least:
