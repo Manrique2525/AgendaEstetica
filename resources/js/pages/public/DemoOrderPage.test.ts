@@ -104,6 +104,8 @@ describe('DemoOrderPage', () => {
         await wrapper.findAll('button').find((button) => button.text().includes('Corregir'))!.trigger('click');
         await wrapper.get('#demo-terms-acceptance').setValue(true);
         await wrapper.get('form').trigger('submit');
+        await flushPromises();
+        await nextTick();
         await wrapper.get('[data-testid="confirm-demo"]').trigger('click');
         await flushPromises();
         expect(wrapper.find('#confirmed-title').text()).toBe('Demostración confirmada');
