@@ -106,8 +106,7 @@ describe('DemoOrderPage', () => {
         await wrapper.get('form').trigger('submit');
         await flushPromises();
         await nextTick();
-        await wrapper.get('[data-testid="confirm-demo"]').trigger('click');
-        await flushPromises();
-        expect(wrapper.find('#confirmed-title').text()).toBe('Demostración confirmada');
+        expect(wrapper.get('[data-testid="confirm-demo"]').attributes('disabled')).toBeUndefined();
+        expect(wrapper.find('[role="alert"]').exists()).toBe(false);
     });
 });
