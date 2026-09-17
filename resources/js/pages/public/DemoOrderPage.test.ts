@@ -67,7 +67,7 @@ describe('DemoOrderPage', () => {
         await wrapper.get('#demo-request-invoice').setValue(true);
         await wrapper.get('form').trigger('submit');
         await flushPromises();
-        await wrapper.findAll('button').find((button) => button.text().includes('Confirmar demostración'))!.trigger('click');
+        await wrapper.get('[data-testid="confirm-demo"]').trigger('click');
         await flushPromises();
 
         expect(wrapper.text().toLocaleLowerCase()).toContain('factura digital demostración');
@@ -80,7 +80,7 @@ describe('DemoOrderPage', () => {
         const wrapper = mount(DemoOrderPage);
 
         await wrapper.get('form').trigger('submit');
-        await wrapper.findAll('section[aria-labelledby="review-title"] button')[1].trigger('click');
+        await wrapper.get('[data-testid="confirm-demo"]').trigger('click');
         await flushPromises();
 
         expect(wrapper.get('aside[aria-label="Aviso provisional de privacidad"]').text()).toContain('no se persisten ni se transmiten');

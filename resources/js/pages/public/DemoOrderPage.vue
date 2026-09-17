@@ -115,7 +115,7 @@ async function confirmDemo(): Promise<void> {
                     </dl>
                     <div class="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
                         <UiButton variant="secondary" type="button" @click="correctDemo">Corregir</UiButton>
-                        <UiButton type="button" @click="confirmDemo">Confirmar demostración</UiButton>
+                        <UiButton data-testid="confirm-demo" type="button" @click="confirmDemo">Confirmar demostración</UiButton>
                     </div>
                 </UiCard>
             </section>
