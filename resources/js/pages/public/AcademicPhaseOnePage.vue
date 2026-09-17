@@ -62,6 +62,10 @@ const areas = [
                     </UiCard>
                 </div>
                 <p class="mt-6 font-body text-sm leading-relaxed text-white/65">Esta presentación no afirma certificaciones, cumplimiento legal integral, cifrado específico, periodos de conservación ni políticas definitivas de eliminación.</p>
+                <div class="mt-6 border-t border-white/15 pt-6">
+                    <h3 class="font-ui text-sm font-bold uppercase tracking-[0.12em] text-brand-gold">Términos y condiciones</h3>
+                    <p class="mt-3 max-w-3xl font-body text-sm leading-relaxed text-white/75">Antes de continuar con una demostración que lo requiera, revisa la información de privacidad y los términos y condiciones aplicables y acepta ese alcance. Esta presentación académica explica esa responsabilidad, pero no registra una aceptación legal.</p>
+                </div>
             </section>
 
             <section id="autenticacion" class="scroll-mt-6 border-t border-white/15 pt-8" aria-labelledby="auth-title">
@@ -99,6 +103,15 @@ const areas = [
                 </div>
                 <p class="mt-3 max-w-2xl font-body leading-relaxed text-white/75">El flujo académico permite solicitar un documento educativo sin pedir datos fiscales. <strong class="text-white">La facturación real permanece PENDIENTE DE INTEGRACIÓN.</strong> No se genera CFDI, no hay timbrado ni validez fiscal.</p>
                 <a href="/demo/pedido" class="mt-5 inline-flex min-h-11 items-center justify-center rounded-md bg-action-primary px-4 py-2 font-ui text-sm font-bold text-action-primary-foreground hover:bg-action-primary-hover focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 focus:ring-offset-brand-black">Ver demostración de factura</a>
+            </section>
+
+            <section id="mary-kay-domicilio" class="scroll-mt-6 border-t border-white/15 pt-8" aria-labelledby="mary-kay-title">
+                <UiCard class="!border-white/15 !bg-white/5 !text-text-inverse !shadow-none sm:!p-10">
+                    <p class="font-ui text-xs font-bold uppercase tracking-[0.18em] text-brand-turquoise">Enlace externo</p>
+                    <h2 id="mary-kay-title" class="mt-2 font-display text-4xl text-text-inverse">Mary Kay a domicilio</h2>
+                    <p class="mt-3 max-w-2xl font-body leading-relaxed text-white/75">Visita la tienda externa de Mary Kay para conocer su oferta. Las compras, pagos y atención de esa tienda ocurren fuera de esta aplicación.</p>
+                    <a href="https://www.marykay.com.mx/yaris" target="_blank" rel="noopener noreferrer" class="mt-5 inline-flex min-h-11 items-center justify-center rounded-md border border-white/40 px-4 py-2 font-ui text-sm font-bold text-text-inverse hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 focus:ring-offset-brand-black">Visitar tienda externa de Mary Kay</a>
+                </UiCard>
             </section>
         </div>
     </PublicLayout>

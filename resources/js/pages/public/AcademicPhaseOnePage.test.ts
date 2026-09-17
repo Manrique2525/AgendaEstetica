@@ -13,12 +13,14 @@ describe('AcademicPhaseOnePage', () => {
         expect(wrapper.text()).toContain('Autenticación');
         expect(wrapper.text()).toContain('Integridad y firma digital');
         expect(wrapper.text()).toContain('Factura digital');
+        expect(wrapper.text()).toContain('Mary Kay a domicilio');
         expect(wrapper.get('#autenticacion').text()).toContain('DEMOSTRACIÓN');
         expect(wrapper.findAll('section[id]').map((section) => section.attributes('id'))).toEqual([
             'privacidad-seguridad',
             'autenticacion',
             'integridad-firma',
             'factura-digital',
+            'mary-kay-domicilio',
         ]);
     });
 
@@ -26,6 +28,11 @@ describe('AcademicPhaseOnePage', () => {
         const wrapper = mount(AcademicPhaseOnePage);
 
         expect(wrapper.get('#privacidad-seguridad').text()).toContain('PENDIENTE DE REVISIÓN');
+        expect(wrapper.get('#privacidad-seguridad').text()).toContain('Términos y condiciones');
+        expect(wrapper.get('#privacidad-seguridad').text()).not.toContain('Autenticación');
+        expect(wrapper.get('#privacidad-seguridad').text()).not.toContain('SHA-256');
+        expect(wrapper.get('#privacidad-seguridad').text()).not.toContain('Factura digital');
+        expect(wrapper.get('#privacidad-seguridad').text()).not.toContain('Mary Kay');
         expect(wrapper.get('#autenticacion').text()).toContain('No hay autenticación de clientes');
         expect(wrapper.get('#autenticacion').text()).toContain('no autentica');
         expect(wrapper.get('#autenticacion').text()).toContain('FUNCIONAL');
@@ -39,6 +46,9 @@ describe('AcademicPhaseOnePage', () => {
         expect(wrapper.get('#autenticacion').text()).not.toMatch(/crear sesión|iniciar sesión|OTP|timbrado/i);
         expect(wrapper.get('#factura-digital').text()).toContain('DEMOSTRACIÓN');
         expect(wrapper.find('#factura-digital a[href="/demo/pedido"]').exists()).toBe(true);
+        expect(wrapper.find('#mary-kay-domicilio').exists()).toBe(true);
+        expect(wrapper.find('#mary-kay-domicilio').text()).toContain('tienda externa de Mary Kay');
+        expect(wrapper.find('#mary-kay-domicilio a[href="https://www.marykay.com.mx/yaris"]').attributes()).toMatchObject({ target: '_blank', rel: 'noopener noreferrer' });
     });
 
     it('links the privacy anchor from the overview', () => {

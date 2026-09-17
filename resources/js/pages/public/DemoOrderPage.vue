@@ -33,8 +33,12 @@ function correctDemo(): void {
 
 function makeDemoFolio(): string {
     const values = new Uint32Array(1);
-    if (typeof globalThis.crypto?.getRandomValues === 'function') {
-        globalThis.crypto.getRandomValues(values);
+    try {
+        if (typeof globalThis.crypto?.getRandomValues === 'function') {
+            globalThis.crypto.getRandomValues(values);
+        }
+    } catch {
+        // The fixed fallback remains a clearly non-production demo folio.
     }
 
     return `DEMO-${(values[0] ?? 0).toString(36).toUpperCase().slice(0, 6).padStart(6, '0')}`;
@@ -45,17 +49,24 @@ async function confirmDemo(): Promise<void> {
 
     const snapshot = normalizeDemoData(demoData);
     const generatedFolio = makeDemoFolio();
-    const payload = buildDemoIntegrityPayload(snapshot, generatedFolio, requestInvoice.value);
-    const serializedPayload = serializeDemoIntegrityPayload(payload);
+    let serializedPayload = '';
+    try {
+        const payload = buildDemoIntegrityPayload(snapshot, generatedFolio, requestInvoice.value);
+        serializedPayload = serializeDemoIntegrityPayload(payload);
+    } catch {
+        digest.value = null;
+    }
 
     confirmedData.value = snapshot;
     confirmedInvoiceRequest.value = requestInvoice.value;
     folio.value = generatedFolio;
     canonicalPayload.value = serializedPayload;
-    try {
-        digest.value = await sha256Hex(serializedPayload);
-    } catch {
-        digest.value = null;
+    if (serializedPayload) {
+        try {
+            digest.value = await sha256Hex(serializedPayload);
+        } catch {
+            digest.value = null;
+        }
     }
     digestError.value = digest.value === null;
     step.value = 'confirmed';

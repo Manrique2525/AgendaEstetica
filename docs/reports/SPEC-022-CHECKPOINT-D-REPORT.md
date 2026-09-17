@@ -30,6 +30,10 @@ self-approved and Checkpoint E was not started.
 - Added a download link only when the demo invoice option is selected.
 - Updated `/fase-1#factura-digital` to `DEMOSTRACIÓN` with real invoicing
   remaining `PENDIENTE DE INTEGRACIÓN`.
+- Corrective human-review pass: privacy/terms responsibility is now explicit
+  and independent Phase 1 capabilities remain sibling sections.
+- Added independent `Mary Kay a domicilio` external-store item with exact URL
+  `https://www.marykay.com.mx/yaris` and external-store disclosure.
 
 ## Invoice Boundary
 
@@ -126,6 +130,8 @@ Passed:
 
 - `/demo/pedido`: `390x844`, `768x1024`, `1440x900`.
 - `/fase-1` smoke: `390x844`, `1440x900`.
+- Corrective `/fase-1` hierarchy QA: `390x844`, `768x1024`, `1440x900`.
+- Mary Kay exact external href/target/rel QA: PASS.
 - `/cliente/acceso` smoke: `390x844`.
 - `/reservar` smoke: `390x844`.
 - No-invoice review/final flow.
@@ -139,9 +145,9 @@ Passed:
 - No console errors, Vue warnings, page errors or critical failed requests.
 - No horizontal overflow.
 
-`pdftotext` was unavailable in the environment, so final-PDF text extraction
-was not executed. The PDF source and generated HTML contain the required exact
-warning and disclaimers; binary/header/HTTP/download checks passed.
+`pdftotext` was unavailable in the environment. The final checked-in PDF was
+directly inspected with the available PDF reader, which parsed and confirmed
+the required warning, CFDI/timbrado/SAT disclaimers and academic-use wording.
 
 Screenshots and raw evidence are outside the repository at
 `/tmp/spec022-browser-qa/`.
