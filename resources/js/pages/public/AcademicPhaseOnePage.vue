@@ -4,7 +4,7 @@ import UiCard from '../../components/ui/UiCard.vue';
 
 const areas = [
     { id: 'privacidad-seguridad', title: 'Privacidad y seguridad', status: 'PENDIENTE DE REVISIÓN', summary: 'Presentación provisional de los controles y datos mínimos del flujo público.' },
-    { id: 'autenticacion', title: 'Autenticación', status: 'PENDIENTE DE INTEGRACIÓN', summary: 'La autenticación de clientes pertenece a una fase académica posterior.' },
+    { id: 'autenticacion', title: 'Autenticación', status: 'DEMOSTRACIÓN', summary: 'El acceso administrativo es funcional; el acceso de clientes se presenta como demostración.' },
     { id: 'integridad-firma', title: 'Integridad y firma digital', status: 'PENDIENTE DE INTEGRACIÓN', summary: 'La diferencia entre una huella de integridad y una firma queda para trabajo futuro.' },
     { id: 'factura-digital', title: 'Factura digital', status: 'PENDIENTE DE INTEGRACIÓN', summary: 'La demostración fiscal todavía no forma parte de este checkpoint.' },
 ] as const;
@@ -65,8 +65,22 @@ const areas = [
             </section>
 
             <section id="autenticacion" class="scroll-mt-6 border-t border-white/15 pt-8" aria-labelledby="auth-title">
-                <h2 id="auth-title" class="font-display text-4xl text-text-inverse">Autenticación</h2>
-                <p class="mt-3 max-w-2xl font-body leading-relaxed text-white/75"><strong class="text-white">PENDIENTE DE INTEGRACIÓN.</strong> El acceso administrativo existente es real. La autenticación de clientes no está implementada en este checkpoint. Abrir WhatsApp no autentica, no verifica identidad y no crea una sesión.</p>
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <h2 id="auth-title" class="font-display text-4xl text-text-inverse">Autenticación</h2>
+                    <span class="self-start rounded-full border border-brand-gold/60 px-3 py-1 font-ui text-xs font-bold tracking-[0.08em] text-brand-gold">DEMOSTRACIÓN</span>
+                </div>
+                <div class="mt-5 grid gap-4 sm:grid-cols-2">
+                    <UiCard class="!border-white/15 !bg-white/5 !text-text-inverse !shadow-none">
+                        <h3 class="font-ui text-sm font-bold uppercase tracking-[0.12em] text-brand-gold">Administración Yaris</h3>
+                        <p class="mt-3 font-body text-sm leading-relaxed text-white/75"><strong class="text-white">FUNCIONAL.</strong> El acceso administrativo real está reservado para Yaris y utiliza el flujo existente.</p>
+                        <a href="/admin/login" class="mt-5 inline-flex min-h-11 items-center justify-center rounded-md bg-action-primary px-4 py-2 font-ui text-sm font-bold text-action-primary-foreground hover:bg-action-primary-hover focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 focus:ring-offset-brand-black">Acceso administrativo</a>
+                    </UiCard>
+                    <UiCard class="!border-white/15 !bg-white/5 !text-text-inverse !shadow-none">
+                        <h3 class="font-ui text-sm font-bold uppercase tracking-[0.12em] text-brand-pink">Acceso de clientes</h3>
+                        <p class="mt-3 font-body text-sm leading-relaxed text-white/75"><strong class="text-white">DEMOSTRACIÓN / VERIFICACIÓN DE WHATSAPP PENDIENTE.</strong> No hay autenticación de clientes en este checkpoint. Abrir WhatsApp es comunicación, no autentica, no verifica identidad y no crea una sesión.</p>
+                        <a href="/cliente/acceso" class="mt-5 inline-flex min-h-11 items-center justify-center rounded-md border border-white/40 px-4 py-2 font-ui text-sm font-bold text-text-inverse hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 focus:ring-offset-brand-black">Ver demostración</a>
+                    </UiCard>
+                </div>
             </section>
 
             <section id="integridad-firma" class="scroll-mt-6 border-t border-white/15 pt-8" aria-labelledby="integrity-title">

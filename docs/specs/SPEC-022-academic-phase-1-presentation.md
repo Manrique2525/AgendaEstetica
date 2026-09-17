@@ -2,11 +2,11 @@
 
 ## Status
 
-`DEVELOPMENT IN PROGRESS / CHECKPOINT A IMPLEMENTED / READY FOR HUMAN APPROVAL`
+`DEVELOPMENT IN PROGRESS / CHECKPOINT B IMPLEMENTED / READY FOR HUMAN APPROVAL`
 
-Definition and Discovery are integrated into `main`. Checkpoint A is authorized
-and implemented on its feature branch, pending human approval; Checkpoints B-E
-and implementation beyond A are not authorized.
+Definition and Discovery are integrated into `main`. Checkpoint A is completed
+and approved. Checkpoint B is implemented on its feature branch, pending human
+approval; Checkpoints C-E and implementation beyond B are not authorized.
 
 ## Purpose
 
@@ -63,7 +63,7 @@ academic demonstrator. No new actor authentication is created here.
 - `/fase-1`: overview of the four areas, with anchors
   `#privacidad-seguridad`, `#autenticacion`, `#integridad-firma` and
   `#factura-digital`.
-- `/cliente/acceso`: customer-access demonstration.
+- `/cliente/acceso`: customer-access demonstration only; no real authentication.
 - `/demo/pedido`: local academic order flow with review, correction, folio,
   summary, hash and invoice option.
 
@@ -88,9 +88,9 @@ without changing form semantics.
 The existing `/admin/login` is real and must be reused. It may be presented as
 “Administración Yaris - acceso real” without exposing credentials.
 
-Customer authentication is absent. `/cliente/acceso` may show a phone field,
-future WhatsApp verification step and flow diagram only when labelled
-`DEMOSTRACIÓN` and `VERIFICACIÓN DE WHATSAPP PENDIENTE`.
+Customer authentication is absent. `/cliente/acceso` shows a local-only phone
+field and future WhatsApp verification concept labelled `DEMOSTRACIÓN` and
+`VERIFICACIÓN DE WHATSAPP PENDIENTE`.
 
 Opening WhatsApp is not authentication, registration or proof of number
 ownership. No password, OTP, token, auth cookie, customer endpoint or trusted
@@ -195,8 +195,8 @@ RFC or certificate identifiers. No PDF runtime dependency is authorized.
 - AC-16: Realistic fiscal identifiers and runtime PDF dependencies are excluded.
 - AC-17: SPEC-009 footer dependency is explicit.
 - AC-18: SPEC-012, SPEC-021 and SPEC-008 boundaries are preserved.
-- AC-19: No application implementation occurs in this phase.
-- AC-20: Human review is required before Development.
+- AC-19: No implementation occurs beyond the currently authorized checkpoint.
+- AC-20: Human review is required before advancing to another checkpoint.
 
 ## Proposed Development Checkpoints
 
@@ -206,19 +206,20 @@ RFC or certificate identifiers. No PDF runtime dependency is authorized.
 4. Invoice-request demo and static educational document.
 5. Integrated academic browser/accessibility/responsive audit.
 
-Checkpoint A is authorized for development only. Checkpoints B-E remain
-unauthorized.
+Checkpoints A and B are authorized for development. Checkpoint A is completed
+and approved; Checkpoint B is implemented pending human approval. Checkpoints
+C-E remain unauthorized.
 
 ## State
 
 ```text
-SPEC-022: DEVELOPMENT IN PROGRESS / CHECKPOINT A IMPLEMENTED / READY FOR HUMAN APPROVAL
-Development: AUTHORIZED FOR CHECKPOINT A ONLY
-Checkpoint A: IMPLEMENTED / READY FOR HUMAN APPROVAL
+SPEC-022: DEVELOPMENT IN PROGRESS / CHECKPOINT B IMPLEMENTED / READY FOR HUMAN APPROVAL
+Development: AUTHORIZED FOR CHECKPOINT B ONLY
+Checkpoint A: COMPLETED / APPROVED
+Checkpoint B: IMPLEMENTED / READY FOR HUMAN APPROVAL
 SPEC-009: CLOSED / MERGED / DEPENDENCY SATISFIED
 SPEC-010 / SPEC-012: NOT REQUIRED FOR DEMO IMPLEMENTATION
 SPEC-021: RESERVED / NOT AUTHORIZED / UNDEFINED
-Checkpoint B: NOT AUTHORIZED
 Checkpoint C: NOT AUTHORIZED
 Checkpoint D: NOT AUTHORIZED
 Checkpoint E: NOT AUTHORIZED
@@ -226,5 +227,5 @@ SPEC-007: PAUSED / UNCHANGED
 SPEC-008: FAKE WHATSAPP / UNCHANGED / NOT AUTHORIZED
 ```
 
-STOP. Submit SPEC-022 Checkpoint A for explicit human approval. Do not
-auto-advance to Checkpoint B.
+STOP. Submit SPEC-022 Checkpoint B for explicit human approval. Do not
+auto-advance to Checkpoint C.

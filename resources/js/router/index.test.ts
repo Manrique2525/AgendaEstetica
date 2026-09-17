@@ -26,6 +26,13 @@ describe('frontend router', () => {
         expect(router.resolve('/fase-1').meta.title).toBe('Fase 1 | Salón y Barbería Yaris');
     });
 
+    it('resolves the customer access demonstration without authentication', () => {
+        expect(router.resolve('/cliente/acceso').name).toBe('public.customer-access-demo');
+        expect(router.resolve('/cliente/acceso').meta.surface).toBe('public');
+        expect(router.resolve('/cliente/acceso').meta.requiresAuth).toBeUndefined();
+        expect(router.resolve('/cliente/acceso').meta.title).toBe('Acceso de clientes | Salón y Barbería Yaris');
+    });
+
     it('updates document titles for public navigation', async () => {
         await router.push('/');
         expect(document.title).toBe('Salón y Barbería Yaris | Belleza y elegancia');
@@ -33,6 +40,8 @@ describe('frontend router', () => {
          expect(document.title).toBe('Solicitar cita | Salón y Barbería Yaris');
          await router.push('/fase-1');
          expect(document.title).toBe('Fase 1 | Salón y Barbería Yaris');
+         await router.push('/cliente/acceso');
+         expect(document.title).toBe('Acceso de clientes | Salón y Barbería Yaris');
         await router.push('/');
     });
 

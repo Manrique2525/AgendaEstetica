@@ -7,6 +7,7 @@ import NotFoundPage from '../pages/NotFoundPage.vue';
 import FoundationPage from '../pages/public/FoundationPage.vue';
 import PublicBookingPage from '../pages/public/PublicBookingPage.vue';
 import AcademicPhaseOnePage from '../pages/public/AcademicPhaseOnePage.vue';
+import CustomerAccessDemoPage from '../pages/public/CustomerAccessDemoPage.vue';
 import { useAuth } from '../composables/useAuth';
 import { publicSite } from '../data/publicSite';
 
@@ -31,6 +32,12 @@ const router = createRouter({
             component: AcademicPhaseOnePage,
             name: 'public.academic-phase-one',
             meta: { surface: 'public', title: `Fase 1 | ${publicSite.business.name}` },
+        },
+        {
+            path: '/cliente/acceso',
+            component: CustomerAccessDemoPage,
+            name: 'public.customer-access-demo',
+            meta: { surface: 'public', title: `Acceso de clientes | ${publicSite.business.name}` },
         },
         {
             path: '/admin',

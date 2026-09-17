@@ -13,6 +13,7 @@ describe('AcademicPhaseOnePage', () => {
         expect(wrapper.text()).toContain('Autenticación');
         expect(wrapper.text()).toContain('Integridad y firma digital');
         expect(wrapper.text()).toContain('Factura digital');
+        expect(wrapper.get('#autenticacion').text()).toContain('DEMOSTRACIÓN');
         expect(wrapper.findAll('section[id]').map((section) => section.attributes('id'))).toEqual([
             'privacidad-seguridad',
             'autenticacion',
@@ -25,8 +26,11 @@ describe('AcademicPhaseOnePage', () => {
         const wrapper = mount(AcademicPhaseOnePage);
 
         expect(wrapper.get('#privacidad-seguridad').text()).toContain('PENDIENTE DE REVISIÓN');
-        expect(wrapper.get('#autenticacion').text()).toContain('no está implementada');
-        expect(wrapper.get('#autenticacion').text()).toContain('WhatsApp no autentica');
+        expect(wrapper.get('#autenticacion').text()).toContain('No hay autenticación de clientes');
+        expect(wrapper.get('#autenticacion').text()).toContain('no autentica');
+        expect(wrapper.get('#autenticacion').text()).toContain('FUNCIONAL');
+        expect(wrapper.find('#autenticacion a[href="/cliente/acceso"]').exists()).toBe(true);
+        expect(wrapper.find('#autenticacion a[href="/admin/login"]').exists()).toBe(true);
         expect(wrapper.get('#integridad-firma').text()).toContain('SHA-256');
         expect(wrapper.get('#integridad-firma').text()).toContain('no es una firma digital');
         expect(wrapper.get('#factura-digital').text()).toContain('ni genera CFDI');

@@ -2,11 +2,11 @@
 
 ## Status
 
-`AUDITED / CHECKPOINT A READY FOR HUMAN APPROVAL`
+`AUDITED / CHECKPOINT B READY FOR HUMAN APPROVAL`
 
-Only SPEC-022 Checkpoint A is authorized and implemented on its feature branch.
-Human approval is still required. All other implementation checkpoints remain
-**NOT AUTHORIZED**.
+SPEC-022 Checkpoint A is completed and approved. Only Checkpoint B is currently
+authorized and implemented on its feature branch; human approval is still
+required. All later implementation checkpoints remain **NOT AUTHORIZED**.
 This is a documentation boundary for one coherent public site combining the
 Yaris salon experience with an academic storefront. It does not replace or
 renumber roadmap SPECs.
@@ -169,13 +169,13 @@ acceptance criteria, tests and a report.
 - No real catalog, payment, invoice, signature or verification claims are
   invented.
 - No production backend, schema or dependency changes are added here; the
-  authorized SPEC-022 Checkpoint A public presentation is the only frontend
-  implementation in progress.
-- Development remains limited to authorized SPEC-022 Checkpoint A.
+  authorized SPEC-022 Checkpoint A and B public presentations are the only
+  frontend implementations in progress.
+- Development remains limited to authorized SPEC-022 Checkpoint B.
 
 ```text
 Epic: DEFINED / COORDINATION ONLY
-Development: SPEC-009 CHECKPOINT C TECHNICAL PORTION ONLY
+Development: SPEC-022 CHECKPOINT B ONLY
 SPEC-007 Notification Engine: PAUSED / UNCHANGED
 SPEC-008 Fake WhatsApp: RESERVED / NOT AUTHORIZED
 SPEC-009 CMS / landing: CLOSED / MERGED
@@ -184,7 +184,7 @@ SPEC-011 Inventory: PRESERVED / NOT AUTHORIZED
 SPEC-012 Cart / checkout / orders: PRESERVED / NOT AUTHORIZED
 SPEC-013 Reviews / favorites: PRESERVED / NOT AUTHORIZED
 SPEC-021 Appointment Request: RESERVED / NOT AUTHORIZED / UNDEFINED
-SPEC-022 Academic Phase 1 Presentation: DEVELOPMENT IN PROGRESS / CHECKPOINT A IMPLEMENTED / READY FOR HUMAN APPROVAL
+SPEC-022 Academic Phase 1 Presentation: DEVELOPMENT IN PROGRESS / CHECKPOINT B IMPLEMENTED / READY FOR HUMAN APPROVAL
 ```
 
-STOP. Submit SPEC-022 Checkpoint A for explicit human approval.
+STOP. Submit SPEC-022 Checkpoint B for explicit human approval.
