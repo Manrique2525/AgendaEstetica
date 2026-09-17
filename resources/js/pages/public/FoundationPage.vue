@@ -1,18 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import PublicLayout from '../../layouts/PublicLayout.vue';
-import UiButton from '../../components/ui/UiButton.vue';
 import UiCard from '../../components/ui/UiCard.vue';
+import TermsConsentBanner from '../../components/public/TermsConsentBanner.vue';
 import { publicSite } from '../../data/publicSite';
-
-type TermsDecision = 'none' | 'accepted' | 'rejected';
-
-const termsDecision = ref<TermsDecision>('none');
 </script>
 
 <template>
     <PublicLayout>
-        <div class="space-y-16">
+        <div class="space-y-16 pb-48 sm:pb-36">
             <section aria-labelledby="hero-title" class="rounded-xl border border-white/15 bg-gradient-to-br from-brand-black via-brand-black to-brand-fuchsia/20 px-6 py-12 sm:px-10 sm:py-16">
                 <p class="font-ui text-xs font-bold uppercase tracking-[0.2em] text-brand-gold">Salón y Barbería</p>
                 <h1 id="hero-title" class="mt-4 max-w-2xl font-display text-5xl leading-[0.95] text-text-inverse sm:text-7xl">{{ publicSite.business.name }}</h1>
@@ -97,19 +92,7 @@ const termsDecision = ref<TermsDecision>('none');
                     </UiCard>
                 </div>
             </section>
-
-            <section id="terminos-privacidad" class="scroll-mt-6 rounded-xl border border-brand-pink/40 bg-white/5 px-6 py-8 sm:px-10" aria-labelledby="terms-title">
-                <p class="font-ui text-xs font-bold uppercase tracking-[0.18em] text-brand-pink">Responsabilidad de la demostración</p>
-                <h2 id="terms-title" class="mt-2 font-display text-4xl text-text-inverse sm:text-5xl">Términos y Condiciones y Aviso de Privacidad</h2>
-                <p class="mt-4 max-w-3xl font-body leading-relaxed text-white/75">Revisa la información provisional aplicable a esta experiencia académica y decide si aceptas o rechazas este alcance. Esta interacción no registra consentimiento legal en backend.</p>
-                <div class="mt-6 flex flex-col gap-3 sm:flex-row">
-                    <UiButton variant="secondary" type="button" :aria-pressed="termsDecision === 'rejected'" @click="termsDecision = 'rejected'">Rechazar</UiButton>
-                    <UiButton type="button" :aria-pressed="termsDecision === 'accepted'" @click="termsDecision = 'accepted'">Aceptar</UiButton>
-                </div>
-                <p v-if="termsDecision === 'accepted'" role="status" class="mt-4 font-body text-sm font-semibold text-brand-gold">Términos y condiciones aceptados para esta demostración.</p>
-                <p v-else-if="termsDecision === 'rejected'" role="status" class="mt-4 font-body text-sm font-semibold text-brand-pink">Has rechazado los términos y condiciones de esta demostración.</p>
-                <p v-else class="mt-4 font-body text-sm text-white/60">Aún no has elegido una opción.</p>
-            </section>
         </div>
+        <TermsConsentBanner />
     </PublicLayout>
 </template>

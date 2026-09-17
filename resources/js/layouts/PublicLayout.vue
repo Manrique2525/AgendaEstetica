@@ -93,10 +93,10 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeydown));
                 </div>
                 <div class="mt-6 border-t border-white/10 pt-5">
                     <a
-                        href="/#terminos-privacidad"
+                        href="/terminos-condiciones"
                         class="inline-block rounded-md font-ui text-sm font-semibold text-text-inverse underline decoration-brand-pink underline-offset-4 focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 focus:ring-offset-brand-black"
                     >
-                        Privacidad y seguridad
+                        Términos y privacidad
                     </a>
                 </div>
             </footer>

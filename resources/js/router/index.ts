@@ -9,6 +9,7 @@ import PublicBookingPage from '../pages/public/PublicBookingPage.vue';
 import AcademicPhaseOnePage from '../pages/public/AcademicPhaseOnePage.vue';
 import CustomerAccessDemoPage from '../pages/public/CustomerAccessDemoPage.vue';
 import DemoOrderPage from '../pages/public/DemoOrderPage.vue';
+import TermsAndConditionsPage from '../pages/public/TermsAndConditionsPage.vue';
 import { useAuth } from '../composables/useAuth';
 import { publicSite } from '../data/publicSite';
 
@@ -45,6 +46,12 @@ const router = createRouter({
             component: DemoOrderPage,
             name: 'public.demo-order',
             meta: { surface: 'public', title: `Pedido de demostración | ${publicSite.business.name}` },
+        },
+        {
+            path: '/terminos-condiciones',
+            component: TermsAndConditionsPage,
+            name: 'public.terms',
+            meta: { surface: 'public', title: `Términos y Condiciones | ${publicSite.business.name}` },
         },
         {
             path: '/admin',

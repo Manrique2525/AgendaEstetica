@@ -18,9 +18,22 @@ Signature or any new product/backend capability.
   Invoice Demonstration capability cards into the main landing.
 - Added the Mary Kay external CTA inside the existing Mary Kay catalog card.
 - Moved the single local Terms/Privacy Accept/Reject interaction to the bottom
-  of `/` and retargeted the shared footer link to `/#terminos-privacidad`.
+- of `/` to a fixed bottom banner and retargeted the shared footer link to
+  `/terminos-condiciones`.
+- Added the internal `/terminos-condiciones` provisional academic page.
 - Removed the misplaced Demo Order Terms control; the Demo Order payload remains
   version `2` and excludes landing Terms state.
+
+## Final Terms Experience Correction
+
+- Replaced the normal landing Terms section with one fixed bottom consent banner
+  on `/`.
+- Added internal `/terminos-condiciones` page with provisional academic
+  Terms/Privacy content and no fabricated legal identity or commitments.
+- Banner starts at `NO DECISION`, supports Accept/Reject, and stores no backend
+  consent state.
+- Footer now links to `/terminos-condiciones`.
+- Demo Order remains free of Terms controls and preserves canonical payload v2.
 
 ## Authoritative Scope
 
@@ -52,7 +65,9 @@ Audited outside the repository with Playwright `1.63.0` and Chromium
 `153.0.8010.12`.
 
 - `/`: `390x844`, `768x1024`, `1440x900` PASS.
+- `/terminos-condiciones`: `390x844`, `768x1024`, `1440x900` PASS.
 - `/fase-1`: `390x844`, `768x1024`, `1440x900` PASS.
+- `/terminos-condiciones`: `390x844`, `768x1024`, `1440x900` PASS.
 - `/demo/pedido`: `390x844` PASS.
 - `/cliente/acceso`: `390x844` PASS.
 - `/reservar`: `390x844` PASS.
@@ -64,6 +79,9 @@ Audited outside the repository with Playwright `1.63.0` and Chromium
 - No console errors, Vue warnings, page errors or critical failed requests.
 - Terms initial state is `NO DECISION`; Accept and Reject both work.
 - Main landing Terms section is the final content section before the footer.
+- Main landing Terms experience is a fixed viewport-anchored banner.
+- Terms page internal navigation, provisional content and return-to-home link pass.
+- Terms page internal navigation and return-to-home link: PASS.
 - Main landing Mary Kay card preserves catalog context and exact external link.
 - Terms remains the final landing section and does not contain capability cards.
 - Mary Kay exact external href/target/rel verified.
@@ -112,8 +130,8 @@ Product/inventory work: NONE
 ## Quality
 
 - Backend remote Quality: PASS, 208 tests / 1202 assertions.
-- Frontend remote Quality: PASS, 22 files / 83 tests.
-- Local frontend tests: PASS, 22 files / 83 tests.
+- Frontend remote Quality: PASS, 23 files / 86 tests.
+- Local frontend tests: PASS, 23 files / 86 tests.
 - ESLint: PASS.
 - TypeScript: PASS.
 - Build: PASS.

@@ -39,6 +39,12 @@ describe('frontend router', () => {
         expect(router.resolve('/demo/pedido').meta.title).toBe('Pedido de demostración | Salón y Barbería Yaris');
     });
 
+    it('resolves the public terms page with its public title', () => {
+        expect(router.resolve('/terminos-condiciones').name).toBe('public.terms');
+        expect(router.resolve('/terminos-condiciones').meta.surface).toBe('public');
+        expect(router.resolve('/terminos-condiciones').meta.title).toBe('Términos y Condiciones | Salón y Barbería Yaris');
+    });
+
     it('updates document titles for public navigation', async () => {
         await router.push('/');
         expect(document.title).toBe('Salón y Barbería Yaris | Belleza y elegancia');
