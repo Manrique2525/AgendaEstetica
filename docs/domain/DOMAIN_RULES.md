@@ -2,16 +2,16 @@
 
 ## Citas
 
-- Una cita requiere aprobación.
+- Appointment Engine V1 creates an authoritative `confirmed` appointment; request/approval workflow remains a future consumer concern.
 - No se aceptan solapamientos de profesional.
 - La disponibilidad respeta turnos, bloqueos, duración del servicio y capacidad general.
 - La disponibilidad se recalcula en backend al persistir.
 - Las transiciones de estado son explícitas; una cita cancelada no vuelve a confirmada sin una decisión de dominio aprobada.
-- Reprogramar conserva el historial y cambia `schedule_version`.
+- Reprogramar conserva el historial; SPEC-004 V1 uses deterministic locking and authoritative revalidation instead of `schedule_version`.
 
 ## Estados iniciales previstos
 
-`REQUEST_RECEIVED`, `PENDING_APPROVAL`, `APPROVED`, `DEPOSIT_PENDING`, `CONFIRMED`, `REJECTED`, `RESCHEDULED`, `CANCELLED`, `COMPLETED`, `NO_SHOW`.
+The broader candidate vocabulary remains future-work context. The approved SPEC-004 V1 persistent statuses are `confirmed`, `cancelled`, `completed` and `no_show`.
 
 ## Notificaciones
 
