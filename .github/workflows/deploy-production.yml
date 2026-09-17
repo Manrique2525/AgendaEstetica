@@ -148,12 +148,15 @@ jobs:
       DEPLOY_BASE_URL: ${{ secrets.ALWAYSDATA_BASE_URL || 'https://yaris.alwaysdata.net' }}
       ALWAYSDATA_SSH_KEY: ${{ secrets.ALWAYSDATA_SSH_KEY }}
       ALWAYSDATA_KNOWN_HOSTS: ${{ secrets.ALWAYSDATA_KNOWN_HOSTS }}
-      SSH_KEY_PATH: ${{ runner.temp }}/alwaysdata_deploy_key
-      KNOWN_HOSTS_PATH: ${{ runner.temp }}/alwaysdata_known_hosts
       DEPLOYED_SHA: ${{ github.sha }}
       RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
     steps:
+      - name: Prepare SSH paths
+        run: |
+          echo "SSH_KEY_PATH=$RUNNER_TEMP/alwaysdata_deploy_key" >> "$GITHUB_ENV"
+          echo "KNOWN_HOSTS_PATH=$RUNNER_TEMP/alwaysdata_known_hosts" >> "$GITHUB_ENV"
+
       - name: Checkout
         uses: actions/checkout@v7
         with:
