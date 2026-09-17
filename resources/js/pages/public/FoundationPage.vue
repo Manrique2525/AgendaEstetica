@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import PublicLayout from '../../layouts/PublicLayout.vue';
 import UiCard from '../../components/ui/UiCard.vue';
+import TermsConsentBanner from '../../components/public/TermsConsentBanner.vue';
 import { publicSite } from '../../data/publicSite';
 </script>
 
 <template>
     <PublicLayout>
-        <div class="space-y-16">
+        <div class="space-y-16 pb-48 sm:pb-36">
             <section aria-labelledby="hero-title" class="rounded-xl border border-white/15 bg-gradient-to-br from-brand-black via-brand-black to-brand-fuchsia/20 px-6 py-12 sm:px-10 sm:py-16">
                 <p class="font-ui text-xs font-bold uppercase tracking-[0.2em] text-brand-gold">Salón y Barbería</p>
                 <h1 id="hero-title" class="mt-4 max-w-2xl font-display text-5xl leading-[0.95] text-text-inverse sm:text-7xl">{{ publicSite.business.name }}</h1>
@@ -27,6 +28,10 @@ import { publicSite } from '../../data/publicSite';
                     <UiCard v-for="category in publicSite.futureStoreCategories" :key="category" class="!border-white/15 !bg-white/5 !text-text-inverse !shadow-none">
                         <h3 class="font-display text-3xl">{{ category }}</h3>
                         <p class="mt-3 font-ui text-sm font-semibold uppercase tracking-[0.12em] text-brand-pink">Catálogo en preparación</p>
+                        <template v-if="category === 'Mary Kay'">
+                            <p class="mt-4 font-body text-sm leading-relaxed text-white/75">Consulta los productos disponibles en nuestra tienda externa de Mary Kay.</p>
+                            <a href="https://www.marykay.com.mx/yaris" target="_blank" rel="noopener noreferrer" class="mt-5 inline-flex min-h-11 items-center justify-center rounded-md border border-white/40 px-4 py-2 font-ui text-sm font-bold text-text-inverse hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 focus:ring-offset-brand-black">Visitar tienda externa de Mary Kay</a>
+                        </template>
                     </UiCard>
                 </div>
             </section>
@@ -58,6 +63,36 @@ import { publicSite } from '../../data/publicSite';
                     </UiCard>
                 </div>
             </section>
+
+            <section id="academic-phase-1" class="scroll-mt-6 space-y-6" aria-labelledby="academic-title">
+                <div>
+                    <p class="font-ui text-xs font-bold uppercase tracking-[0.18em] text-brand-turquoise">Presentación académica</p>
+                    <h2 id="academic-title" class="mt-2 font-display text-4xl text-text-inverse sm:text-5xl">Capacidades de Fase 1</h2>
+                    <p class="mt-3 max-w-2xl font-body text-base leading-relaxed text-white/75">Estas capacidades se presentan con estados reales, demostrativos o pendientes, sin convertir una demostración académica en una promesa de producción.</p>
+                </div>
+                <div class="grid gap-4 md:grid-cols-2">
+                    <UiCard class="!border-white/15 !bg-white/5 !text-text-inverse !shadow-none">
+                        <h3 class="font-display text-3xl">Autenticación</h3>
+                        <p class="mt-3 font-body text-sm leading-relaxed text-white/75"><strong class="text-white">DEMOSTRACIÓN.</strong> El acceso administrativo existente es funcional; el acceso de clientes permanece demostrativo.</p>
+                        <a href="/cliente/acceso" class="mt-5 inline-flex min-h-11 items-center justify-center rounded-md border border-white/40 px-4 py-2 font-ui text-sm font-bold text-text-inverse hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 focus:ring-offset-brand-black">Ver acceso de clientes</a>
+                    </UiCard>
+                    <UiCard class="!border-white/15 !bg-white/5 !text-text-inverse !shadow-none">
+                        <h3 class="font-display text-3xl">Integridad</h3>
+                        <p class="mt-3 font-body text-sm leading-relaxed text-white/75"><strong class="text-white">DEMOSTRACIÓN FUNCIONAL.</strong> La experiencia académica muestra una huella SHA-256; una huella no es una firma digital.</p>
+                        <a href="/demo/pedido" class="mt-5 inline-flex min-h-11 items-center justify-center rounded-md bg-action-primary px-4 py-2 font-ui text-sm font-bold text-action-primary-foreground hover:bg-action-primary-hover focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 focus:ring-offset-brand-black">Ver demostración de integridad</a>
+                    </UiCard>
+                    <UiCard class="!border-white/15 !bg-white/5 !text-text-inverse !shadow-none">
+                        <h3 class="font-display text-3xl">Firma digital</h3>
+                        <p class="mt-3 font-body text-sm leading-relaxed text-white/75"><strong class="text-white">PENDIENTE DE INTEGRACIÓN.</strong> No se implementan claves, certificados ni firma digital en esta fase.</p>
+                    </UiCard>
+                    <UiCard class="!border-white/15 !bg-white/5 !text-text-inverse !shadow-none">
+                        <h3 class="font-display text-3xl">Factura digital</h3>
+                        <p class="mt-3 font-body text-sm leading-relaxed text-white/75"><strong class="text-white">DEMOSTRACIÓN.</strong> El documento educativo no es CFDI, no está timbrado y no tiene validez fiscal.</p>
+                        <a href="/demo/pedido" class="mt-5 inline-flex min-h-11 items-center justify-center rounded-md border border-white/40 px-4 py-2 font-ui text-sm font-bold text-text-inverse hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 focus:ring-offset-brand-black">Solicitar documento de demostración</a>
+                    </UiCard>
+                </div>
+            </section>
         </div>
+        <TermsConsentBanner />
     </PublicLayout>
 </template>

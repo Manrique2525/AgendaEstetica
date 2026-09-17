@@ -95,6 +95,10 @@ onMounted(async () => { loading.value = true; try { const [context, catalog] = a
                 <p class="font-ui text-xs font-bold uppercase tracking-[0.18em] text-brand-gold">Reserva tu cita</p>
                 <h1 class="mt-3 font-display text-4xl leading-tight text-text-primary sm:text-5xl">Un momento para ti</h1>
                 <p class="mt-3 font-body text-base leading-relaxed text-text-secondary">Elige tu servicio, horario y déjanos tus datos. Tu cita quedará confirmada al finalizar.</p>
+                <aside aria-label="Aviso de privacidad" class="mt-5 rounded-lg border border-brand-pink/40 bg-pink-50/70 p-4 font-body text-sm leading-relaxed text-text-secondary">
+                    Usamos los datos proporcionados para gestionar tu cita. La información de privacidad y seguridad presentada en esta fase es provisional y está pendiente de revisión.
+                    <a href="/fase-1#privacidad-seguridad" class="font-ui font-bold text-action-primary underline underline-offset-4 focus:outline-none focus:ring-2 focus:ring-focus-ring">Conoce el aviso provisional</a>
+                </aside>
                 <div class="mt-7 flex items-center gap-2" aria-label="Progreso de reserva">
                     <span v-for="number in 5" :key="number" :class="['h-1.5 flex-1 rounded-full', number <= step ? 'bg-action-primary' : 'bg-border-default']" />
                 </div>
