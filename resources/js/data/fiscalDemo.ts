@@ -1,7 +1,8 @@
 export const fiscalDemoCatalog = {
     claveProdServ: '91101701',
     claveUnidad: 'E48',
-    regimenFiscal: '601',
+    issuerRegimenFiscal: '601',
+    receiverRegimenFiscal: '612',
     usoCfdi: 'S01',
     formaPago: '03',
     metodoPago: 'PUE',
@@ -16,6 +17,7 @@ export const fiscalDemoCatalog = {
 } as const;
 
 export interface IssuerFiscalProfile {
+    personType: 'moral';
     rfc: string;
     name: string;
     regimenFiscal: string;
@@ -23,10 +25,11 @@ export interface IssuerFiscalProfile {
 }
 
 export interface ReceiverFiscalProfile {
+    personType: 'fisica';
     rfc: string;
     name: string;
     fiscalPostalCode: string;
-    regimenFiscal: string;
+    regimenFiscalReceptor: string;
     usoCfdi: string;
 }
 
@@ -123,16 +126,18 @@ export function getDemoInvoiceDraft(): InvoiceDraft {
     return {
         demo: true,
         issuer: {
-            rfc: 'DEMO010101AAA',
+            personType: 'moral',
+            rfc: 'DEM010101AA0',
             name: 'YARIS DEMOSTRACION ACADEMICA',
-            regimenFiscal: fiscalDemoCatalog.regimenFiscal,
+            regimenFiscal: fiscalDemoCatalog.issuerRegimenFiscal,
             placeOfIssuePostalCode: fiscalDemoCatalog.demoPostalCode,
         },
         receiver: {
-            rfc: 'DEMO010101AA0',
+            personType: 'fisica',
+            rfc: 'DEMO010101AAA',
             name: 'CLIENTE DEMOSTRACION ACADEMICA',
             fiscalPostalCode: fiscalDemoCatalog.demoPostalCode,
-            regimenFiscal: fiscalDemoCatalog.regimenFiscal,
+            regimenFiscalReceptor: fiscalDemoCatalog.receiverRegimenFiscal,
             usoCfdi: fiscalDemoCatalog.usoCfdi,
         },
         metadata: {

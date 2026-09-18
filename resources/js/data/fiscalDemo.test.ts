@@ -6,10 +6,12 @@ describe('fiscal demo contract', () => {
         const draft = getDemoInvoiceDraft();
 
         expect(draft.demo).toBe(true);
+        expect(draft.issuer).toMatchObject({ personType: 'moral', rfc: 'DEM010101AA0', regimenFiscal: '601' });
+        expect(draft.receiver).toMatchObject({ personType: 'fisica', rfc: 'DEMO010101AAA', regimenFiscalReceptor: '612', usoCfdi: 'S01' });
         expect(draft.issuer.name).toContain('DEMOSTRACION');
         expect(draft.receiver.name).toContain('DEMOSTRACION');
-        expect(draft.issuer.rfc).toBe('DEMO010101AAA');
-        expect(draft.receiver.rfc).toBe('DEMO010101AA0');
+        expect(draft.issuer.rfc).toHaveLength(12);
+        expect(draft.receiver.rfc).toHaveLength(13);
         expect(draft.issuer.placeOfIssuePostalCode).toBe('01000');
         expect(draft.receiver.fiscalPostalCode).toBe('01000');
         expect(draft.issuer.placeOfIssuePostalCode).not.toBe('00000');
@@ -19,7 +21,8 @@ describe('fiscal demo contract', () => {
             objetoImp: '02',
         });
         expect(fiscalDemoCatalog).toMatchObject({
-            regimenFiscal: '601',
+            issuerRegimenFiscal: '601',
+            receiverRegimenFiscal: '612',
             usoCfdi: 'S01',
             formaPago: '03',
             metodoPago: 'PUE',

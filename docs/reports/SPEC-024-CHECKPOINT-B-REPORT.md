@@ -38,13 +38,20 @@ cross-field business relationships. This report therefore distinguishes
 catalog membership from fiscal compatibility. The selected scenario is
 internally coherent for academic purposes, not SAT-validated.
 
+The final party contract makes person type explicit: the issuer is a synthetic
+persona-moral-shaped fixture using regime `601`; the receiver is a synthetic
+persona-fisica-shaped fixture using regime `612` and `UsoCFDI=S01`. This is an
+academic compatibility scenario, not RFC registry or taxpayer-applicability
+validation.
+
 ## Verified Catalog Values
 
 | Field | Value | Evidence |
 | --- | --- | --- |
 | `ClaveProdServ` | `91101701` | present in `c_ClaveProdServ` enumeration |
 | `ClaveUnidad` | `E48` | present in `c_ClaveUnidad` enumeration |
-| `RegimenFiscal` | `601` | present in `c_RegimenFiscal` enumeration |
+| Issuer `RegimenFiscal` | `601` | present in `c_RegimenFiscal` enumeration |
+| Receiver `RegimenFiscalReceptor` | `612` | present in `c_RegimenFiscal` enumeration |
 | `UsoCFDI` | `S01` | present in `c_UsoCFDI` enumeration |
 | `FormaPago` | `03` | present in `c_FormaPago` enumeration |
 | `MetodoPago` | `PUE` | present in `c_MetodoPago` enumeration |
@@ -71,8 +78,10 @@ or SAT registration of the synthetic identities.
 - `TipoDeComprobante=I` and `Exportacion=01` describe a domestic income
   invoice-shaped scenario.
 - The current XSD proves each code domain but does not prove receiver regime /
-  `UsoCFDI` relationships or SAT taxpayer registry validity. Those are not
-  claimed by this demo.
+  `UsoCFDI` relationships or SAT taxpayer registry validity. The `612` +
+  `S01` pair is retained as the documented academic compatibility scenario; a
+  real CFDI must revalidate it against current SAT relationship rules and the
+  receiver's actual fiscal profile.
 
 ## Contract
 
@@ -100,10 +109,13 @@ fiscal data into Vue templates. No persistence or API exists.
 
 The exported fixture is `getDemoInvoiceDraft()`.
 
-- Issuer: `YARIS DEMOSTRACION ACADEMICA`.
-- Receiver: `CLIENTE DEMOSTRACION ACADEMICA`.
-- RFC-like values: synthetic, not verified against the RFC registry and not for
-  real invoicing.
+- Issuer: `YARIS DEMOSTRACION ACADEMICA`, person type `moral`, regime `601`,
+  synthetic 12-character RFC-like value `DEM010101AA0`.
+- Receiver: `CLIENTE DEMOSTRACION ACADEMICA`, person type `fisica`, regime
+  `612`, `UsoCFDI=S01`, synthetic 13-character RFC-like value
+  `DEMO010101AAA`.
+- RFC-like values are synthetic, not verified against the RFC registry and not
+  for real invoicing.
 - One synthetic service concept.
 - One transferred-tax scenario.
 - No retentions.
@@ -122,6 +134,11 @@ retentions: 0
 not Yaris tax configuration
 not tax advice
 ```
+
+The 16% value is the academic IVA scenario supported by the applicable general
+IVA rule (LIVA Article 1, official legal source) and represented in the CFDI
+tax shape as `Impuesto=002` + `TipoFactor=Tasa`. It is not a Yaris tax
+configuration and does not make the fixture a valid CFDI.
 
 ## Calculations
 
