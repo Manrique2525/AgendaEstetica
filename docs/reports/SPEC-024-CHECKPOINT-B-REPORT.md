@@ -5,7 +5,7 @@
 ```text
 SPEC-024: DEVELOPMENT IN PROGRESS
 Checkpoint A: APPROVED / COMPLETE / IN MAIN / IN PRODUCTION
-Checkpoint B: APPROVED / COMPLETE
+Checkpoint B: IMPLEMENTED / READY FOR HUMAN APPROVAL
 Checkpoint C: NOT AUTHORIZED
 XML: NOT IMPLEMENTED
 Digital Signature: PENDING / FUTURE WORK
@@ -195,5 +195,5 @@ Production: UNCHANGED
 - absence of fiscal certification artifacts;
 - complete demo disclaimers.
 
-Checkpoint B is explicitly approved by the human. It does not start visual
-invoice work or XML generation; those belong to Checkpoint C/D respectively.
+Checkpoint B does not start visual invoice work or XML generation; those belong
+to Checkpoint C/D respectively. Formal human approval remains pending.
