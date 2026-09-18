@@ -66,10 +66,53 @@ Behavior:
 - public layout keeps bottom spacing on `/` so content is not permanently
   hidden while the banner is visible.
 
-Browser tooling was unavailable in this environment, so visual viewport QA was
-not executed. The responsive contract is covered by the component structure and
-CSS classes, but no visual PASS is claimed for 320x568, 390x844, 430x932,
-768x1024 or 1440x900.
+## Browser QA
+
+Browser: Google Chrome `153.0.8010.48`, launched headlessly through transient
+Playwright `1.63.0` outside the repository. No project dependency was added.
+
+| Viewport | Banner width | Banner height | Occupancy | Overflow | Clipping | Verdict |
+| --- | ---: | ---: | ---: | --- | --- | --- |
+| 320x568 | 320px | 169.5px | 29.8% | No | No | PASS |
+| 390x844 | 390px | 150.25px | 17.8% | No | No | PASS |
+| 430x932 | 430px | 150.25px | 16.1% | No | No | PASS |
+| 768x1024 | 768px | 102.25px | 10.0% | No | No | PASS |
+| 1440x900 | 1440px | 102.25px | 11.4% | No | No | PASS |
+
+All measurements used `getBoundingClientRect()` and actual document/body
+scroll widths. The banner stayed fixed at the viewport bottom before and after
+scrolling at 390x844. The page remained visible above it and the action row
+fit without clipping at every target width.
+
+Screenshots were kept as transient evidence outside the repository:
+
+```text
+/var/folders/4b/9ml3xz_s4h1g9plscls0vc2r0000gn/T/opencode/spec024-qa/evidence/
+```
+
+## Interaction QA
+
+- Fresh session: banner visible, storage value absent.
+- `Aceptar`: banner disappeared immediately; storage became `accepted`.
+- Accept refresh: banner remained hidden.
+- Accept SPA navigation and return: banner remained hidden.
+- `Rechazar` in an isolated session: banner disappeared immediately; storage
+  became `rejected`.
+- Reject refresh: banner remained hidden.
+- New isolated session: banner visible again with no stored decision.
+- Footer Terms link remained present after dismissal and opened
+  `/terminos-condiciones` successfully.
+- Keyboard `Tab` reached `Leer términos`, `Rechazar`, `Aceptar` and the footer
+  Terms link in order; visible focus rings were present.
+- Keyboard `Space` activated `Rechazar` and persisted `rejected`.
+- No keyboard trap was observed.
+
+## Console and Request QA
+
+- JavaScript console errors: `0`.
+- Vue warnings: `0`.
+- Page errors: `0`.
+- Failed application requests: `0`.
 
 ## Tests
 
