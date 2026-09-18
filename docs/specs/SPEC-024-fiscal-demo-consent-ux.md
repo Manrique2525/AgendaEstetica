@@ -2,14 +2,13 @@
 
 ## Status
 
-`DEVELOPMENT IN PROGRESS / CHECKPOINT A APPROVED / COMPLETE`
+`DEVELOPMENT IN PROGRESS / CHECKPOINT B IMPLEMENTED / READY FOR HUMAN APPROVAL`
 
 Implementation is **not authorized** by this document. Production deployment,
 real fiscal integration and reopening SPEC-022 remain out of scope.
 
-Checkpoint A is approved and complete. Checkpoint B is the next authorized
-scope after successful integration and production verification. Checkpoint C
-and all XML/CFDI work remain unauthorized.
+Checkpoint A is approved and complete. Checkpoint B is implemented and ready
+for human approval. Checkpoint C and all XML/CFDI work remain unauthorized.
 
 ## Purpose
 
@@ -325,7 +324,7 @@ security review and business approval.
 - AC-18: No migration, API, fiscal persistence, PAC or deployment is introduced
   by Definition/Discovery.
 - AC-19: Digital Signature remains `PENDING / FUTURE WORK`.
-- AC-20: Human approval is required before Checkpoint A implementation.
+- AC-20: Human approval is required before Checkpoint C implementation.
 
 ## Quality and Security Handoff
 
@@ -335,16 +334,16 @@ responsive browser checks at 320x568, 390x844, 430x932, 768x1024 and 1440x900,
 and checks that no real fiscal data, keys or certificates are logged or shipped
 to the browser.
 
-No implementation, dependency, migration or deployment is authorized by this
-Definition/Discovery document.
+No Checkpoint C implementation, XML, migration or deployment is authorized by
+this document.
 
 ## Checkpoint State
 
 ```text
 SPEC-024: DEVELOPMENT IN PROGRESS
 Checkpoint A: APPROVED / COMPLETE
-Checkpoint B: AUTHORIZED NEXT AFTER A INTEGRATION
-Fiscal demo: NOT IMPLEMENTED
+Checkpoint B: IMPLEMENTED / READY FOR HUMAN APPROVAL
+Fiscal demo contract: IMPLEMENTED
 CFDI/XML: NOT IMPLEMENTED
 Digital Signature: PENDING / FUTURE WORK
 Production: UNCHANGED
