@@ -4,8 +4,8 @@
 
 ```text
 SPEC-024: DEVELOPMENT IN PROGRESS
-Checkpoint A: IMPLEMENTED / READY FOR HUMAN APPROVAL
-Checkpoint B: NOT AUTHORIZED
+Checkpoint A: APPROVED / COMPLETE
+Checkpoint B: AUTHORIZED NEXT AFTER A INTEGRATION
 ```
 
 This checkpoint changes only the academic consent UX. No invoice, fiscal,
@@ -164,5 +164,6 @@ main: UNCHANGED
 Production: UNCHANGED
 ```
 
-STOP. Submit Checkpoint A for explicit human approval. Do not start
-Checkpoint B.
+Checkpoint A was explicitly approved by the human after the browser evidence
+recorded above. Do not start Checkpoint B until A is integrated and production
+verification completes.

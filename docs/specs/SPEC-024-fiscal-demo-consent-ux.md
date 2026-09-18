@@ -2,13 +2,14 @@
 
 ## Status
 
-`DEVELOPMENT IN PROGRESS / CHECKPOINT A IMPLEMENTED / READY FOR HUMAN APPROVAL`
+`DEVELOPMENT IN PROGRESS / CHECKPOINT A APPROVED / COMPLETE`
 
 Implementation is **not authorized** by this document. Production deployment,
 real fiscal integration and reopening SPEC-022 remain out of scope.
 
-Checkpoint A is the only authorized development scope. Checkpoint B and all
-fiscal-demo, invoice, XML and CFDI work remain unauthorized.
+Checkpoint A is approved and complete. Checkpoint B is the next authorized
+scope after successful integration and production verification. Checkpoint C
+and all XML/CFDI work remain unauthorized.
 
 ## Purpose
 
@@ -341,8 +342,8 @@ Definition/Discovery document.
 
 ```text
 SPEC-024: DEVELOPMENT IN PROGRESS
-Checkpoint A: IMPLEMENTED / READY FOR HUMAN APPROVAL
-Checkpoint B: NOT AUTHORIZED
+Checkpoint A: APPROVED / COMPLETE
+Checkpoint B: AUTHORIZED NEXT AFTER A INTEGRATION
 Fiscal demo: NOT IMPLEMENTED
 CFDI/XML: NOT IMPLEMENTED
 Digital Signature: PENDING / FUTURE WORK
