@@ -12,7 +12,7 @@ export const fiscalDemoCatalog = {
     impuesto: '002',
     tipoFactor: 'Tasa',
     tasaIvaBasisPoints: 1600,
-    demoPostalCode: '00000',
+    demoPostalCode: '01000',
 } as const;
 
 export interface IssuerFiscalProfile {

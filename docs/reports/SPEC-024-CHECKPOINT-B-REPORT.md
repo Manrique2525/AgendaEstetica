@@ -33,6 +33,11 @@ official catalog enumeration, but no human-readable catalog label is claimed
 in the application. The fixture uses its own synthetic description and does
 not present it as SAT text.
 
+The XSD catalogs define individual value domains, but do not encode all
+cross-field business relationships. This report therefore distinguishes
+catalog membership from fiscal compatibility. The selected scenario is
+internally coherent for academic purposes, not SAT-validated.
+
 ## Verified Catalog Values
 
 | Field | Value | Evidence |
@@ -49,10 +54,25 @@ not present it as SAT text.
 | `ObjetoImp` | `02` | present in `c_ObjetoImp` enumeration |
 | `Impuesto` | `002` | present in `c_Impuesto` enumeration |
 | `TipoFactor` | `Tasa` | present in `c_TipoFactor` enumeration |
-| Demo postal code | `00000` | present in `c_CodigoPostal` enumeration; synthetic only |
+| Demo postal code | `01000` | present in `c_CodigoPostal` enumeration; public value, not real Yaris data |
 
 These values prove catalog enumeration membership, not business tax treatment
 or SAT registration of the synthetic identities.
+
+## Postal and Compatibility Audit
+
+- `LugarExpedicion` and `DomicilioFiscalReceptor` both use `01000` in the
+  academic fixture. It is a current catalog value and is not asserted to be
+  Yaris's real fiscal address or the receiver's real address.
+- `FormaPago=03` and `MetodoPago=PUE` describe the selected academic
+  single-payment transfer scenario; this is not a production payment rule.
+- `ObjetoImp=02` with `Impuesto=002`, `TipoFactor=Tasa` and `0.160000` is an
+  internally coherent transferred-tax demonstration.
+- `TipoDeComprobante=I` and `Exportacion=01` describe a domestic income
+  invoice-shaped scenario.
+- The current XSD proves each code domain but does not prove receiver regime /
+  `UsoCFDI` relationships or SAT taxpayer registry validity. Those are not
+  claimed by this demo.
 
 ## Contract
 
@@ -90,6 +110,7 @@ The exported fixture is `getDemoInvoiceDraft()`.
 - Currency: `MXN`.
 - Payment scenario: catalog-backed `03` / `PUE`, explicitly academic.
 - No real client, business, tax, CSD, PAC or certificate data.
+- Demo postal code: `01000`, valid catalog value, not real Yaris fiscal data.
 
 Tax scenario:
 

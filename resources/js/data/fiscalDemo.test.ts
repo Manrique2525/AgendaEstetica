@@ -10,6 +10,9 @@ describe('fiscal demo contract', () => {
         expect(draft.receiver.name).toContain('DEMOSTRACION');
         expect(draft.issuer.rfc).toBe('DEMO010101AAA');
         expect(draft.receiver.rfc).toBe('DEMO010101AA0');
+        expect(draft.issuer.placeOfIssuePostalCode).toBe('01000');
+        expect(draft.receiver.fiscalPostalCode).toBe('01000');
+        expect(draft.issuer.placeOfIssuePostalCode).not.toBe('00000');
         expect(draft.concepts[0]).toMatchObject({
             claveProdServ: '91101701',
             claveUnidad: 'E48',
