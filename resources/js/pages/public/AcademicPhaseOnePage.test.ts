@@ -23,6 +23,7 @@ describe('AcademicPhaseOnePage', () => {
             'mary-kay-domicilio',
             'terminos-privacidad',
         ]);
+        expect(wrapper.find('section[aria-labelledby="terms-banner-title"]').exists()).toBe(false);
     });
 
     it('keeps privacy provisional and does not claim future capabilities', () => {
