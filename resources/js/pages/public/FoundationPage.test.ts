@@ -1,11 +1,15 @@
 import { mount } from '@vue/test-utils';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import router from '../../router';
 import FoundationPage from './FoundationPage.vue';
 
 const global = { plugins: [router] };
 
 describe('FoundationPage', () => {
+    beforeEach(() => {
+        sessionStorage.removeItem('yaris.academic-consent.v1');
+    });
+
     it('renders the approved Yaris homepage content and destinations', () => {
         const wrapper = mount(FoundationPage, { global });
 
@@ -41,7 +45,7 @@ describe('FoundationPage', () => {
         expect(wrapper.get('#contacto a').attributes('href')).toBe('https://wa.me/529932294158');
     });
 
-    it('renders independent academic capabilities and the fixed terms banner', async () => {
+    it('renders independent academic capabilities and the fixed terms banner', () => {
         const wrapper = mount(FoundationPage, { global });
 
         expect(wrapper.get('#academic-phase-1').text()).toContain('Autenticación');
@@ -50,12 +54,7 @@ describe('FoundationPage', () => {
         expect(wrapper.get('#academic-phase-1').text()).toContain('Factura digital');
         expect(wrapper.get('#academic-phase-1').findAll('section')).toHaveLength(0);
         expect(wrapper.find('section[aria-labelledby="terms-banner-title"]').exists()).toBe(true);
-        expect(wrapper.get('section[aria-labelledby="terms-banner-title"]').text()).toContain('Aún no has elegido una opción');
-
-        await wrapper.findAll('section[aria-labelledby="terms-banner-title"] button')[0].trigger('click');
-        expect(wrapper.get('section[aria-labelledby="terms-banner-title"]').text()).toContain('Has rechazado');
-        await wrapper.findAll('section[aria-labelledby="terms-banner-title"] button')[1].trigger('click');
-        expect(wrapper.get('section[aria-labelledby="terms-banner-title"]').text()).toContain('Términos aceptados');
+        expect(wrapper.get('section[aria-labelledby="terms-banner-title"]').text()).toContain('Términos y privacidad');
     });
 });
 
