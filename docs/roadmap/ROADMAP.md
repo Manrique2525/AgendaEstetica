@@ -46,4 +46,6 @@ Cada etapa requiere SPEC, discovery, plan aprobado, implementación, pruebas, au
 
 `SPEC-023 - Automated Production Deployment` está en estado `DEFINITION / IMPLEMENTED (pending activation)` en `docs/specs/SPEC-023-automated-production-deployment.md`. La rama de producción es `main` y el workflow `.github/workflows/deploy-production.yml` implementa el despliegue automático a alwaysdata. La activación en GitHub (Environment `production`, secretos y llave CI dedicada) queda pendiente y no autoriza iniciar otra SPEC. Ver `docs/deployment/alwaysdata-production.md`.
 
+`SPEC-024 - Fiscal Demo & Consent UX` está en estado `DEFINITION / TECHNICAL DISCOVERY COMPLETE / READY FOR HUMAN DEVELOPMENT REVIEW` en `docs/specs/SPEC-024-fiscal-demo-consent-ux.md`. Define una UX de consentimiento móvil más compacta, una demo fiscal sintética CFDI 4.0-style y XML de prueba sin validez fiscal. La implementación no está autorizada; no reabre SPEC-022, no modifica SPEC-023 y no despliega.
+
 Target de Foundation: Laravel 13, PHP 8.3+, MySQL 8.4 LTS, Vue 3, TypeScript, Vite, Tailwind CSS, Sanctum y Pest.
