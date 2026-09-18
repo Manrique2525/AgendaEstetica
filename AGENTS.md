@@ -39,7 +39,7 @@ Para cambios de pruebas, leer también `docs/testing/TEST_PLAN.md`.
 
 ## Arquitectura y código
 
-- Stack aprobado: Laravel 12, PHP 8.3+, MySQL 8, Vue 3, TypeScript, Tailwind CSS, Vite, Sanctum y Pest.
+- Stack aprobado: Laravel 13, PHP 8.3+, MySQL 8.4 LTS, Vue 3, TypeScript, Tailwind CSS, Vite, Sanctum y Pest.
 - Arquitectura: modular monolith en un solo repositorio.
 - Flujo backend preferido: Route -> Controller -> Form Request -> Action/Service -> Domain/Model -> Database.
 - Controllers coordinan; no contienen reglas complejas de negocio.
@@ -69,6 +69,14 @@ npm run build
 ```
 
 Si un comando todavía no existe, documentar la limitación en el reporte; no simular resultados.
+
+## Producción y deployment
+
+- Rama de producción: `main`.
+- Un push/merge aprobado a `main` despliega automáticamente a alwaysdata si y solo si pasan todos los quality gates del workflow `deploy-production.yml`.
+- Nunca desplegar código no commiteado; nunca bypassear un CI fallido; no aplicar cambios de aplicación manualmente en producción.
+- `DB_PASSWORD`, `APP_KEY` y llaves SSH privadas viven solo en el entorno del servidor y en los secretos del GitHub Environment `production`; nunca en el repositorio ni en la documentación.
+- El flujo y las reglas de despliegue están en `docs/deployment/alwaysdata-production.md` y en la SPEC-023.
 
 ## Alcance de OpenCode
 
