@@ -120,9 +120,27 @@ function printInvoice(): void {
 </template>
 
 <style>
+@page {
+    size: A4 portrait;
+    margin: 10mm 12mm;
+}
+
 @media print {
+    html,
+    body {
+        height: auto !important;
+    }
+
+    header,
+    footer {
+        display: none !important;
+    }
+
     body > * {
         visibility: hidden !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
     }
 
     .invoice-document,
@@ -132,7 +150,9 @@ function printInvoice(): void {
 
     .invoice-document {
         position: absolute !important;
-        inset: 0 !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
     }
 
     .invoice-document__print-action {
@@ -144,12 +164,68 @@ function printInvoice(): void {
         box-shadow: none !important;
         color: #111827 !important;
         width: 100% !important;
+        max-width: none !important;
+        padding: 14px 20px !important;
     }
 
     .invoice-summary,
     .invoice-disclaimers {
         break-inside: avoid;
         page-break-inside: avoid;
+    }
+
+    .invoice-document > div.border-b-2 {
+        gap: 8px !important;
+        padding-bottom: 10px !important;
+    }
+
+    .invoice-document > div.grid {
+        margin-top: 12px !important;
+    }
+
+    section[aria-labelledby='demo-invoice-issuer'],
+    section[aria-labelledby='demo-invoice-receiver'],
+    section[aria-labelledby='demo-invoice-taxes'],
+    section[aria-labelledby='demo-invoice-totals'] {
+        padding: 8px 10px !important;
+    }
+
+    dl.border-y {
+        margin-top: 12px !important;
+        padding: 6px 0 !important;
+    }
+
+    section[aria-labelledby='demo-invoice-payment'],
+    section[aria-labelledby='demo-invoice-concepts'],
+    .invoice-summary {
+        margin-top: 12px !important;
+    }
+
+    section[aria-labelledby='demo-invoice-payment'] p {
+        margin-top: 4px !important;
+    }
+
+    section[aria-labelledby='demo-invoice-concepts'] div.mt-2 {
+        margin-top: 6px !important;
+    }
+
+    thead th,
+    tbody td {
+        padding-top: 3px !important;
+        padding-bottom: 3px !important;
+    }
+
+    dl.space-y-2 {
+        margin-top: 6px !important;
+    }
+
+    dl.space-y-2 > div + div {
+        margin-top: 3px !important;
+    }
+
+    .invoice-disclaimers {
+        margin-top: 12px !important;
+        padding-top: 8px !important;
     }
 }
 </style>
