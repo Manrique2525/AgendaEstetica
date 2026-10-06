@@ -5,6 +5,8 @@ import UiButton from '../../components/ui/UiButton.vue';
 import UiCard from '../../components/ui/UiCard.vue';
 import UiFormField from '../../components/ui/UiFormField.vue';
 import UiInput from '../../components/ui/UiInput.vue';
+import DemoInvoiceDocument from '../../components/public/DemoInvoiceDocument.vue';
+import { getDemoInvoiceDraft } from '../../data/fiscalDemo';
 import { buildDemoIntegrityPayload, normalizeDemoData, serializeDemoIntegrityPayload, sha256Hex, type DemoOrderData } from '../../utils/demoIntegrity';
 
 type DemoStep = 'edit' | 'review' | 'confirmed';
@@ -22,6 +24,7 @@ const folio = ref('');
 const canonicalPayload = ref('');
 const digest = ref<string | null>(null);
 const digestError = ref(false);
+const demoInvoiceDraft = getDemoInvoiceDraft();
 
 function reviewDemo(): void {
     step.value = 'review';
@@ -156,12 +159,7 @@ async function confirmDemo(): Promise<void> {
                             <p class="mt-4 font-body text-sm font-semibold leading-relaxed text-brand-gold">Esta huella SHA-256 demuestra integridad de los datos de la demostración. NO constituye una firma digital.</p>
                         </div>
                     </div>
-                    <div v-if="confirmedInvoiceRequest" class="mt-6 rounded-lg border border-brand-gold/50 bg-brand-gold/10 p-5">
-                        <h3 class="font-ui text-sm font-bold uppercase tracking-[0.12em] text-brand-gold">Factura digital DEMOSTRACIÓN</h3>
-                        <p class="mt-3 font-body text-sm leading-relaxed text-white/80">Documento de demostración disponible. No es un CFDI, no está timbrado y no tiene validez fiscal.</p>
-                        <p class="mt-3 font-ui text-sm font-bold text-brand-gold">DOCUMENTO DE PRUEBA — SIN VALIDEZ FISCAL</p>
-                        <a href="/demo/factura-demostracion-sin-validez-fiscal.pdf" download class="mt-4 inline-flex min-h-11 items-center justify-center rounded-md bg-action-primary px-4 py-2 font-ui text-sm font-bold text-action-primary-foreground hover:bg-action-primary-hover focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 focus:ring-offset-brand-black">Descargar documento de prueba</a>
-                    </div>
+                    <DemoInvoiceDocument v-if="confirmedInvoiceRequest" :draft="demoInvoiceDraft" class="mt-6" />
                 </UiCard>
             </section>
 

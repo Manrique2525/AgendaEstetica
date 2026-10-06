@@ -1,6 +1,6 @@
 import { flushPromises, mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import DemoOrderPage from './DemoOrderPage.vue';
 
 describe('DemoOrderPage', () => {
@@ -59,6 +59,33 @@ describe('DemoOrderPage', () => {
         expect(wrapper.text()).toContain('Factura de demostraciónSolicitada');
         expect(wrapper.text()).not.toMatch(/RFC|régimen fiscal|uso CFDI|domicilio fiscal/i);
         expect(wrapper.find('[data-testid="confirm-demo"]').exists()).toBe(true);
+    });
+
+    it('renders the complete invoice demonstration from the canonical fiscal fixture', async () => {
+        const wrapper = mount(DemoOrderPage);
+
+        await wrapper.get('#demo-request-invoice').setValue(true);
+        await wrapper.get('form').trigger('submit');
+        await wrapper.get('[data-testid="confirm-demo"]').trigger('click');
+        await flushPromises();
+        await vi.waitFor(() => {
+            expect(wrapper.find('article[aria-labelledby="demo-invoice-title"]').exists()).toBe(true);
+        });
+
+        const invoice = wrapper.get('article[aria-labelledby="demo-invoice-title"]');
+
+        expect(invoice.text()).toContain('DOCUMENTO DEMOSTRATIVO');
+        expect(invoice.text()).toContain('YARIS DEMOSTRACION ACADEMICA');
+        expect(invoice.text()).toContain('CLIENTE DEMOSTRACION ACADEMICA');
+        expect(invoice.text()).toContain('91101701');
+        expect(invoice.text()).toContain('$750.00');
+        expect(invoice.text()).toContain('$120.00');
+        expect(invoice.text()).toContain('$870.00 MXN');
+        expect(invoice.text()).toContain('NO ES UN CFDI TIMBRADO');
+        expect(invoice.text()).toContain('NO HA SIDO CERTIFICADO POR EL SAT NI POR UN PAC');
+        expect(invoice.find('button[aria-label="Imprimir factura demostrativa"]').exists()).toBe(false);
+        expect(invoice.find('a[href="/demo/factura-demostracion-sin-validez-fiscal.pdf"]').exists()).toBe(false);
+        expect(invoice.find('button.invoice-document__print-action').exists()).toBe(true);
     });
 
     it('keeps the privacy notice and acceptance state visible in review', async () => {
