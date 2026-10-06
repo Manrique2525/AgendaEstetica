@@ -205,13 +205,22 @@ private key, cadena original or SAT verification QR is produced or shipped.
 - `/tmp/spec024-d-print.pdf` (print regression)
 - `/tmp/spec024-d-qa/` (Playwright harnesses and screenshots)
 
+## Remote Quality
+
+Verified on the exact final branch SHA:
+
+- SHA `cee3deab73ac58827b7e6aa36958ba1798791beb` (branch `feat/spec-024-demo-cfdi-xml`).
+- GitHub Actions run `37410606338` (Quality, event `push`): conclusion `success`.
+- Jobs: `Frontend quality` success · `Backend quality` success.
+- Overall: SUCCESS.
+
 ## Checkpoint D status
 
 ```text
 Checkpoint D: IMPLEMENTED / READY FOR HUMAN APPROVAL
 Digital Signature: PENDING / FUTURE WORK
 Production: THROUGH CHECKPOINT C ONLY
-Remote Quality: PENDING VERIFICATION ON FINAL BRANCH SHA
+Remote Quality: PASSED ON FINAL BRANCH SHA (run 37410606338)
 ```
 
 STOP. Submit Checkpoint D for explicit human approval. Do not merge
