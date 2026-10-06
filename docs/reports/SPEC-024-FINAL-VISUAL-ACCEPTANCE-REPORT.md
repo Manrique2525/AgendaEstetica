@@ -19,7 +19,7 @@
 - `e94c32b` `fix: wrap demo invoice totals rows to avoid 320px overflow` (QA sesión previa)
 - `86ebe45` `fix: prevent invoice summary print splitting` (QA sesión previa)
 - `ff1d59b` `fix: finalize SPEC-024 invoice print layout` (**código de esta pasada final**)
-- `<docs>` `docs: record SPEC-024 final acceptance evidence` (este reporte, trackeado)
+- `2ba7453` `docs: record SPEC-024 final acceptance evidence` (este reporte, trackeado)
 
 ### HEAD verificado (local == remoto == head del PR)
 
@@ -152,6 +152,8 @@ Soporte: `/tmp/spec024-c-browser-qa/` (capturas 5 viewports + `print-media-layou
 | 37405987610 | push | Quality: **Backend quality success** · **Frontend quality success** | **success** (SHA `86ebe45`) |
 | 37408366023 | pull_request | Quality: **Backend quality success** · **Frontend quality success** | **success** (SHA `ff1d59b`, código final) |
 | 37408362206 | push | Quality: **Backend quality success** · **Frontend quality success** | **success** (SHA `ff1d59b`, código final) |
+| 37408535584 | pull_request | Quality: **Backend quality success** · **Frontend quality success** | **success** (SHA `2ba7453`, HEAD final) |
+| 37408532339 | push | Quality: **Backend quality success** · **Frontend quality success** | **success** (SHA `2ba7453`, HEAD final) |
 
 Sin despliegue (`deploy-production.yml` solo actúa ante push/merge a `main`).
 
@@ -286,8 +288,8 @@ Sin despliegue (`deploy-production.yml` solo actúa ante push/merge a `main`).
 102. `npm run lint` PASS · `npm run typecheck` PASS · `npm run build` PASS
 103. `git diff --check` limpio
 104. Remote Quality previo (SHA `86ebe45`): push `37405987610` (Backend/Frontend quality success) · pull_request `37405992561` success
-105. Remote Quality final (HEAD de la pasada): sección 10 / anexo (runs del nuevo SHA)
-106. Exact Quality SHA (código final): ver 105 (run del nuevo push)
+105. Remote Quality código final (SHA `ff1d59b`): push `37408362206` (Backend/Frontend quality success) · pull_request `37408366023` success
+106. Remote Quality HEAD final (SHA `2ba7453`): push `37408532339` (Backend/Frontend quality success) · pull_request `37408535584` success
 
 ### M. BOUNDARY / VERDICT
 107. Alcance respetado: **QA/FIX ONLY** — print CSS mínimo; sin merge PR #8, sin deploy, sin Checkpoint D, sin XML, sin firma digital
