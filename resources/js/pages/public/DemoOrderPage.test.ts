@@ -61,6 +61,31 @@ describe('DemoOrderPage', () => {
         expect(wrapper.find('[data-testid="confirm-demo"]').exists()).toBe(true);
     });
 
+    it('renders the complete invoice demonstration from the canonical fiscal fixture', async () => {
+        const wrapper = mount(DemoOrderPage);
+
+        await wrapper.get('#demo-request-invoice').setValue(true);
+        await wrapper.get('form').trigger('submit');
+        await wrapper.get('[data-testid="confirm-demo"]').trigger('click');
+        await flushPromises();
+        await nextTick();
+
+        const invoice = wrapper.get('article[aria-labelledby="demo-invoice-title"]');
+
+        expect(invoice.text()).toContain('DOCUMENTO DEMOSTRATIVO');
+        expect(invoice.text()).toContain('YARIS DEMOSTRACION ACADEMICA');
+        expect(invoice.text()).toContain('CLIENTE DEMOSTRACION ACADEMICA');
+        expect(invoice.text()).toContain('91101701');
+        expect(invoice.text()).toContain('$750.00');
+        expect(invoice.text()).toContain('$120.00');
+        expect(invoice.text()).toContain('$870.00 MXN');
+        expect(invoice.text()).toContain('NO ES UN CFDI TIMBRADO');
+        expect(invoice.text()).toContain('NO HA SIDO CERTIFICADO POR EL SAT NI POR UN PAC');
+        expect(invoice.find('button[aria-label="Imprimir factura demostrativa"]').exists()).toBe(false);
+        expect(invoice.find('a[href="/demo/factura-demostracion-sin-validez-fiscal.pdf"]').exists()).toBe(false);
+        expect(invoice.find('button.invoice-document__print-action').exists()).toBe(true);
+    });
+
     it('keeps the privacy notice and acceptance state visible in review', async () => {
         const wrapper = mount(DemoOrderPage);
 
