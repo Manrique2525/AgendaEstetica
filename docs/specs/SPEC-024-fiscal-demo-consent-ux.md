@@ -2,14 +2,14 @@
 
 ## Status
 
-`DEVELOPMENT IN PROGRESS / CHECKPOINT C IMPLEMENTED / READY FOR HUMAN APPROVAL`
+`DEVELOPMENT IN PROGRESS / CHECKPOINT C APPROVED AND PRODUCTION / CHECKPOINT D IMPLEMENTED / READY FOR HUMAN APPROVAL`
 
 Implementation is **not authorized** by this document. Production deployment,
 real fiscal integration and reopening SPEC-022 remain out of scope.
 
-Checkpoint A and B are approved and complete. Checkpoint C is implemented and
-ready for human approval. Checkpoint D and all XML/CFDI work remain
-unauthorized.
+Checkpoint A, B and C are approved, complete and in production. Checkpoint D
+(demonstrative CFDI 4.0 XML) is implemented on a dedicated feature branch and
+is ready for human approval.
 
 ## Purpose
 
@@ -335,8 +335,11 @@ responsive browser checks at 320x568, 390x844, 430x932, 768x1024 and 1440x900,
 and checks that no real fiscal data, keys or certificates are logged or shipped
 to the browser.
 
-No Checkpoint C implementation, XML, migration or deployment is authorized by
-this document.
+This document does not authorize production deployment on its own: Checkpoint C
+reached production through the approved SPEC-024 workflow, and the Checkpoint D
+demo XML is implemented on `feat/spec-024-demo-cfdi-xml` pending human approval.
+Real signing/timbrado, PAC integration, migration and any further deployment
+remain unauthorized.
 
 ## Checkpoint State
 
@@ -345,8 +348,8 @@ SPEC-024: DEVELOPMENT IN PROGRESS
 Checkpoint A: APPROVED / COMPLETE
 Checkpoint B: APPROVED / COMPLETE
 Fiscal demo contract: IMPLEMENTED
-Checkpoint C: IMPLEMENTED / READY FOR HUMAN APPROVAL
-CFDI/XML: NOT IMPLEMENTED
+Checkpoint C: APPROVED / COMPLETE / PRODUCTION
+CFDI/XML (demo serializer): IMPLEMENTED / READY FOR HUMAN APPROVAL
 Digital Signature: PENDING / FUTURE WORK
-Production: UNCHANGED
+Production: DEPLOYED THROUGH CHECKPOINT C ONLY
 ```

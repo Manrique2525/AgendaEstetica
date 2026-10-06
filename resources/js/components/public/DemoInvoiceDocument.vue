@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { calculateInvoiceTotals, type InvoiceDraft } from '../../data/fiscalDemo';
+import { demoCfdiXmlFilename, serializeDemoCfdiXml } from '../../data/cfdiDemoXml';
 
 const props = defineProps<{
     draft: InvoiceDraft;
@@ -16,6 +17,21 @@ function formatCents(cents: number): string {
 function printInvoice(): void {
     window.print();
 }
+
+function downloadDemoXml(): void {
+    const blob = new Blob([serializeDemoCfdiXml(props.draft)], { type: 'application/xml;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+
+    anchor.href = url;
+    anchor.download = demoCfdiXmlFilename;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(() => {
+        URL.revokeObjectURL(url);
+    }, 1000);
+}
 </script>
 
 <template>
@@ -26,7 +42,13 @@ function printInvoice(): void {
                 <h3 id="demo-invoice-title" class="mt-2 font-display text-3xl text-text-primary sm:text-4xl">Factura digital demostrativa</h3>
                 <p class="mt-2 font-ui text-xs font-bold uppercase tracking-[0.12em] text-brand-pink">{{ draft.disclaimers.validity }}</p>
             </div>
-            <button type="button" class="invoice-document__print-action inline-flex min-h-11 items-center justify-center rounded-md bg-action-primary px-4 py-2 font-ui text-sm font-bold text-action-primary-foreground hover:bg-action-primary-hover focus:outline-none focus:ring-2 focus:ring-focus-ring" @click="printInvoice">Imprimir / guardar PDF</button>
+            <div class="invoice-document__actions flex flex-col items-stretch gap-2 sm:items-end">
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" class="invoice-document__xml-action inline-flex min-h-11 items-center justify-center rounded-md bg-action-primary px-4 py-2 font-ui text-sm font-bold text-action-primary-foreground hover:bg-action-primary-hover focus:outline-none focus:ring-2 focus:ring-focus-ring" @click="downloadDemoXml">Descargar XML demostrativo</button>
+                    <button type="button" class="invoice-document__print-action inline-flex min-h-11 items-center justify-center rounded-md bg-action-primary px-4 py-2 font-ui text-sm font-bold text-action-primary-foreground hover:bg-action-primary-hover focus:outline-none focus:ring-2 focus:ring-focus-ring" @click="printInvoice">Imprimir / guardar PDF</button>
+                </div>
+                <p class="font-ui text-[10px] font-bold uppercase tracking-[0.08em] text-brand-pink">XML demostrativo · SIN VALIDEZ FISCAL</p>
+            </div>
         </div>
 
         <div class="mt-5 grid gap-5 text-sm sm:grid-cols-2">
@@ -155,7 +177,9 @@ function printInvoice(): void {
         right: 0 !important;
     }
 
-    .invoice-document__print-action {
+    .invoice-document__print-action,
+    .invoice-document__xml-action,
+    .invoice-document__actions {
         display: none !important;
     }
 
