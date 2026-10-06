@@ -103,10 +103,10 @@ function printInvoice(): void {
             <section aria-labelledby="demo-invoice-totals" class="rounded-lg border-2 border-brand-gold/50 bg-brand-gold/10 p-4 text-sm">
                 <h4 id="demo-invoice-totals" class="font-ui text-xs font-bold uppercase tracking-[0.12em] text-text-secondary">Totales</h4>
                 <dl class="mt-3 space-y-2">
-                    <div class="flex justify-between gap-4"><dt>Subtotal</dt><dd class="font-semibold">{{ formatCents(totals.subtotalCents) }}</dd></div>
-                    <div class="flex justify-between gap-4"><dt>Descuento</dt><dd class="font-semibold">{{ formatCents(totals.discountCents) }}</dd></div>
-                    <div class="flex justify-between gap-4"><dt>Impuestos trasladados</dt><dd class="font-semibold">{{ formatCents(totals.transferredTaxesCents) }}</dd></div>
-                    <div class="flex justify-between gap-4 border-t border-black/15 pt-2 text-lg"><dt class="font-bold">Total</dt><dd class="font-bold">{{ formatCents(totals.totalCents) }} MXN</dd></div>
+                    <div class="flex flex-wrap justify-between gap-x-4 gap-y-1"><dt>Subtotal</dt><dd class="font-semibold">{{ formatCents(totals.subtotalCents) }}</dd></div>
+                    <div class="flex flex-wrap justify-between gap-x-4 gap-y-1"><dt>Descuento</dt><dd class="font-semibold">{{ formatCents(totals.discountCents) }}</dd></div>
+                    <div class="flex flex-wrap justify-between gap-x-4 gap-y-1"><dt>Impuestos trasladados</dt><dd class="font-semibold">{{ formatCents(totals.transferredTaxesCents) }}</dd></div>
+                    <div class="flex flex-wrap justify-between gap-x-4 gap-y-1 border-t border-black/15 pt-2 text-lg"><dt class="font-bold">Total</dt><dd class="font-bold">{{ formatCents(totals.totalCents) }} MXN</dd></div>
                 </dl>
             </section>
         </div>
