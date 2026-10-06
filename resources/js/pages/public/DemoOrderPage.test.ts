@@ -1,6 +1,6 @@
 import { flushPromises, mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import DemoOrderPage from './DemoOrderPage.vue';
 
 describe('DemoOrderPage', () => {
@@ -68,7 +68,9 @@ describe('DemoOrderPage', () => {
         await wrapper.get('form').trigger('submit');
         await wrapper.get('[data-testid="confirm-demo"]').trigger('click');
         await flushPromises();
-        await nextTick();
+        await vi.waitFor(() => {
+            expect(wrapper.find('article[aria-labelledby="demo-invoice-title"]').exists()).toBe(true);
+        });
 
         const invoice = wrapper.get('article[aria-labelledby="demo-invoice-title"]');
 
