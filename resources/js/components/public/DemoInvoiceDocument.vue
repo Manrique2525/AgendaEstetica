@@ -90,7 +90,7 @@ function printInvoice(): void {
             </div>
         </section>
 
-        <div class="mt-5 grid gap-5 sm:grid-cols-2">
+        <div class="invoice-summary mt-5 grid gap-5 sm:grid-cols-2">
             <section aria-labelledby="demo-invoice-taxes" class="rounded-lg border border-black/10 bg-surface-muted p-4 text-sm">
                 <h4 id="demo-invoice-taxes" class="font-ui text-xs font-bold uppercase tracking-[0.12em] text-text-secondary">Impuestos</h4>
                 <dl class="mt-3 space-y-2">
@@ -111,7 +111,7 @@ function printInvoice(): void {
             </section>
         </div>
 
-        <aside class="mt-5 border-t-2 border-brand-pink/50 pt-4 text-sm font-semibold leading-relaxed text-text-primary" aria-label="Estado fiscal de demostración">
+        <aside class="invoice-disclaimers mt-5 border-t-2 border-brand-pink/50 pt-4 text-sm font-semibold leading-relaxed text-text-primary" aria-label="Estado fiscal de demostración">
             {{ draft.disclaimers.certification }}<br>
             {{ draft.disclaimers.pac }}<br>
             {{ draft.disclaimers.validity }}
@@ -144,6 +144,12 @@ function printInvoice(): void {
         box-shadow: none !important;
         color: #111827 !important;
         width: 100% !important;
+    }
+
+    .invoice-summary,
+    .invoice-disclaimers {
+        break-inside: avoid;
+        page-break-inside: avoid;
     }
 }
 </style>
