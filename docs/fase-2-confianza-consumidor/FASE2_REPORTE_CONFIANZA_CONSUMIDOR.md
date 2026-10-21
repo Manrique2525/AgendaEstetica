@@ -260,6 +260,16 @@ Además, límite **por teléfono** dentro de `CreatePublicBooking`: 3 por hora
 - **Fase 1:** usa estados `FUNCIONAL`, `DEMOSTRACIÓN`, `PENDIENTE`
   (`AcademicPhaseOnePage.vue`).
 
+**Nuevas secciones visibles de confianza (implementadas en esta iteración):**
+
+| Sección | Componente | Ubicación | Descripción |
+|---------|------------|-----------|-------------|
+| **Confianza y seguridad en cada reserva** | `TrustSection.vue` | `/` (página principal, tras Contacto) | 4 bloques: Transparencia en reservas, Acceso protegido, Tus datos protegidos, Transparencia y contacto. Explica el flujo de reserva, autenticación admin, protección de datos y contacto. |
+| **Aviso de Privacidad mejorado** | `TermsAndConditionsPage.vue` | `/terminos-condiciones` | Secciones 9.1–9.8: responsable, datos recabados, finalidades, base legal, conservación, destinatarios, derechos ARCO, cookies. Rotulado como **BORRADOR PROVISIONAL**. |
+| **Políticas de citas** | `TermsAndConditionsPage.vue` | `/terminos-condiciones` (sección 3) | Subsecciones: solicitud/confirmación, reprogramación, cancelación, disponibilidad y conflictos. |
+| **Advertencia de salida a Mary Kay** | `MaryKayExitWarning.vue` | `/` (sección Tienda) y `/terminos-condiciones` | Modal accesible con foco, teclado, lectura por AT. Botones "Continuar" / "Cancelar". No transmite datos personales. |
+| **Contraste y accesibilidad en formularios** | `theme.css`, `UiInput.vue`, `UiTextarea.vue` | Global | Placeholders con `--ui-text-muted` (55% negro), bordes `--ui-border-default` (20% negro), foco visible, `aria-invalid`, `aria-describedby`. |
+
 **Estado:** transparencia verificada como buena; la privacidad se declara
 explícitamente **provisional**.
 

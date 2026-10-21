@@ -16,10 +16,11 @@
     --ui-surface-elevated: var(--color-brand-white);
     --ui-surface-inverse: var(--color-brand-black);
     --ui-text-primary: var(--color-brand-black);
-    --ui-text-secondary: color-mix(in srgb, var(--color-brand-black) 68%, transparent);
+    --ui-text-secondary: color-mix(in srgb, var(--color-brand-black) 55%, transparent);
+    --ui-text-muted: color-mix(in srgb, var(--color-brand-black) 40%, transparent);
     --ui-text-inverse: var(--color-brand-white);
-    --ui-border-default: color-mix(in srgb, var(--color-brand-black) 16%, transparent);
-    --ui-border-strong: color-mix(in srgb, var(--color-brand-black) 32%, transparent);
+    --ui-border-default: color-mix(in srgb, var(--color-brand-black) 20%, transparent);
+    --ui-border-strong: color-mix(in srgb, var(--color-brand-black) 40%, transparent);
     --ui-action-primary: var(--color-brand-fuchsia);
     --ui-action-primary-foreground: var(--color-brand-white);
     --ui-action-primary-hover: color-mix(in srgb, var(--color-brand-fuchsia) 86%, var(--color-brand-black));

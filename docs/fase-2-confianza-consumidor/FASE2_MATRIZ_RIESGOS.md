@@ -7,9 +7,9 @@
 | Proyecto | AgendaEstetica — Salón y Barbería Yaris |
 | Fase | Fase 2 — Confianza del consumidor |
 | Documento padre | [`FASE2_REPORTE_CONFIANZA_CONSUMIDOR.md`](./FASE2_REPORTE_CONFIANZA_CONSUMIDOR.md) |
-| Commit inspeccionado | `34c274fdcf294e2386922f9856f42c9044e8176a` |
-| Fecha | 2026-10-20 |
-| Naturaleza | Auditoría documental. **No implementa cambios.** |
+| Commit inspeccionado | `f47de0d` |
+| Fecha | 2026-10-21 |
+| Naturaleza | **Registro de implementación y verificación.** Se documentan controles implementados y verificados. |
 
 ## 1. Metodología de puntuación
 
@@ -55,7 +55,7 @@
 ## 2. Matriz de riesgos
 
 | ID | Activo / proceso | Riesgo y escenario | Causa / debilidad | Evidencia comprobable | P | I | Nivel | Banda | Consecuencia para la confianza | Mitigación propuesta | Prioridad | Estado |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | R-001 | Datos de clientes (`customers`) | Exposición de PII si se compromete la base | Nombre/teléfono en texto plano, sin cifrado | `database/migrations/2026_09_08_100005_create_customers_table.php:13-15`; `app/Models/Customer.php` | 3 | 4 | 12 | Alta | Pérdida de privacidad y confianza; posible daño reputacional | Evaluar cifrado de campos o minimización (ADR) | Alta | Confirmado |
 | R-002 | Configuración de producción | Errores detallados expuestos por `APP_DEBUG=true` | `.env.example` trae `APP_DEBUG=true` (valor de desarrollo) | `.env.example:4` | 2 | 4 | 8 | Media | El usuario ve trazas internas; reduce confianza y seguridad | Forzar `APP_DEBUG=false` en producción y verificar | Alta | Pendiente de validar |
 | R-003 | Cookie de sesión admin | Cookie sin flag `Secure` viaja en claro si no hay HTTPS forzado | `SESSION_SECURE_COOKIE=false` en `.env.example`; `config/session.php:172` sin default forzado | `.env.example:32`; `config/session.php:172` | 2 | 4 | 8 | Media | Interceptación de sesión en redes inseguras | Forzar `SESSION_SECURE_COOKIE=true` y HTTPS | Alta | Pendiente de validar |
@@ -78,17 +78,22 @@
 | R-020 | Panel admin: negocio | Zona horaria inválida en perfil | `IanaTimezoneValidator` + validación Laravel `timezone` | `AdminBusinessProfileRequest.php:24`; `IanaTimezoneValidator.php` | 2 | 3 | 6 | Media | Disponibilidad calculada en zona horaria incorrecta | Validación en cliente y servidor | Media | Confirmado |
 | R-021 | Seeder demo | Ejecución accidental en producción | Guarda `APP_ENV=production` y `config('app.env')` | `BookingDemoSeeder.php:37-39` | 1 | 4 | 4 | Baja | Datos demo sobrescribiendo reales en prod | Guarda doble en seeder + condicional en DatabaseSeeder | Baja | Confirmado |
 | R-022 | Seeder demo | Datos demo presentados como reales | Prefijo `[DEMO]` en nombres; `(DEMO)` en perfil | `BookingDemoSeeder.php:17,80,117,125,131` | 1 | 2 | 2 | Baja | Confusión entre datos demo y reales | Prefijos explícitos; no se usa en producción | Baja | Confirmado |
-| R-023 | Dependencias | CVE-2026-108082 en symfony/http-foundation v7.4.18 | Versión afectada (fix en v7.4.19) | `composer show symfony/http-foundation`; `composer audit` | 3 | 3 | 9 | Media | ReDoS vía Cache-Control header | Actualizar a v7.4.19+ (validar compatibilidad Laravel 13) | Alta | Pendiente de validar |
+| R-023 | Dependencias | CVE-2026-108082 en symfony/http-foundation v7.4.18 | Versión afectada (fix en v7.4.19) | `composer show symfony/http-foundation`; `composer audit` | 3 | 3 | 9 | Media | ReDoS vía Cache-Control header | Actualizar a v7.4.19+ (validar compatibilidad Laravel 13) | Alta | **Mitigado** — actualizado a v7.4.21, `composer audit` limpio |
+| R-024 | Sección de confianza | Falta de explicación visible de cómo se construye la confianza | Ausencia de sección explicativa en página principal | `TrustSection.vue` implementado en `FoundationPage.vue` | 2 | 2 | 4 | Baja | Usuario no comprende controles de confianza | Sección `TrustSection.vue` con 4 bloques explicativos | Baja | **Mitigado** |
+| R-025 | Privacidad y políticas | Aviso de privacidad mínimo; sin políticas de citas claras | Ausencia de secciones detalladas en `/terminos-condiciones` | `TermsAndConditionsPage.vue` actualizado con secciones 9.1–9.8 y 3.1–3.4 | 2 | 3 | 6 | Media | Usuario desinformado sobre derechos y políticas | Secciones 9.1–9.8 (privacidad), 3.1–3.4 (citas), banner provisional | Media | **Mitigado** |
+| R-026 | Salida a Mary Kay | Enlace directo sin aviso de salida a sitio externo | Enlace directo `target="_blank"` sin confirmación | `MaryKayExitWarning.vue` modal en `FoundationPage.vue` y `TermsAndConditionsPage.vue` | 2 | 3 | 6 | Media | Usuario sale a sitio externo sin aviso de responsabilidad | Modal accesible con confirmación; no transmite datos | Media | **Mitigado** |
+| R-027 | Contraste y accesibilidad | Placeholders ilegibles, bordes tenues, foco visible deficiente | Colores de texto/borde con contraste límite WCAG AA | `theme.css` (nuevos tokens), `UiInput.vue`, `UiTextarea.vue` | 2 | 2 | 4 | Baja | Usuario con discapacidad visual no usa formularios | Tokens `--ui-text-muted` (55%), `--ui-border-default` (20%), foco visible | Baja | **Mitigado** |
 
 ## 3. Lectura de la matriz
 
-- **Riesgos de banda Alta:** R-001 (PII en claro), **R-023 (CVE-2026-108082)**.
+- **Riesgos de banda Alta:** R-001 (PII en claro).
 - **Riesgos de banda Media:** R-002, R-003, R-004, R-005, R-007, R-009, R-011,
-  R-013, R-015, **R-016, R-017, R-018, R-019, R-020, R-023**.
-- **Riesgos de banda Baja:** R-006, R-008, R-010, R-012, R-014, R-021, R-022.
+  R-013, R-015, R-016, R-017, R-018, R-019, R-020, R-023, R-025.
+- **Riesgos de banda Baja:** R-006, R-008, R-010, R-012, R-014, R-021, R-022, R-024, R-026, R-027.
 - **Ninguno alcanza banda Crítica.**
-- Los riesgos **pendientes de validar** (R-002, R-003, R-006, R-015, **R-023**) dependen de
+- Los riesgos **pendientes de validar** (R-002, R-003, R-006, R-015) dependen de
   la configuración real de producción, no comprobable desde el repositorio.
+- **R-023 (CVE-2026-108082):** **Mitigado** — actualizado a v7.4.21, `composer audit` limpio.
 
 ## 4. Relación con los hallazgos del informe
 
@@ -102,11 +107,15 @@
 | R-007 | H-12 (transparencia provisional) |
 | R-011, R-013 | H-13 |
 | R-003, R-006 | H-14 |
-| **R-016, R-017** | **Implementación: validación servicios / integridad citas** |
-| **R-018, R-019** | **Implementación: validación horarios / aviso impacto** |
-| **R-020** | **Implementación: validación zona horaria** |
-| **R-021, R-022** | **Implementación: seeder demo protegido / etiquetado** |
-| **R-023** | **CVE-2026-108082** |
+| R-016, R-017 | Implementación: validación servicios / integridad citas |
+| R-018, R-019 | Implementación: validación horarios / aviso impacto |
+| R-020 | Implementación: validación zona horaria |
+| R-021, R-022 | Implementación: seeder demo protegido / etiquetado |
+| R-023 | CVE-2026-108082 — Mitigado |
+| R-024 | Implementación: TrustSection |
+| R-025 | Implementación: Privacidad y políticas |
+| R-026 | Implementación: Mary Kay exit warning |
+| R-027 | Implementación: Contraste y accesibilidad |
 
 ## 5. Nota de honestidad
 

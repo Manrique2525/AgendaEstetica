@@ -9,7 +9,7 @@ describe('TermsAndConditionsPage', () => {
 
         expect(wrapper.get('h1').text()).toBe('Términos y Condiciones');
         expect(wrapper.findAll('h1')).toHaveLength(1);
-        expect(wrapper.text()).toContain('Documento provisional para fines académicos');
+        expect(wrapper.text()).toContain('BORRADOR PROVISIONAL — PENDIENTE DE VALIDACIÓN DEL RESPONSABLE DEL NEGOCIO');
         expect(wrapper.text()).toContain('Objeto de la plataforma');
         expect(wrapper.text()).toContain('Citas');
         expect(wrapper.text()).toContain('Mary Kay — sitio externo');
@@ -18,8 +18,11 @@ describe('TermsAndConditionsPage', () => {
         expect(wrapper.text()).toContain('SHA-256');
         expect(wrapper.text()).toContain('Aviso de Privacidad');
         expect(wrapper.text()).toContain('Contacto');
-        expect(wrapper.text()).not.toMatch(/RFC|régimen fiscal|ARCO|razón social/i);
-        expect(wrapper.find('a[href="https://www.marykay.com.mx/yaris"]').exists()).toBe(true);
+        expect(wrapper.text()).not.toMatch(/RFC|régimen fiscal|razón social/i);
+        // Mary Kay link is now a button that opens modal
+        const maryKayButtons = wrapper.findAll('button');
+        const maryKayButton = maryKayButtons.find(b => b.text().includes('Abrir tienda externa de Mary Kay'));
+        expect(maryKayButton).toBeDefined();
         expect(wrapper.findAll('a[href="/"]').some((link) => link.text() === 'Volver al inicio')).toBe(true);
     });
 });

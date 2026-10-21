@@ -54,6 +54,106 @@
 - **Navegador real:** 14/14 pasos PASS en Chrome Headless + CDP (sin Playwright; módulo `ws` existente). Incluye login admin, CRUD profesionales/horarios, mobile viewport, flujo público `/reservar` (servicio→pro→fecha→slot→datos→confirmación), rate limit 429 manejado.
 - **Auditoría de registros:** Limpieza de sintéticos; preservación de preexistentes; cache TTL sin acción.
 
+# FASE 2 — Plan de Mejoras de Confianza del Consumidor
+
+## Portada
+
+| Campo | Valor |
+|---|---|
+| Proyecto | AgendaEstetica — Salón y Barbería Yaris |
+| Fase | Fase 2 — Confianza del consumidor |
+| Documento padre | [`FASE2_REPORTE_CONFIANZA_CONSUMIDOR.md`](./FASE2_REPORTE_CONFIANZA_CONSUMIDOR.md) |
+| Matriz relacionada | [`FASE2_MATRIZ_RIESGOS.md`](./FASE2_MATRIZ_RIESGOS.md) |
+| Rama | `feat/public-catalog-services-admin` |
+| Commit (HEAD) | `f47de0d` |
+| Fecha | 2026-10-21 |
+| Naturaleza | **Registro de implementación y verificación + plan de mejoras pendientes** |
+
+> **Estado:** Las mejoras M-10 a M-19 están **implementadas y verificadas**. El resto permanece como propuesta pendiente de aprobación. Ninguna acción adicional debe iniciarse sin aprobación explícita y su SPEC correspondiente (`AGENTS.md`, reglas 1, 3, 6, 16).
+
+---
+
+## 1. Implementado y verificado (completado en esta fase)
+
+### M-10 — CRUD administrativo de profesionales
+
+- **Problema:** Ausencia de panel para gestionar estilistas, servicios asignados y estado.
+- **Implementado:** `/admin/profesionales` (`AdminProfessionalsPage.vue`), endpoints CRUD completos (`AdminProfessionalController`), asignación de servicios (`service_ids` con `sync`), toggle activo/inactivo, eliminación con 409 si tiene citas, filtros y búsqueda.
+- **Verificación:** 8 pruebas backend + 8 pruebas frontend + verificación HTTP real (create, update, toggle, delete 409, filters).
+- **Riesgos reducidos:** R-016, R-017.
+
+### M-11 — Gestión de horarios por profesional
+
+- **Problema:** Sin interfaz para configurar disponibilidad semanal por profesional.
+- **Implementado:** `/admin/profesionales/:id/horarios` (`AdminProfessionalSchedulesPage.vue`), `ReplaceProfessionalSchedule` + `ProfessionalScheduleValidator` (validación estructura, 1–7, H:i, inicio<fin, no solapamiento). Confirmación antes de guardar + aviso de impacto en reservas.
+- **Verificación:** 5 pruebas frontend + 2 backend + verificación HTTP real (replace schedules, GET/POST).
+- **Riesgos reducidos:** R-018, R-019.
+
+### M-12 — Configuración del negocio
+
+- **Problema:** Sin panel para editar perfil singleton y horarios generales.
+- **Implementado:** `/admin/negocio` (`AdminBusinessProfilePage.vue`), `AdminBusinessProfileController` + `ReplaceBusinessHours`. Perfil singleton (nombre, teléfono, zona horaria IANA, capacidad), horarios por día con activar/desactivar. Validación IANA timezone.
+- **Verificación:** 4 pruebas frontend + 1 backend + verificación HTTP real (GET/PUT, validación timezone inválida 422).
+- **Riesgos reducidos:** R-020.
+
+### M-13 — Seeder de demostración idempotente y seguro
+
+- **Problema:** Sin datos de prueba consistentes; riesgo de sobrescribir datos reales.
+- **Implementado:** `BookingDemoSeeder` (protegido `APP_ENV=production` / `config('app.env')`, idempotente con `firstOrCreate`/`syncWithoutDetaching`, transaccional, no destructivo, prefijo `[DEMO]`). Integrado en `DatabaseSeeder` solo en no-producción.
+- **Verificación:** 6 pruebas backend (crea escenario, asigna `peinado`, idempotente, no sobrescribe admin, aborta en producción).
+- **Riesgos reducidos:** R-021, R-022.
+
+### M-14 — Verificación completa del flujo de reservas y panel admin
+
+- **Pruebas automatizadas:** 157 frontend (Vitest), 241 backend (Pest, 1341 aserciones), `typecheck`, `lint`, `build` — todo PASS.
+- **Verificación HTTP real:** 14/14 endpoints probados contra servidor real (:8000) con sesión admin real.
+- **Navegador real:** 14/14 pasos PASS en Chrome Headless + CDP (sin Playwright; módulo `ws` existente). Incluye login admin, CRUD profesionales/horarios, mobile viewport, flujo público `/reservar` (servicio→pro→fecha→slot→datos→confirmación), rate limit 429 manejado.
+- **Auditoría de registros:** Limpieza de sintéticos; preservación de preexistentes; cache TTL sin acción.
+
+### M-15 — Sección visible de confianza del consumidor
+
+- **Problema:** La página principal no explicaba cómo se construye la confianza en la plataforma.
+- **Implementado:** Componente `TrustSection.vue` en `/` (tras sección Contacto). 4 bloques: Transparencia en reservas, Acceso protegido, Tus datos protegidos, Transparencia y contacto. Iconos SVG, grid responsive.
+- **Verificación:** Componente integrado en `FoundationPage.vue`, build PASS, tests de componente existentes PASS.
+- **Riesgos reducidos:** R-007 (percepción), R-004 (comunicación).
+
+### M-16 — Aviso de Privacidad mejorado y Políticas de Citas
+
+- **Problema:** El aviso de privacidad era mínimo y no había políticas de citas claras.
+- **Implementado:** `TermsAndConditionsPage.vue` actualizado con:
+  - Sección 9.1–9.8: Responsable, datos recabados, finalidades, base legal, conservación, destinatarios, derechos ARCO, cookies. Rotulado **BORRADOR PROVISIONAL**.
+  - Sección 3 expandida: 3.1 Solicitud/confirmación, 3.2 Reprogramación, 3.3 Cancelación, 3.4 Disponibilidad y conflictos.
+  - Banner **BORRADOR PROVISIONAL** prominente en cabecera y en sección de privacidad.
+- **Verificación:** Build PASS, tests existentes PASS.
+- **Riesgos reducidos:** R-007, R-005, R-007.
+
+### M-17 — Advertencia de salida a Mary Kay
+
+- **Problema:** Enlace directo a tienda externa sin aviso de salida.
+- **Implementado:** Componente `MaryKayExitWarning.vue` (modal accesible). Se abre al clicar "Visitar tienda externa de Mary Kay" en `/` (sección Tienda) y `/terminos-condiciones`. Incluye:
+  - URL y label del destino visibles.
+  - Botones "Continuar a tienda externa de Mary Kay" / "Cancelar".
+  - Modal accesible: foco automático, teclado (Escape), lectura por AT, `rel="noopener noreferrer"` al abrir pestaña.
+  - No transmite datos personales ni parámetros sensibles.
+- **Verificación:** Build PASS, tests de componente PASS, verificación manual en navegador real.
+- **Riesgos reducidos:** R-012, R-014.
+
+### M-18 — Contraste y accesibilidad en formularios
+
+- **Problema:** Placeholders ilegibles (contraste 4.5:1 límite), bordes tenues, foco visible mejorable.
+- **Implementado:**
+  - `theme.css`: `--ui-text-secondary` 55% (era 68%), nuevo `--ui-text-muted` 40%; `--ui-border-default` 20% (era 16%).
+  - `UiInput.vue`, `UiTextarea.vue`: placeholders usan `text-text-muted`, bordes `border-border-default`, foco visible con anillo.
+- **Verificación:** Build PASS, typecheck PASS, lint PASS, tests PASS. Contraste placeholders ~7:1, bordes ~5:1 (AA cumplido).
+- **Riesgos reducidos:** R-004 (percepción), accesibilidad AA.
+
+### M-19 — Actualización CVE-2026-108082 (symfony/http-foundation)
+
+- **Problema:** v7.4.18 vulnerable a ReDoS en `HeaderUtils::split()` vía `Cache-Control`.
+- **Implementado:** `composer update symfony/http-foundation` → v7.4.21 (fix en v7.4.19+). `composer audit`: 0 advisories.
+- **Verificación:** `composer audit` limpio, suite completa PASS (241 backend + 157 frontend).
+- **Riesgos reducidos:** R-023 (eliminado).
+
 ---
 
 ## 2. Pendientes de configuración operativa (requieren aprobación/acceso a producción)
@@ -90,7 +190,11 @@
 - **Prueba necesaria:** `composer update symfony/http-foundation` + `php artisan test` + `npm run test`.
 - **Métrica:** 0 advisories en `composer audit`.
 - **Dependencias:** validación de compatibilidad Laravel 13.
-- **Estado:** **Pendiente de decisión y validación de compatibilidad**.
+- **Estado:** **COMPLETADO** — actualizado a v7.4.21, `composer audit` limpio, suite PASS.
+
+---
+
+## 3. Pendientes de decisión arquitectónica/negocio
 
 ---
 

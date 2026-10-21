@@ -43,8 +43,9 @@ describe('FoundationPage', () => {
         expect(store.get('#tienda').text()).toContain('Cuidado capilar');
         expect(store.get('#tienda').text()).toContain('Catálogo en preparación');
         expect(store.get('#tienda').text()).not.toMatch(/Comprar|Agregar al carrito|Pagar|Stock|Precio/i);
-        expect(store.get('#tienda').findAll('a[href="https://www.marykay.com.mx/yaris"]')).toHaveLength(1);
-        expect(store.get('#tienda').find('a[href="https://www.marykay.com.mx/yaris"]').attributes()).toMatchObject({ target: '_blank', rel: 'noopener noreferrer' });
+        // Mary Kay link now opens a modal instead of direct navigation
+        const maryKayButton = store.findAll('button').find(b => b.text().includes('Visitar tienda externa de Mary Kay'));
+        expect(maryKayButton).toBeDefined();
         expect(store.get('#tienda').text()).toContain('tienda externa de Mary Kay');
     });
 
@@ -92,7 +93,9 @@ describe('FoundationPage', () => {
         expect(store.text()).toContain('Shampoo');
         expect(store.text()).toContain('Cuidado capilar');
         expect(store.text()).toContain('$180.00');
-        expect(store.find('a[href="https://www.marykay.com.mx/yaris"]').exists()).toBe(true);
+        // Mary Kay link is now a button that opens modal
+        const maryKayButton = store.findAll('button').find(b => b.text().includes('Visitar tienda externa de Mary Kay'));
+        expect(maryKayButton).toBeDefined();
     });
 
     it('renders the dynamic product catalog empty state honestly', async () => {

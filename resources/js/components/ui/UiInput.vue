@@ -28,7 +28,7 @@ const model = defineModel<string>({ default: '' });
         :disabled="props.disabled"
         :class="[
             'block min-h-11 w-full rounded-md border bg-surface-elevated px-3 py-2 font-body text-base text-text-primary',
-            'placeholder:text-text-secondary focus-visible:border-focus-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring',
+            'placeholder:text-text-muted focus-visible:border-focus-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring',
             'disabled:cursor-not-allowed disabled:bg-disabled-surface disabled:text-disabled-foreground',
             props.invalid ? 'border-state-error' : 'border-border-default',
         ]"

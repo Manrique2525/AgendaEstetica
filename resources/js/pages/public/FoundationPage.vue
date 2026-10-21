@@ -1,10 +1,26 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import PublicLayout from '../../layouts/PublicLayout.vue';
 import UiCard from '../../components/ui/UiCard.vue';
 import ServiceCatalog from '../../components/public/ServiceCatalog.vue';
 import ProductCatalog from '../../components/public/ProductCatalog.vue';
 import TermsConsentBanner from '../../components/public/TermsConsentBanner.vue';
+import TrustSection from '../../components/public/TrustSection.vue';
+import MaryKayExitWarning from '../../components/public/MaryKayExitWarning.vue';
 import { publicSite } from '../../data/publicSite';
+
+const maryKayModalOpen = ref(false);
+const MARY_KAY_URL = 'https://www.marykay.com.mx/yaris';
+const MARY_KAY_LABEL = 'tienda externa de Mary Kay';
+
+function openMaryKayModal(): void {
+    maryKayModalOpen.value = true;
+}
+
+function handleMaryKayConfirm(): void {
+    maryKayModalOpen.value = false;
+    window.open(MARY_KAY_URL, '_blank', 'noopener,noreferrer');
+}
 </script>
 
 <template>
@@ -31,10 +47,10 @@ import { publicSite } from '../../data/publicSite';
                     <UiCard v-for="category in publicSite.futureStoreCategories" :key="category" class="!border-white/15 !bg-white/5 !text-text-inverse !shadow-none">
                         <h3 class="font-display text-3xl">{{ category }}</h3>
                         <p class="mt-3 font-ui text-sm font-semibold uppercase tracking-[0.12em] text-brand-pink">Catálogo en preparación</p>
-                        <template v-if="category === 'Mary Kay'">
-                            <p class="mt-4 font-body text-sm leading-relaxed text-white/75">Consulta los productos disponibles en nuestra tienda externa de Mary Kay.</p>
-                            <a href="https://www.marykay.com.mx/yaris" target="_blank" rel="noopener noreferrer" class="mt-5 inline-flex min-h-11 items-center justify-center rounded-md border border-white/40 px-4 py-2 font-ui text-sm font-bold text-text-inverse hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 focus:ring-offset-brand-black">Visitar tienda externa de Mary Kay</a>
-                        </template>
+<template v-if="category === 'Mary Kay'">
+    <p class="mt-4 font-body text-sm leading-relaxed text-white/75">Consulta los productos disponibles en nuestra tienda externa de Mary Kay.</p>
+    <button type="button" class="mt-5 inline-flex min-h-11 items-center justify-center rounded-md border border-white/40 px-4 py-2 font-ui text-sm font-bold text-text-inverse hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-brand-black" @click="openMaryKayModal">Visitar tienda externa de Mary Kay</button>
+</template>
                     </UiCard>
                 </div>
             </section>
@@ -68,6 +84,8 @@ import { publicSite } from '../../data/publicSite';
                 </div>
             </section>
 
+            <TrustSection />
+
             <section id="academic-phase-1" class="scroll-mt-6 space-y-6" aria-labelledby="academic-title">
                 <div>
                     <p class="font-ui text-xs font-bold uppercase tracking-[0.18em] text-brand-turquoise">Presentación académica</p>
@@ -98,5 +116,6 @@ import { publicSite } from '../../data/publicSite';
             </section>
         </div>
         <TermsConsentBanner />
+        <MaryKayExitWarning :open="maryKayModalOpen" :destination-url="MARY_KAY_URL" :destination-label="MARY_KAY_LABEL" @close="maryKayModalOpen = false" @confirm="handleMaryKayConfirm" />
     </PublicLayout>
 </template>
