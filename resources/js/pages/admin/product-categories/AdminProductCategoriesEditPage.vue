@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import AdminLayout from '@/layouts/AdminLayout.vue'
 import UiButton from '@/components/ui/UiButton.vue'
@@ -16,6 +16,7 @@ const route = useRoute()
 const categoryId = computed(() => Number(route.params.id))
 
 const saving = ref(false)
+const loading = ref(false)
 const error = ref('')
 const message = ref('')
 
@@ -30,12 +31,17 @@ async function loadCategory(): Promise<void> {
     error.value = ''
 
     try {
-        const response = await adminCatalogApi.productCategories.show(categoryId.value)
-        const category = response.data ?? response
-
-        form.name = category.name
-        form.description = category.description ?? ''
-        form.active = category.active
+        const response = await adminCatalogApi.productCategories.list()
+        const categories = Array.isArray(response) ? response : (response.data ?? response)
+        const category = categories.find(c => c.id === categoryId.value)
+        
+        if (category) {
+            form.name = category.name
+            form.description = category.description ?? ''
+            form.active = category.active
+        } else {
+            error.value = 'Categoría no encontrada.'
+        }
     } catch {
         error.value = 'No pudimos cargar la categoría.'
     } finally {
@@ -66,9 +72,6 @@ async function save(): Promise<void> {
         message.value = 'Categoría actualizada.'
         await router.push({ name: 'admin.catalog.product-categories' })
     } catch (exception: any) {
-        if (exception instanceof ApiError && exception.errors) {
-            // Handle validation errors
-        }
         error.value = exception instanceof ApiError ? exception.message : 'No pudimos actualizar la categoría.'
     } finally {
         saving.value = false

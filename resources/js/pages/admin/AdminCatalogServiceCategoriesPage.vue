@@ -30,7 +30,8 @@ async function load(): Promise<void> {
     loading.value = true;
     error.value = '';
     try {
-        categories.value = await adminCatalogApi.serviceCategories.list();
+        const response = await adminCatalogApi.serviceCategories.list();
+        categories.value = response.data;
     } catch {
         error.value = 'No pudimos cargar las categorías.';
     } finally {

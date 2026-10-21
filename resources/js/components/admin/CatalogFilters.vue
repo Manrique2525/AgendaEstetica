@@ -1,39 +1,39 @@
 <script setup lang="ts">
-import UiInput from '../ui/UiInput.vue';
-import { defineEmits, defineProps } from 'vue';
+import { ref, watch } from 'vue'
+import UiInput from '../ui/UiInput.vue'
 
 interface Props {
-    search?: string;
-    filters?: Record<string, string | number | boolean>;
+    search?: string
+    filters?: Record<string, string | number | boolean>
 }
 
 interface Emits {
-    search: [value: string];
-    filter: [filters: Record<string, string | number | boolean>];
-    clear: [];
+    search: [value: string]
+    filter: [filters: Record<string, string | number | boolean>]
+    clear: []
 }
 
-const props = defineProps<Props>();
-const emit = defineEmits<Emits>();
+const props = defineProps<Props>()
+const emit = defineEmits<Emits>()
 
-const search = ref(props.search ?? '');
+const search = ref(props.search ?? '')
 
 function updateSearch(value: string): void {
-    search.value = value;
+    search.value = value
 }
 
 function handleSearch(): void {
-    emit('search', search.value);
+    emit('search', search.value)
 }
 
 function handleClear(): void {
-    search.value = '';
-    emit('clear');
+    search.value = ''
+    emit('clear')
 }
 
-watch(() => props.search, (value) => {
-    search.value = value ?? '';
-});
+watch(() => props.search, (value: string | undefined) => {
+    search.value = value ?? ''
+})
 </script>
 
 <template>
@@ -43,7 +43,7 @@ watch(() => props.search, (value) => {
             <UiInput
                 id="catalog-search"
                 v-model="search"
-                type="search"
+                type="text"
                 placeholder="Buscar..."
                 @input="updateSearch"
                 @keydown.enter="handleSearch"

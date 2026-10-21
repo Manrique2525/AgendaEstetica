@@ -45,8 +45,8 @@ async function load(): Promise<void> {
             adminCatalogApi.products.list(),
             adminCatalogApi.productCategories.list(),
         ]);
-        products.value = productList;
-        categories.value = categoryList;
+        products.value = productList.data;
+        categories.value = categoryList.data;
     } catch {
         error.value = 'No pudimos cargar los productos.';
     } finally {

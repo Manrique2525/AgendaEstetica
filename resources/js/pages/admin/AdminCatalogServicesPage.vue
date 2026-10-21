@@ -49,9 +49,9 @@ async function load(): Promise<void> {
             adminCatalogApi.services.list(),
             adminCatalogApi.serviceCategories.list(),
         ]);
-        services.value = serviceList;
-        categories.value = categoryList;
-        if (!form.service_category_id) form.service_category_id = categoryList[0]?.id ?? 0;
+        services.value = serviceList.data;
+        categories.value = categoryList.data;
+        if (!form.service_category_id) form.service_category_id = categoryList.data[0]?.id ?? 0;
     } catch {
         error.value = 'No pudimos cargar los servicios.';
     } finally {

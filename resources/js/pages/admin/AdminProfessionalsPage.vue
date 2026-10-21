@@ -56,7 +56,8 @@ async function load(): Promise<void> {
         if (filters.active !== '') params.active = filters.active === 'true';
         if (filters.service_id !== '') params.service_id = Number(filters.service_id);
 
-        professionals.value = await adminOperationsApi.professionals.list(params);
+        const response = await adminOperationsApi.professionals.list(params);
+        professionals.value = response.data;
     } catch {
         error.value = 'No pudimos cargar los profesionales.';
     } finally {
@@ -66,7 +67,8 @@ async function load(): Promise<void> {
 
 async function loadServices(): Promise<void> {
     try {
-        services.value = (await adminCatalogApi.services.list()).filter((service) => service.active);
+        const response = await adminCatalogApi.services.list();
+        services.value = response.data.filter((service) => service.active);
     } catch {
         // The catalog is optional for managing professionals; keep the page usable.
     }

@@ -9,6 +9,7 @@ interface Column {
     sortable?: boolean;
     render?: (row: Record<string, unknown>) => string | number | null;
     class?: string;
+    width?: string;
 }
 
 interface Props {
@@ -91,7 +92,7 @@ function getCellValue(row: Record<string, unknown>, column: Column): string {
                 </tr>
             </thead>
             <tbody class="divide-y divide-border-default">
-                <tr v-for="row in rows" :key="row[rowKey]" class="hover:bg-surface-subtle transition-colors">
+                <tr v-for="row in rows" :key="row[props.rowKey] as string" class="hover:bg-surface-subtle transition-colors">
                     <td v-for="column in columns" :key="column.key" :class="['px-4 py-3 font-body text-sm text-text-primary', column.class]">
                         {{ getCellValue(row, column) }}
                     </td>

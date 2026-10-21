@@ -16,14 +16,12 @@ interface ProductRow {
     category: string
     price: string
     active: boolean
-    stock: number | null
 }
 
 const columns = [
     { key: 'name', label: 'Nombre', render: (row: any) => row.name },
     { key: 'category', label: 'Categoría', render: (row: any) => row.category },
     { key: 'price', label: 'Precio', render: (row: any) => `$${row.price}` },
-    { key: 'stock', label: 'Stock', render: (row: any) => row.stock !== null ? row.stock : '—' },
     { key: 'active', label: 'Estado', render: (row: any) => row.active ? 'Activo' : 'Inactivo' },
 ]
 
@@ -50,8 +48,6 @@ const pendingDelete = ref<any | null>(null)
 const deleting = ref(false)
 const router = useRouter()
 
-const categories = ref<any[]>([])
-
 async function load(): Promise<void> {
     loading.value = true
     error.value = ''
@@ -71,23 +67,17 @@ async function load(): Promise<void> {
             adminCatalogApi.productCategories.list({ active: true }),
         ])
 
-        // Handle both paginated response and direct array response
-        const productsData = Array.isArray(productsResponse) ? productsResponse : (productsResponse.data ?? productsResponse)
-        const categoriesData = Array.isArray(categoriesResponse) ? categoriesResponse : (categoriesResponse.data ?? categoriesResponse)
+        // The API returns arrays directly
+        const productsData = Array.isArray(productsResponse) ? productsResponse : []
+        const categoriesData = Array.isArray(categoriesResponse) ? categoriesResponse : []
 
         products.value = productsData
         categories.value = categoriesData
 
-        // Handle pagination from response
-        if (productsResponse.current_page !== undefined) {
-            pagination.currentPage = productsResponse.current_page ?? 1
-            pagination.lastPage = productsResponse.last_page ?? 1
-            pagination.total = productsResponse.total ?? 0
-        } else {
-            pagination.currentPage = 1
-            pagination.lastPage = 1
-            pagination.total = productsData.length
-        }
+        // For pagination, we'll use the full data length since the API returns all items
+        pagination.currentPage = 1
+        pagination.lastPage = 1
+        pagination.total = productsData.length
     } catch {
         error.value = 'No pudimos cargar los productos.'
     } finally {
@@ -156,35 +146,36 @@ onMounted(load)
                     <option value="">Todas las categorías</option>
                     <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
                 </select>
-        </template>
-    </CatalogFilters>
+            </template>
+        </CatalogFilters>
 
-    <CatalogTable
-        :columns="columns"
-        :rows="products"
-        :loading="loading"
-        :emptyMessage="'Sin productos registrados.'"
-        rowKey="id"
-        @edit="editProduct"
-        @toggle="toggle"
-        @delete="confirmDelete"
-    />
+        <CatalogTable
+            :columns="columns"
+            :rows="products"
+            :loading="loading"
+            :emptyMessage="'Sin productos registrados.'"
+            rowKey="id"
+            @edit="editProduct"
+            @toggle="toggle"
+            @delete="confirmDelete"
+        />
 
-    <CatalogPagination
-        v-model:currentPage="pagination.currentPage"
-        :lastPage="pagination.lastPage"
-        :perPage="pagination.perPage"
-        :total="pagination.total"
-        @update:currentPage="handlePageChange"
-    />
+        <CatalogPagination
+            v-model:currentPage="pagination.currentPage"
+            :lastPage="pagination.lastPage"
+            :perPage="pagination.perPage"
+            :total="pagination.total"
+            @update:currentPage="handlePageChange"
+        />
 
-    <UiConfirmDialog
-        :open="pendingDelete !== null"
-        title="Eliminar producto"
-        :message="`¿Confirmas eliminar ${pendingDelete?.name ?? ''}? Esta acción no se puede deshacer.`"
-        confirm-label="Eliminar"
-        :pending="deleting"
-        @cancel="pendingDelete = null"
-        @confirm="confirmDelete"
-    />
+        <UiConfirmDialog
+            :open="pendingDelete !== null"
+            title="Eliminar producto"
+            :message="`¿Confirmas eliminar ${pendingDelete?.name ?? ''}? Esta acción no se puede deshacer.`"
+            confirm-label="Eliminar"
+            :pending="deleting"
+            @cancel="pendingDelete = null"
+            @confirm="confirmDelete"
+        />
+    </AdminLayout>
 </template>

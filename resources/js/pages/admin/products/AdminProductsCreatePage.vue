@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import AdminLayout from '@/layouts/AdminLayout.vue'
 import UiButton from '@/components/ui/UiButton.vue'
@@ -24,14 +24,14 @@ const form = reactive({
     name: '',
     description: '',
     price: '',
-    stock: '' as string,
+    stock: '',
     active: true,
 })
 
 async function loadCategories(): Promise<void> {
     try {
         const response = await adminCatalogApi.productCategories.list({ active: true })
-        categories.value = response.data ?? response
+        categories.value = Array.isArray(response) ? response : (response.data ?? response)
     } catch {
         // Keep empty categories on error
     }
@@ -58,7 +58,7 @@ async function save(): Promise<void> {
         product_category_id: form.product_category_id,
         name: form.name.trim(),
         description: form.description || null,
-        price: form.price,
+        price: String(form.price),
         stock: form.stock === '' ? null : Number(form.stock),
         active: form.active,
     }
@@ -68,9 +68,6 @@ async function save(): Promise<void> {
         message.value = 'Producto creado.'
         await router.push({ name: 'admin.catalog.products' })
     } catch (exception: any) {
-        if (exception instanceof ApiError && exception.errors) {
-            // Handle validation errors
-        }
         error.value = exception instanceof ApiError ? exception.message : 'No pudimos crear el producto.'
     } finally {
         saving.value = false

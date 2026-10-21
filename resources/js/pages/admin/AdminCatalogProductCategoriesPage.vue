@@ -29,7 +29,8 @@ async function load(): Promise<void> {
     loading.value = true;
     error.value = '';
     try {
-        categories.value = await adminCatalogApi.productCategories.list();
+        const response = await adminCatalogApi.productCategories.list();
+        categories.value = response.data;
     } catch {
         error.value = 'No pudimos cargar las categorías de productos.';
     } finally {

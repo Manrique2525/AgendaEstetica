@@ -7,7 +7,7 @@ import UiCard from '@/components/ui/UiCard.vue';
 import UiFormField from '@/components/ui/UiFormField.vue';
 import UiInput from '@/components/ui/UiInput.vue';
 import UiTextarea from '@/components/ui/UiTextarea.vue';
-import { ApiError } from '../../../services/http';
+import { ApiError } from '@/services/http';
 import { adminCatalogApi, type AdminServiceCategory } from '@/services/api/adminCatalog';
 
 const router = useRouter();
@@ -18,6 +18,7 @@ const loading = ref(false);
 const saving = ref(false);
 const error = ref('');
 const message = ref('');
+const serverErrors = reactive<Record<string, string>>({});
 
 const isVariable = computed(() => form.pricing_type === 'variable');
 
@@ -34,13 +35,17 @@ const form = reactive({
 async function loadCategories(): Promise<void> {
     try {
         const response = await adminCatalogApi.serviceCategories.list({ active: true });
-        categories.value = response.data ?? response;
+        categories.value = response.data;
         if (!form.service_category_id && categories.value.length > 0) {
             form.service_category_id = categories.value[0].id;
         }
     } catch {
         // Keep empty categories on error
     }
+}
+
+function clearServerErrors(): void {
+    Object.keys(serverErrors).forEach((key) => delete serverErrors[key]);
 }
 
 async function save(): Promise<void> {
@@ -54,6 +59,7 @@ async function save(): Promise<void> {
     saving.value = true;
     error.value = '';
     message.value = '';
+    clearServerErrors();
 
     const payload = {
         service_category_id: form.service_category_id,
@@ -61,7 +67,7 @@ async function save(): Promise<void> {
         description: form.description || null,
         duration_minutes: Number(form.duration_minutes),
         pricing_type: form.pricing_type,
-        price: form.pricing_type === 'variable' ? null : form.price,
+        price: form.pricing_type === 'variable' ? null : String(form.price),
         active: form.active,
     };
 
@@ -71,7 +77,9 @@ async function save(): Promise<void> {
         await router.push({ name: 'admin.catalog.services' });
     } catch (exception: any) {
         if (exception instanceof ApiError && exception.errors) {
-            // Handle validation errors
+            Object.entries(exception.errors).forEach(([key, messages]) => {
+                serverErrors[key] = messages[0] ?? 'Revisa este campo.';
+            });
         }
         error.value = exception instanceof ApiError ? exception.message : 'No pudimos crear el servicio.';
     } finally {
@@ -113,7 +121,7 @@ onMounted(loadCategories);
                     </template>
                 </UiFormField>
 
-                <UiFormField label="Nombre" required :error="errors?.name">
+                <UiFormField label="Nombre" required :error="serverErrors.name">
                     <template #default="{ inputId, describedBy, invalid }">
                         <UiInput
                             :id="inputId"

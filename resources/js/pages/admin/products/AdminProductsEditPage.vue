@@ -7,7 +7,7 @@ import UiCard from '@/components/ui/UiCard.vue'
 import UiFormField from '@/components/ui/UiFormField.vue'
 import UiInput from '@/components/ui/UiInput.vue'
 import UiTextarea from '@/components/ui/UiTextarea.vue'
-import { ApiError } from '../../../services/http'
+import { ApiError } from '@/services/http'
 import { adminCatalogApi, type AdminProductCategory } from '@/services/api/adminCatalog'
 
 const router = useRouter()
@@ -35,19 +35,27 @@ async function loadProduct(): Promise<void> {
     error.value = ''
 
     try {
-        const [productResponse, categoriesResponse] = await Promise.all([
-            adminCatalogApi.products.show(productId.value),
+        const [productsResponse, categoriesResponse] = await Promise.all([
+            adminCatalogApi.products.list({ active: true }),
             adminCatalogApi.productCategories.list({ active: true }),
         ])
 
-        const product = productResponse.data ?? productResponse
-        form.product_category_id = product.category?.id ?? null
-        form.name = product.name
-        form.description = product.description ?? ''
-        form.price = product.price
-        form.stock = product.stock !== null ? String(product.stock) : ''
-        form.active = product.active
-        categories.value = categoriesResponse.data ?? categoriesResponse
+        const products = productsResponse.data
+        const categoriesData = categoriesResponse.data
+
+        categories.value = categoriesData
+
+        const product = products.find(p => p.id === productId.value)
+        if (product) {
+            form.product_category_id = product.category?.id ?? null
+            form.name = product.name
+            form.description = product.description ?? ''
+            form.price = product.price
+            form.stock = ''
+            form.active = product.active
+        } else {
+            error.value = 'Producto no encontrado.'
+        }
     } catch {
         error.value = 'No pudimos cargar el producto.'
     } finally {
@@ -76,7 +84,7 @@ async function save(): Promise<void> {
         product_category_id: form.product_category_id,
         name: form.name.trim(),
         description: form.description || null,
-        price: form.price,
+        price: String(form.price),
         stock: form.stock === '' ? null : Number(form.stock),
         active: form.active,
     }
@@ -86,10 +94,7 @@ async function save(): Promise<void> {
         message.value = 'Producto actualizado.'
         await router.push({ name: 'admin.catalog.products' })
     } catch (exception: any) {
-        if (exception instanceof ApiError && exception.errors) {
-            // Handle validation errors
-        }
-        error.value = exception instanceof ApiError ? exception.message : 'No pudimos actualizar el producto.'
+        error.value = exception instanceof Error ? exception.message : 'No pudimos actualizar el producto.'
     } finally {
         saving.value = false
     }
@@ -114,16 +119,16 @@ onMounted(loadProduct)
             <p v-if="error" role="alert" class="mb-6 rounded-md border border-state-error bg-red-50 p-3 font-body text-sm text-state-error">{{ error }}</p>
 
             <form class="space-y-6" @submit.prevent="save">
-                <UiFormField label="Categoría (opcional)">
+                <UiFormField label="Categoría" required>
                     <template #default="{ inputId, describedBy, invalid }">
                         <select
                             :id="inputId"
-                            v-model="form.product_category_id"
+                            v-model.number="form.product_category_id"
                             :aria-describedby="describedBy"
                             :aria-invalid="invalid"
+                            required
                             class="mt-1 block min-h-11 w-full rounded-md border border-border-default px-3 py-2 font-body text-base"
                         >
-                            <option :value="null">Sin categoría</option>
                             <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
                         </select>
                     </template>
@@ -182,17 +187,6 @@ onMounted(loadProduct)
                         </template>
                     </UiFormField>
                 </div>
-
-                <UiFormField label="Descripción (opcional)">
-                    <template #default="{ inputId, describedBy, invalid }">
-                        <UiTextarea
-                            :id="inputId"
-                            v-model="form.description"
-                            :aria-describedby="describedBy"
-                            :invalid="invalid"
-                        />
-                    </template>
-                </UiFormField>
 
                 <label class="flex items-center gap-2 font-ui text-sm font-semibold">
                     <input v-model="form.active" type="checkbox" class="rounded border-border-default text-action-primary focus:ring-2 focus:ring-focus-ring">

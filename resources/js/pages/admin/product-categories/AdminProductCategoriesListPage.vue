@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
 import AdminLayout from '@/layouts/AdminLayout.vue'
-import CatalogPageHeader from '../../../../components/admin/CatalogPageHeader.vue'
-import CatalogTable from '../CatalogTable.vue'
+import CatalogPageHeader from '@/components/admin/CatalogPageHeader.vue'
+import CatalogTable from '@/components/admin/CatalogTable.vue'
 import CatalogFilters from '@/components/admin/CatalogFilters.vue'
 import CatalogPagination from '@/components/admin/CatalogPagination.vue'
 import CatalogEmptyState from '@/components/admin/CatalogEmptyState.vue'
-import UiConfirmDialog from '../../../components/ui/UiConfirmDialog.vue'
+import UiConfirmDialog from '@/components/ui/UiConfirmDialog.vue'
 import { adminCatalogApi, type AdminProductCategory } from '@/services/api/adminCatalog'
+import { useRouter } from 'vue-router'
 
 interface CategoryRow {
     id: number
     name: string
+    slug: string | null
     description: string | null
     active: boolean
     products_count: number
@@ -19,6 +21,7 @@ interface CategoryRow {
 
 const columns = [
     { key: 'name', label: 'Nombre', render: (row: any) => row.name },
+    { key: 'slug', label: 'Slug', render: (row: any) => row.slug ?? '—' },
     { key: 'active', label: 'Estado', render: (row: any) => row.active ? 'Activa' : 'Inactiva' },
     { key: 'products_count', label: 'Productos', render: (row: any) => `${row.products_count ?? 0}` },
 ]
@@ -40,6 +43,10 @@ const filters = reactive({
     active: '' as '' | 'true' | 'false',
 })
 
+const pendingDelete = ref<any | null>(null)
+const deleting = ref(false)
+const router = useRouter()
+
 async function load(): Promise<void> {
     loading.value = true
     error.value = ''
@@ -54,10 +61,16 @@ async function load(): Promise<void> {
         if (filters.active !== '') params.active = filters.active === 'true'
 
         const response = await adminCatalogApi.productCategories.list(params)
-        categories.value = response.data ?? response
-        pagination.currentPage = response.current_page ?? 1
-        pagination.lastPage = response.last_page ?? 1
-        pagination.total = response.total ?? 0
+        
+        // The API returns arrays directly
+        const categoriesData = Array.isArray(response) ? response : (response.data ?? response)
+        
+        categories.value = categoriesData
+        
+        // For pagination, we'll use the full data length since the API returns all items
+        pagination.currentPage = 1
+        pagination.lastPage = 1
+        pagination.total = categoriesData.length
     } catch {
         error.value = 'No pudimos cargar las categorías.'
     } finally {
@@ -98,6 +111,10 @@ async function handlePageChange(page: number): Promise<void> {
     await load()
 }
 
+function editCategory(category: any): void {
+    window.location.href = `/admin/catalogo/servicios/categorias/${category.id}/editar`
+}
+
 onMounted(load)
 </script>
 
@@ -107,7 +124,7 @@ onMounted(load)
             title="Categorías de productos"
             description="Agrupan los productos del catálogo."
             :count="pagination.total"
-            createRoute="/admin/catalogo/productos/categorias/nueva"
+            createRoute="/admin/catalogo/servicios/categorias/nueva"
             createLabel="Nueva categoría"
         />
 
@@ -121,32 +138,32 @@ onMounted(load)
             </template>
         </CatalogFilters>
 
-    <CatalogTable
-        :columns="columns"
-        :rows="categories"
-        :loading="loading"
-        :emptyMessage="'Sin categorías registradas.'"
-        rowKey="id"
-        @edit="editCategory"
-        @toggle="toggle"
-        @delete="confirmDelete"
-    />
+        <CatalogTable
+            :columns="columns"
+            :rows="categories"
+            :loading="loading"
+            :emptyMessage="'Sin categorías registradas.'"
+            rowKey="id"
+            @edit="editCategory"
+            @toggle="toggle"
+            @delete="confirmDelete"
+        />
 
-    <CatalogPagination
-        v-model:currentPage="pagination.currentPage"
-        :lastPage="pagination.lastPage"
-        :perPage="pagination.perPage"
-        :total="pagination.total"
-        @update:currentPage="handlePageChange"
-    />
+        <CatalogPagination
+            v-model:currentPage="pagination.currentPage"
+            :lastPage="pagination.lastPage"
+            :perPage="pagination.perPage"
+            :total="pagination.total"
+            @update:currentPage="handlePageChange"
+        />
 
-    <UiConfirmDialog
-        :open="pendingDelete !== null"
-        title="Eliminar categoría"
-        :message="`¿Confirmas eliminar ${pendingDelete?.name ?? ''}? Esta acción no se puede deshacer.`"
-        confirm-label="Eliminar"
-        :pending="deleting"
-        @cancel="pendingDelete = null"
-        @confirm="confirmDelete"
-    />
+        <UiConfirmDialog
+            :open="pendingDelete !== null"
+            title="Eliminar categoría"
+            :message="`¿Confirmas eliminar ${pendingDelete?.name ?? ''}? Esta acción no se puede deshacer.`"
+            confirm-label="Eliminar"
+            :pending="deleting"
+            @cancel="pendingDelete = null"
+            @confirm="confirmDelete"
+        />
 </template>
