@@ -5,7 +5,7 @@ import { publicSite } from '../../data/publicSite';
 </script>
 
 <template>
-    <section id="confianza" class="scroll-mt-6 py-6 md:py-10" aria-labelledby="trust-title">
+    <section id="confianza" class="scroll-mt-6 py-6 md:py-10 bg-surface-page" aria-labelledby="trust-title">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <header class="text-center max-w-3xl mx-auto mb-10 md:mb-14">
                 <p class="font-ui text-xs font-bold uppercase tracking-[0.18em] text-brand-turquoise">Confianza y seguridad</p>
