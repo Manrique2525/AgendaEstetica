@@ -24,6 +24,8 @@ final class PublicBookingServiceResource extends JsonResource
         return [
             'id' => $service->id,
             'name' => $service->name,
+            'slug' => $service->slug,
+            'description' => $service->description,
             'duration_minutes' => $service->duration_minutes,
             'pricing_type' => $pricingType,
             'price' => $service->price,
@@ -36,6 +38,7 @@ final class PublicBookingServiceResource extends JsonResource
             'category' => $category === null ? null : [
                 'id' => $category->id,
                 'name' => $category->name,
+                'slug' => $category->slug,
             ],
         ];
     }

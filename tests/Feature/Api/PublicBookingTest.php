@@ -73,8 +73,12 @@ it('returns only active Services with minimal category and pricing projections',
         'pricing_type' => 'fixed',
         'price' => '350.00',
         'pricing_display' => '$350.00',
-        'category' => ['id' => $fixture['category']->id, 'name' => 'Cuidado'],
-    ])->not->toHaveKeys(['created_at', 'updated_at', 'active', 'description', 'phone']);
+        'category' => [
+            'id' => $fixture['category']->id,
+            'name' => 'Cuidado',
+            'slug' => $fixture['category']->slug,
+        ],
+    ])->not->toHaveKeys(['created_at', 'updated_at', 'active', 'phone']);
 
     expect(collect($data)->pluck('name')->all())
         ->toBe(['Color desde', 'Corte fijo', 'Diseño variable']);

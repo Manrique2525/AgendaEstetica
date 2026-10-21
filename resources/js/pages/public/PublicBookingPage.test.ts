@@ -66,6 +66,16 @@ describe('PublicBookingPage', () => {
         expect(wrapper.text()).not.toMatch(/Customer|Appointment ID|cancelar|reprogramar|lookup/i);
     });
 
+    it('preselects a service from the query string and advances to professionals', async () => {
+        window.history.replaceState({}, '', '/reservar?service=2');
+        const wrapper = mount(PublicBookingPage);
+        await flushPromises();
+
+        expect(wrapper.text()).toContain('2. Elige a tu profesional');
+        expect(api.listProfessionals).toHaveBeenCalledWith(2);
+        window.history.replaceState({}, '', '/reservar');
+    });
+
     it('renders every authoritative pricing label without adding a payment action', async () => {
         const wrapper = mount(PublicBookingPage);
         await flushPromises();
@@ -232,5 +242,52 @@ describe('PublicBookingPage', () => {
 
         expect(wrapper.text()).toContain('11:00');
         expect(wrapper.text()).not.toContain('10:00');
+    });
+
+    it('still renders the services when the booking context request fails', async () => {
+        api.getContext.mockRejectedValue(new ApiError(404, 'No query results for model [App\\Models\\BusinessProfile].'));
+        const wrapper = mount(PublicBookingPage);
+        await flushPromises();
+
+        expect(wrapper.text()).toContain('Corte');
+        expect(wrapper.text()).toContain('Color');
+        expect(wrapper.text()).toContain('Consulta');
+        expect(wrapper.text()).not.toContain('No pudimos cargar las opciones de reserva.');
+        expect(wrapper.text()).not.toContain('No hay servicios disponibles por ahora.');
+    });
+
+    it('does not show the empty message together with a load error', async () => {
+        api.listServices.mockRejectedValue(new ApiError(500, 'Server error.'));
+        const wrapper = mount(PublicBookingPage);
+        await flushPromises();
+
+        expect(wrapper.text()).toContain('No pudimos cargar las opciones de reserva.');
+        expect(wrapper.text()).not.toContain('No hay servicios disponibles por ahora.');
+    });
+
+    it('shows the empty message only for a valid response with no services', async () => {
+        api.listServices.mockResolvedValue([]);
+        const wrapper = mount(PublicBookingPage);
+        await flushPromises();
+
+        expect(wrapper.text()).toContain('No hay servicios disponibles por ahora.');
+        expect(wrapper.text()).not.toContain('No pudimos cargar las opciones de reserva.');
+    });
+
+    it('retries the services request and renders them after a failure', async () => {
+        api.listServices
+            .mockRejectedValueOnce(new ApiError(500, 'Server error.'))
+            .mockResolvedValueOnce(services);
+        const wrapper = mount(PublicBookingPage);
+        await flushPromises();
+
+        expect(wrapper.text()).toContain('No pudimos cargar las opciones de reserva.');
+
+        await wrapper.findAll('button').find((button) => button.text() === 'Reintentar')!.trigger('click');
+        await flushPromises();
+
+        expect(api.listServices).toHaveBeenCalledTimes(2);
+        expect(wrapper.text()).toContain('Corte');
+        expect(wrapper.text()).not.toContain('No pudimos cargar las opciones de reserva.');
     });
 });

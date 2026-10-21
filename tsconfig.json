@@ -12,7 +12,18 @@
         "lib": ["ES2020", "DOM", "DOM.Iterable"],
         "skipLibCheck": true,
         "noEmit": true,
-        "types": ["vite/client"]
+        "types": ["vite/client"],
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["resources/js/*"],
+            "@/components/*": ["resources/js/components/*"],
+            "@/layouts/*": ["resources/js/layouts/*"],
+            "@/pages/*": ["resources/js/pages/*"],
+            "@/services/*": ["resources/js/services/*"],
+            "@/data/*": ["resources/js/data/*"],
+            "@/components/ui/*": ["resources/js/components/ui/*"],
+            "@/components/admin/*": ["resources/js/components/admin/*"]
+        }
     },
     "include": [
         "resources/js/**/*.ts",

@@ -4,11 +4,13 @@ export interface PublicBookingContext { timezone: string }
 export interface PublicBookingService {
     id: number;
     name: string;
+    slug: string | null;
+    description: string | null;
     duration_minutes: number;
     pricing_type: 'fixed' | 'starting_from' | 'variable';
     price: string | null;
     pricing_display: string;
-    category: { id: number; name: string } | null;
+    category: { id: number; name: string; slug: string | null } | null;
 }
 export interface PublicBookingProfessional { id: number; name: string }
 export interface PublicBookingSlot {

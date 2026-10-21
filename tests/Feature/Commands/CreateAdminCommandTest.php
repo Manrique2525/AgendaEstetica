@@ -15,6 +15,7 @@ it('creates an administrator with normalized email and hashed password', functio
     $user = User::query()->where('email', 'admin-command@example.invalid')->firstOrFail();
 
     expect($user->name)->toBe('Foundation Command Admin')
+        ->and($user->is_admin)->toBeTrue()
         ->and(Hash::check('a-strong-local-password', $user->password))->toBeTrue();
 });
 
