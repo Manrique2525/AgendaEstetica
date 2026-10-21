@@ -62,4 +62,18 @@ describe('DemoInvoiceDocument', () => {
             vi.useRealTimers();
         }
     });
+
+    it('labels the download as an incomplete demo that is not XSD-valid', () => {
+        const wrapper = mount(DemoInvoiceDocument, { props: { draft: getDemoInvoiceDraft() } });
+        const notice = wrapper.get('.invoice-document__actions p').text();
+
+        expect(wrapper.get('button.invoice-document__xml-action').text()).toContain('Descargar XML demostrativo');
+        expect(notice).toContain('XML demostrativo e incompleto');
+        expect(notice).toContain('SIN VALIDEZ FISCAL');
+        expect(notice).toContain('No válido contra el XSD de CFDI 4.0');
+        expect(notice).toContain('No es un CFDI válido ni timbrado');
+        expect(notice).toContain('No apto para PAC ni uso fiscal');
+        expect(wrapper.text()).not.toMatch(/descargar cfdi/i);
+        expect(wrapper.text()).not.toMatch(/validación exitosa|validado contra el xsd|cumple el xsd|listo para timbrar|lista para timbrar/i);
+    });
 });

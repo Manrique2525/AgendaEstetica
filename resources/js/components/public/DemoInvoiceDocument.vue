@@ -47,7 +47,11 @@ function downloadDemoXml(): void {
                     <button type="button" class="invoice-document__xml-action inline-flex min-h-11 items-center justify-center rounded-md bg-action-primary px-4 py-2 font-ui text-sm font-bold text-action-primary-foreground hover:bg-action-primary-hover focus:outline-none focus:ring-2 focus:ring-focus-ring" @click="downloadDemoXml">Descargar XML demostrativo</button>
                     <button type="button" class="invoice-document__print-action inline-flex min-h-11 items-center justify-center rounded-md bg-action-primary px-4 py-2 font-ui text-sm font-bold text-action-primary-foreground hover:bg-action-primary-hover focus:outline-none focus:ring-2 focus:ring-focus-ring" @click="printInvoice">Imprimir / guardar PDF</button>
                 </div>
-                <p class="font-ui text-[10px] font-bold uppercase tracking-[0.08em] text-brand-pink">XML demostrativo · SIN VALIDEZ FISCAL</p>
+                <p class="font-ui text-[10px] font-bold uppercase tracking-[0.08em] text-brand-pink">
+                    XML demostrativo e incompleto · SIN VALIDEZ FISCAL<br>
+                    No válido contra el XSD de CFDI 4.0<br>
+                    No es un CFDI válido ni timbrado · No apto para PAC ni uso fiscal
+                </p>
             </div>
         </div>
 

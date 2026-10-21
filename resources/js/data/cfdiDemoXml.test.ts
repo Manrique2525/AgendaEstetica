@@ -140,6 +140,36 @@ describe('serializeDemoCfdiXml', () => {
         }
     });
 
+    it('never emits signing or certificate attributes on any element', () => {
+        const doc = parseXml(serializeDemoCfdiXml(getDemoInvoiceDraft()));
+        const forbiddenAttributes = [
+            'Sello',
+            'Certificado',
+            'NoCertificado',
+            'NoCertificadoSAT',
+            'SelloSAT',
+            'SelloCFD',
+            'UUID',
+        ];
+        const usedAttributes: string[] = [];
+
+        for (const element of Array.from(doc.getElementsByTagName('*'))) {
+            for (const index of Array.from({ length: element.attributes.length }, (_, position) => position)) {
+                usedAttributes.push(element.attributes[index].name);
+            }
+        }
+
+        expect(usedAttributes.filter((name) => forbiddenAttributes.includes(name))).toEqual([]);
+    });
+
+    it('self-declares that the file is incomplete and not XSD-valid', () => {
+        const xml = serializeDemoCfdiXml(getDemoInvoiceDraft());
+
+        expect(xml).toContain('ARCHIVO INCOMPLETO: OMITE Sello, NoCertificado y Certificado.');
+        expect(xml).toContain('NO ES VALIDO CONTRA EL XSD DE CFDI 4.0; LA REFERENCIA AL XSD NO IMPLICA VALIDACION.');
+        expect(xml).not.toMatch(/validacion exitosa|validado contra el xsd|cumple el xsd|listo para timbrar/i);
+    });
+
     it('derives totals and taxes from the draft contract instead of hardcoded literals', () => {
         const draft = getDemoInvoiceDraft();
         draft.concepts.push({

@@ -11,6 +11,8 @@ const demoComment = [
     'SIN VALIDEZ FISCAL.',
     'NO ES UN CFDI TIMBRADO.',
     'NO HA SIDO CERTIFICADO POR EL SAT NI POR UN PAC.',
+    'ARCHIVO INCOMPLETO: OMITE Sello, NoCertificado y Certificado.',
+    'NO ES VALIDO CONTRA EL XSD DE CFDI 4.0; LA REFERENCIA AL XSD NO IMPLICA VALIDACION.',
 ].join('\n');
 
 interface Taxable {

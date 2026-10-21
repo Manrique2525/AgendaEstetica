@@ -8,7 +8,7 @@ Checkpoint A: APPROVED / COMPLETE / PRODUCTION
 Checkpoint B: APPROVED / COMPLETE / PRODUCTION
 Checkpoint C: APPROVED / COMPLETE / PRODUCTION
 Checkpoint D: IMPLEMENTED / READY FOR HUMAN APPROVAL
-CFDI/XML: DEMO SERIALIZER IMPLEMENTED / NOT VALID / NOT TIMBRADO
+CFDI/XML: DEMO SERIALIZER IMPLEMENTED / WELL-FORMED / NOT XSD-VALID / NOT TIMBRADO
 Digital Signature: PENDING / FUTURE WORK
 Production: DEPLOYED THROUGH CHECKPOINT C ONLY
 ```
@@ -27,7 +27,7 @@ validity, timbrado, PAC certification or any signing material.
 
 ## Official SAT References (recheck, Section 19)
 
-Re-retrieved `2026-10-05` (same official sources as the approved Discovery):
+Re-retrieved `2026-10-20` (same official sources as the approved Discovery):
 
 - `https://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd` — HTTP 200, 50 607 bytes,
   sha256 `2489b5b5…`, target namespace `http://www.sat.gob.mx/cfd/4`.
@@ -94,6 +94,8 @@ DOCUMENTO DEMOSTRATIVO.
 SIN VALIDEZ FISCAL.
 NO ES UN CFDI TIMBRADO.
 NO HA SIDO CERTIFICADO POR EL SAT NI POR UN PAC.
+ARCHIVO INCOMPLETO: OMITE Sello, NoCertificado y Certificado.
+NO ES VALIDO CONTRA EL XSD DE CFDI 4.0; LA REFERENCIA AL XSD NO IMPLICA VALIDACION.
 -->
 ```
 
@@ -122,24 +124,86 @@ NO HA SIDO CERTIFICADO POR EL SAT NI POR UN PAC.
 
 ## XML QA (local WebKit/parser + browser)
 
-- Downloaded file `/tmp/spec024-d-downloaded.xml`: 1 466 bytes, declaration
+- Downloaded file `/tmp/spec024-d-downloaded.xml`: 1 612 bytes, declaration
   present, namespace and schemaLocation present, all canonical tokens present,
-  forbidden tokens absent.
-- Well-formedness (Python `xml.etree.ElementTree` on the transient artifact
-  `/tmp/spec024-d-cfdi-demo.xml`): parse OK; root
+  forbidden tokens absent, self-declared incomplete/not-XSD-valid comment present.
+- Well-formedness (`xmllint --noout` exit 0 and Python `xml.etree.ElementTree`
+  on the transient artifact `/tmp/spec024-d-cfdi-demo.xml`): parse OK; root
   `{http://www.sat.gob.mx/cfd/4}Comprobante`; no `<!DOCTYPE`.
 - Browser download (Playwright headless Chrome): suggested filename
   `cfdi-demo-sin-validez-fiscal.xml`; download initiates without navigation
   (URL unchanged after click); Blob type `application/xml;charset=utf-8`;
   object URL revoked ~1 s after download; 0 console errors, 0 Vue warnings.
 
+## XSD validation audit (real run)
+
+The generated XML was validated against the official `cfdv40.xsd` (retrieved
+`2026-10-20`, 50 607 bytes, sha256 `2489b5b5…`, imports
+`catCFDI.xsd` / `tdCFDI.xsd` from their official URLs) with the local system
+`xmllint` (libxml2). No dependency was added for this.
+
+```text
+$ xmllint --noout /tmp/spec024-d-cfdi-demo.xml
+(well-formed: exit 0)
+
+$ xmllint --noout --schema cfdv40.xsd /tmp/spec024-d-cfdi-demo.xml
+...: element Comprobante: Schemas validity error : Element '{http://www.sat.gob.mx/cfd/4}Comprobante': The attribute 'Sello' is required but missing.
+...: element Comprobante: Schemas validity error : Element '{http://www.sat.gob.mx/cfd/4}Comprobante': The attribute 'NoCertificado' is required but missing.
+...: element Comprobante: Schemas validity error : Element '{http://www.sat.gob.mx/cfd/4}Comprobante': The attribute 'Certificado' is required but missing.
+/tmp/spec024-d-cfdi-demo.xml fails to validate
+exit code 3
+```
+
+Interpretation, explicitly separated (these are NOT equivalent):
+
+1. **XML well-formed: YES** — `xmllint --noout` exit 0; browser `DOMParser`
+   parse OK; no `DOCTYPE`, no external entities.
+2. **Name/structure correspondence with CFDI 4.0: ILLUSTRATIVE / PARTIAL** —
+   the schema run reports ONLY the three omitted signing/certificate attributes
+   as schema errors; every element, child order and attribute actually emitted
+   is accepted by the XSD. This is an illustrative structure, not a conforming
+   document: required content is missing by design.
+3. **SAT XSD schema compliance: NO — VALIDATION FAILED** (3 concrete errors
+   above; no successful validation is claimed anywhere).
+4. **Additional fiscal rules compatibility: NOT EVALUATED / NOT CLAIMED** — no
+   cross-field fiscal rule engine is run; catalog values are the hand-selected
+   Discovery values, not machine-validated business rules.
+5. **SAT fiscal validity and timbrado: NO** — no signing material, no PAC, no
+   `TimbreFiscalDigital`.
+
+Deliberately omitted required attributes: `Sello`, `NoCertificado`,
+`Certificado` (and everything that depends on them: no UUID, no
+`TimbreFiscalDigital`, no SAT/emisor seals, no PAC responses). No fictitious
+value was invented to make the XSD pass, and none may be added later for that
+purpose.
+
+`xsi:schemaLocation` decision: **kept**. SPEC-024 requires the official
+namespace and XSD reference (AC-12), and a reference alone does not assert
+conformance. To prevent that interpretation, the limitation is stated in the
+file comment itself and in the visible download notice (below). The official
+namespace is unchanged.
+
 ## UI / download action
 
-- The final invoice header now shows `Descargar XML demostrativo`
-  (class `invoice-document__xml-action`) next to `Imprimir / guardar PDF`, with a
-  nearby disclosure `XML demostrativo · SIN VALIDEZ FISCAL`.
+- The final invoice header shows `Descargar XML demostrativo`
+  (class `invoice-document__xml-action`) next to `Imprimir / guardar PDF`.
 - The action is layered (not the default action) and never presents itself as a
   real CFDI download label.
+- Final visible notice below the buttons (verbatim, verified in the browser
+  DOM at 1440 px and all responsive widths):
+
+```text
+XML demostrativo e incompleto · SIN VALIDEZ FISCAL
+No válido contra el XSD de CFDI 4.0
+No es un CFDI válido ni timbrado · No apto para PAC ni uso fiscal
+```
+
+- The notice and the invoice's own disclaimers (`DOCUMENTO DEMOSTRATIVO`,
+  `SIN VALIDEZ FISCAL`, `NO ES UN CFDI TIMBRADO`, `NO HA SIDO CERTIFICADO POR
+  EL SAT NI POR UN PAC`) keep the print/PDF wording coherent.
+- No positive validation claim exists anywhere: assertions exclude phrases such
+  as "validación exitosa", "validado contra el XSD", "cumple el XSD" and
+  "listo para timbrar".
 - No backend persistence or API; the serializer runs in the browser.
 
 ## Print regression
@@ -163,40 +227,76 @@ XML button, print button, disclosure text or the invoice title.
 
 ## Tests
 
-- `resources/js/data/cfdiDemoXml.test.ts` (9 tests): declaration/comment/root,
+- `resources/js/data/cfdiDemoXml.test.ts` (11 tests): declaration/comment/root,
   well-formedness + namespaces, no DOCTYPE/entities, canonical parity
   (`750.00`/`120.00`/`870.00`/`DEM010101AA0`/`DEMO010101AAA`/`91101701`/`E48`/
   `0.160000`), escaping round-trip (`&<>"'`), determinism, derived totals from
-  the draft contract, absence of invented signing/timbrado artifacts and
-  approved filename.
-- `resources/js/components/public/DemoInvoiceDocument.test.ts`: download action
-  test (Blob type, anchor click, URL revocation) plus the pre-existing print/no
-  artifact assertions.
-- Frontend suite: 27 files / 114 tests PASS.
+  the draft contract, absence of invented signing/timbrado artifacts, absence of
+  signing/certificate attributes on ANY element (structural attribute audit),
+  self-declared incompleteness + "not XSD-valid" comment (and no positive
+  validation claim), and approved filename.
+- `resources/js/components/public/DemoInvoiceDocument.test.ts` (3 tests):
+  download action (Blob type, anchor click, URL revocation), print/no anchor
+  artifact assertions, and the honesty test for the notice (demo/incomplete,
+  not valid against XSD, not a valid/timbrado CFDI, not for PAC/fiscal use;
+  button not labelled as a CFDI download; no positive validation claim).
+- Frontend suite: 27 files / 117 tests PASS.
 - Backend suite: `php artisan test` 208 tests / 1202 assertions PASS.
+- Real XSD validation: `xmllint --schema cfdv40.xsd` executed as an audit step
+  (documented above); it is deliberately NOT a passing test and no test claims
+  it passes.
 
 ## Quality gates
 
-- `composer validate --strict` PASS · `composer audit` 0 advisories.
+Passing:
+
+- `composer validate --strict` PASS.
 - `vendor/bin/pint --test` PASS · `phpstan analyse` 0 errors.
-- `npm run typecheck` PASS · `npm run lint` PASS · `npm run build` PASS ·
-  `npm audit` 0 vulnerabilities.
+- `php artisan test` PASS 208 tests / 1202 assertions.
+- `npm run typecheck` PASS · `npm run lint` PASS · `npm run build` PASS.
+- `npm run test` PASS 27 files / 117 tests (three consecutive clean runs).
 - `git diff --check` clean.
+
+Not passing (upstream advisories in untouched dependencies — NOT fixed here):
+
+- `composer audit`: 1 advisory — `symfony/http-foundation` v7.4.18 affected by
+  `CVE-2026-108082` (ReDoS in `HeaderUtils::split()`; fixed in >=7.4.19).
+  `composer.lock` is untouched by this change; the fix requires a targeted
+  dependency update, which is outside this audit's authorized scope.
+- `npm audit`: 3 advisories (2 critical, 1 high) in dev tooling —
+  `shell-quote@1.9.0` via `concurrently@9.2.4`, and `vite@8.2.2`
+  (`launch-editor` advisories). `package.json` / `package-lock.json` are
+  untouched by this change; the fix requires `npm audit fix`, which is
+  explicitly not authorized in this pass.
+
+Both advisories are pre-existing conditions surfaced by freshly updated upstream
+advisory databases, not regressions of this correction. They are reported here
+and left for an explicitly authorized dependency-update chore.
+
+Transient event recorded honestly: one frontend run and one backend run failed
+once during heavy local load (vitest jsdom environment timeout; concurrency test
+"workers did not become ready in time"). Three consecutive frontend runs and a
+backend re-run passed cleanly afterwards; no code change was needed.
 
 ## XML validity boundary (truthfulness)
 
 ```text
-XML well-formed: YES
-CFDI 4.0 structural mapping: YES
-SAT XSD validation without real signing material: NOT CLAIMED
-SAT fiscal validity: NO
-Timbrado: NO
-PAC certification: NO
+1. XML well-formed: YES
+2. Name/structure correspondence with CFDI 4.0: ILLUSTRATIVE / PARTIAL
+   (only the omitted required attributes are schema errors; not a conforming document)
+3. SAT XSD schema validation (real xmllint run, 2026-10-20): FAILED
+   (Sello required but missing; NoCertificado required but missing;
+   Certificado required but missing — exit code 3)
+4. Additional fiscal rules compatibility: NOT EVALUATED / NOT CLAIMED
+5. SAT fiscal validity: NO
+   Timbrado: NO
+   PAC certification: NO
 Digital Signature: PENDING / FUTURE WORK
 ```
 
 No invented `TimbreFiscalDigital`, UUID, fake seals, fake certificate, CSD
 private key, cadena original or SAT verification QR is produced or shipped.
+No fictitious attribute was added to make the XSD pass.
 
 ## Transient QA artifacts (not committed)
 
