@@ -19,10 +19,23 @@ final class AuthenticateAdminAction
             ]);
         }
 
-        $request->session()->regenerate();
-
         /** @var User $user */
         $user = $request->user('web');
+
+        if (! $user->is_admin) {
+            Auth::guard('web')->logout();
+
+            if ($request->hasSession()) {
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+            }
+
+            throw ValidationException::withMessages([
+                'email' => ['Las credenciales proporcionadas no son correctas.'],
+            ]);
+        }
+
+        $request->session()->regenerate();
 
         return $user;
     }

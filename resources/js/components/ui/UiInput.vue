@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { InputHTMLAttributes } from 'vue';
 
-type SupportedInputType = Extract<InputHTMLAttributes['type'], 'text' | 'email' | 'password' | 'date' | 'time' | 'tel'>;
+type SupportedInputType = Extract<InputHTMLAttributes['type'], 'text' | 'email' | 'password' | 'date' | 'time' | 'tel' | 'number'>;
 
 interface Props {
     type?: SupportedInputType;

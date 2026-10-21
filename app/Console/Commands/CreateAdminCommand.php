@@ -54,6 +54,7 @@ class CreateAdminCommand extends Command
             'name' => $name,
             'email' => $email,
             'password' => Hash::make($password),
+            'is_admin' => true,
         ]);
 
         $this->info('Administrator created successfully.');

@@ -300,7 +300,7 @@ it('returns a bounded in-progress conflict when the same idempotency lock is hel
 
 it('makes a public confirmed booking visible through the existing Admin Agenda read', function (): void {
     $fixture = publicBookingAppointmentFixture();
-    $admin = User::factory()->create();
+    $admin = User::factory()->admin()->create();
 
     postPublicBooking(publicBookingPayload($fixture), '12121212-1212-4121-8121-121212121212')
         ->assertCreated();

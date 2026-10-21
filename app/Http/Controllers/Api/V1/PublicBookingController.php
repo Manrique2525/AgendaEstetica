@@ -31,13 +31,13 @@ final class PublicBookingController
     public function services(Request $request): AnonymousResourceCollection
     {
         return PublicBookingServiceResource::collection(Service::query()
-            ->with('category:id,name')
+            ->with('category:id,name,slug')
             ->where('active', true)
             ->whereHas('category', fn ($query) => $query->where('active', true))
             ->orderBy('service_category_id')
             ->orderBy('name')
             ->orderBy('id')
-            ->get(['id', 'service_category_id', 'name', 'duration_minutes', 'pricing_type', 'price']));
+            ->get(['id', 'service_category_id', 'name', 'slug', 'description', 'duration_minutes', 'pricing_type', 'price']));
     }
 
     public function professionals(PublicBookingProfessionalIndexRequest $request): AnonymousResourceCollection

@@ -3,6 +3,13 @@ import AdminLoginPage from '../pages/admin/AdminLoginPage.vue';
 import AdminPage from '../pages/admin/AdminPage.vue';
 import AdminAgendaPage from '../pages/admin/AdminAgendaPage.vue';
 import AdminAgendaDetailPage from '../pages/admin/AdminAgendaDetailPage.vue';
+import AdminCatalogServicesPage from '../pages/admin/AdminCatalogServicesPage.vue';
+import AdminCatalogServiceCategoriesPage from '../pages/admin/AdminCatalogServiceCategoriesPage.vue';
+import AdminCatalogProductsPage from '../pages/admin/AdminCatalogProductsPage.vue';
+import AdminCatalogProductCategoriesPage from '../pages/admin/AdminCatalogProductCategoriesPage.vue';
+import AdminBusinessProfilePage from '../pages/admin/AdminBusinessProfilePage.vue';
+import AdminProfessionalsPage from '../pages/admin/AdminProfessionalsPage.vue';
+import AdminProfessionalSchedulesPage from '../pages/admin/AdminProfessionalSchedulesPage.vue';
 import NotFoundPage from '../pages/NotFoundPage.vue';
 import FoundationPage from '../pages/public/FoundationPage.vue';
 import PublicBookingPage from '../pages/public/PublicBookingPage.vue';
@@ -70,6 +77,48 @@ const router = createRouter({
             component: AdminAgendaDetailPage,
             name: 'admin.agenda.detail',
             meta: { requiresAuth: true },
+        },
+        {
+            path: '/admin/catalogo/servicios',
+            component: AdminCatalogServicesPage,
+            name: 'admin.catalog.services',
+            meta: { requiresAuth: true, title: 'Servicios | Administración' },
+        },
+        {
+            path: '/admin/catalogo/categorias',
+            component: AdminCatalogServiceCategoriesPage,
+            name: 'admin.catalog.service-categories',
+            meta: { requiresAuth: true, title: 'Categorías de servicios | Administración' },
+        },
+        {
+            path: '/admin/catalogo/productos',
+            component: AdminCatalogProductsPage,
+            name: 'admin.catalog.products',
+            meta: { requiresAuth: true, title: 'Productos | Administración' },
+        },
+        {
+            path: '/admin/catalogo/categorias-producto',
+            component: AdminCatalogProductCategoriesPage,
+            name: 'admin.catalog.product-categories',
+            meta: { requiresAuth: true, title: 'Categorías de productos | Administración' },
+        },
+        {
+            path: '/admin/negocio',
+            component: AdminBusinessProfilePage,
+            name: 'admin.business-profile',
+            meta: { requiresAuth: true, title: 'Configuración del negocio | Administración' },
+        },
+        {
+            path: '/admin/profesionales',
+            component: AdminProfessionalsPage,
+            name: 'admin.professionals',
+            meta: { requiresAuth: true, title: 'Profesionales | Administración' },
+        },
+        {
+            path: '/admin/profesionales/:id/horarios',
+            component: AdminProfessionalSchedulesPage,
+            name: 'admin.professionals.schedules',
+            meta: { requiresAuth: true, title: 'Horarios del profesional | Administración' },
         },
         {
             path: '/admin/login',

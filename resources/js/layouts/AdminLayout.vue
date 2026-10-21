@@ -17,6 +17,24 @@ import { RouterLink } from 'vue-router';
                 <RouterLink class="rounded-md px-3 py-2 text-text-secondary hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring" to="/admin/agenda">
                     Agenda
                 </RouterLink>
+                <RouterLink class="rounded-md px-3 py-2 text-text-secondary hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring" to="/admin/negocio">
+                    Negocio
+                </RouterLink>
+                <RouterLink class="rounded-md px-3 py-2 text-text-secondary hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring" to="/admin/profesionales">
+                    Profesionales
+                </RouterLink>
+                <RouterLink class="rounded-md px-3 py-2 text-text-secondary hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring" to="/admin/catalogo/servicios">
+                    Servicios
+                </RouterLink>
+                <RouterLink class="rounded-md px-3 py-2 text-text-secondary hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring" to="/admin/catalogo/categorias">
+                    Categorías
+                </RouterLink>
+                <RouterLink class="rounded-md px-3 py-2 text-text-secondary hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring" to="/admin/catalogo/productos">
+                    Productos
+                </RouterLink>
+                <RouterLink class="rounded-md px-3 py-2 text-text-secondary hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring" to="/admin/catalogo/categorias-producto">
+                    Categorías de productos
+                </RouterLink>
             </nav>
             <slot />
         </UiContainer>

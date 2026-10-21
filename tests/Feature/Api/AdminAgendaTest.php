@@ -29,7 +29,7 @@ function adminAgendaFixture(string $timezone = 'UTC'): array
         'service' => $service,
         'professional' => $professional,
         'customer' => Customer::factory()->create(),
-        'admin' => User::factory()->create(),
+        'admin' => User::factory()->admin()->create(),
     ];
 }
 

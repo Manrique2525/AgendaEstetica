@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import PublicLayout from '../../layouts/PublicLayout.vue';
 import UiCard from '../../components/ui/UiCard.vue';
+import ServiceCatalog from '../../components/public/ServiceCatalog.vue';
+import ProductCatalog from '../../components/public/ProductCatalog.vue';
 import TermsConsentBanner from '../../components/public/TermsConsentBanner.vue';
 import { publicSite } from '../../data/publicSite';
 </script>
@@ -24,6 +26,7 @@ import { publicSite } from '../../data/publicSite';
                     <h2 id="store-title" class="mt-2 font-display text-4xl text-text-inverse sm:text-5xl">Tienda</h2>
                     <p class="mt-3 max-w-2xl font-body text-base leading-relaxed text-white/75">Nuestro catálogo se está preparando. Estas son las categorías que podrás conocer más adelante.</p>
                 </div>
+                <ProductCatalog />
                 <div class="grid gap-4 sm:grid-cols-2">
                     <UiCard v-for="category in publicSite.futureStoreCategories" :key="category" class="!border-white/15 !bg-white/5 !text-text-inverse !shadow-none">
                         <h3 class="font-display text-3xl">{{ category }}</h3>
@@ -40,6 +43,7 @@ import { publicSite } from '../../data/publicSite';
                 <p class="font-ui text-xs font-bold uppercase tracking-[0.18em] text-brand-turquoise">Agenda</p>
                 <h2 id="services-title" class="mt-2 font-display text-4xl text-text-inverse sm:text-5xl">Servicios</h2>
                 <p class="mt-4 max-w-2xl font-body text-base leading-relaxed text-white/75">Consulta los servicios disponibles y encuentra un horario en nuestro flujo de reserva.</p>
+                <ServiceCatalog />
                 <a href="/reservar" class="mt-6 inline-flex min-h-11 items-center justify-center rounded-md bg-action-primary px-5 py-2 font-ui text-sm font-bold text-action-primary-foreground hover:bg-action-primary-hover focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 focus:ring-offset-brand-black">Solicitar cita</a>
             </section>
 

@@ -82,10 +82,44 @@ async function submit(): Promise<void> {
     } finally { submitting.value = false; }
 }
 
+function preselectFromQuery(): void {
+    const requested = Number(new URLSearchParams(window.location.search).get('service'));
+
+    if (! requested) return;
+
+    const match = services.value.find((service) => service.id === requested);
+
+    if (match) { selectedServiceId.value = match.id; step.value = 2; }
+}
+
 watch(selectedServiceId, selectService);
 watch(selectedProfessionalId, selectProfessional);
 watch(date, loadAvailability);
-onMounted(async () => { loading.value = true; try { const [context, catalog] = await Promise.all([publicBookingApi.getContext(), publicBookingApi.listServices()]); timezone.value = context.timezone; services.value = catalog; } catch { error.value = 'No pudimos cargar las opciones de reserva.'; } finally { loading.value = false; } });
+
+async function loadContext(): Promise<void> {
+    try {
+        const context = await publicBookingApi.getContext();
+        timezone.value = context.timezone;
+    } catch {
+        timezone.value = timezone.value || 'UTC';
+    }
+}
+
+async function loadServices(): Promise<void> {
+    loading.value = true;
+    error.value = '';
+
+    try {
+        services.value = await publicBookingApi.listServices();
+        preselectFromQuery();
+    } catch {
+        error.value = 'No pudimos cargar las opciones de reserva.';
+    } finally {
+        loading.value = false;
+    }
+}
+
+onMounted(() => { void loadContext(); void loadServices(); });
 </script>
 
 <template>
@@ -106,11 +140,13 @@ onMounted(async () => { loading.value = true; try { const [context, catalog] = a
 
                 <section v-if="step === 1" class="mt-8 space-y-4" aria-labelledby="service-title">
                     <h2 id="service-title" class="font-display text-2xl">1. Elige un servicio</h2>
+                    <p v-if="loading" role="status" class="font-body text-sm text-text-secondary">Cargando servicios...</p>
                     <button v-for="service in services" :key="service.id" type="button" :aria-pressed="selectedServiceId === service.id" :class="['w-full rounded-lg border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring', selectedServiceId === service.id ? 'border-action-primary bg-amber-50' : 'border-border-default bg-surface-elevated hover:border-action-primary']" @click="selectedServiceId = service.id">
                         <span class="flex items-start justify-between gap-4"><span class="font-ui font-bold">{{ service.name }}</span><span class="font-ui text-sm font-semibold text-action-primary">{{ service.pricing_display }}</span></span>
                         <span class="mt-1 block font-body text-sm text-text-secondary">{{ service.duration_minutes }} minutos</span>
                     </button>
-                    <p v-if="!loading && !services.length" class="font-body text-sm text-text-secondary">No hay servicios disponibles por ahora.</p>
+                    <button v-if="!loading && error" type="button" class="font-ui text-sm font-bold text-action-primary underline" @click="loadServices">Reintentar</button>
+                    <p v-else-if="!loading && !services.length" class="font-body text-sm text-text-secondary">No hay servicios disponibles por ahora.</p>
                 </section>
 
                 <section v-else-if="step === 2" class="mt-8 space-y-4" aria-labelledby="professional-title"><h2 id="professional-title" class="font-display text-2xl">2. Elige a tu profesional</h2><p class="font-body text-sm text-text-secondary">Servicio: {{ selectedService?.name }}</p><button v-for="professional in professionals" :key="professional.id" type="button" :aria-pressed="selectedProfessionalId === professional.id" :class="['w-full rounded-lg border p-4 text-left font-ui font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring', selectedProfessionalId === professional.id ? 'border-action-primary bg-amber-50' : 'border-border-default']" @click="selectedProfessionalId = professional.id">{{ professional.name }}</button><p v-if="!professionals.length" class="font-body text-sm text-text-secondary">No hay profesionales disponibles para este servicio.</p></section>

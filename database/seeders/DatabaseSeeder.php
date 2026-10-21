@@ -2,24 +2,27 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
      * Seed the application's database.
+     *
+     * Services and their categories are safe to seed idempotently. No product
+     * records are created because the business has not confirmed real products
+     * or inventory. Administrator accounts are created exclusively through the
+     * `admin:create` command, never through a seeder.
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $this->call([
+            ServiceCategorySeeder::class,
+            ServiceCatalogSeeder::class,
         ]);
+
+        if (! app()->environment('production')) {
+            $this->call(BookingDemoSeeder::class);
+        }
     }
 }

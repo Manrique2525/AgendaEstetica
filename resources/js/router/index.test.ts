@@ -13,6 +13,17 @@ describe('frontend router', () => {
         expect(router.resolve('/admin/login').meta.guestOnly).toBe(true);
     });
 
+    it('protects the business, professionals and schedules admin routes', () => {
+        expect(router.resolve('/admin/negocio').meta.requiresAuth).toBe(true);
+        expect(router.resolve('/admin/profesionales').meta.requiresAuth).toBe(true);
+        expect(router.resolve('/admin/profesionales').name).toBe('admin.professionals');
+
+        const schedules = router.resolve('/admin/profesionales/5/horarios');
+        expect(schedules.meta.requiresAuth).toBe(true);
+        expect(schedules.name).toBe('admin.professionals.schedules');
+        expect(schedules.params.id).toBe('5');
+    });
+
     it('resolves the public booking route without authentication', () => {
         expect(router.resolve('/reservar').name).toBe('public.booking');
         expect(router.resolve('/reservar').meta.surface).toBe('public');

@@ -35,7 +35,7 @@ it('validates login input without user enumeration', function (): void {
 });
 
 it('rejects invalid credentials with a generic response', function (): void {
-    User::factory()->create([
+    User::factory()->admin()->create([
         'email' => 'admin@example.invalid',
         'password' => 'correct-password',
     ]);
@@ -50,7 +50,7 @@ it('rejects invalid credentials with a generic response', function (): void {
 
 it('authenticates, returns the current user, and logs out', function (): void {
     $password = 'correct-password';
-    User::factory()->create([
+    User::factory()->admin()->create([
         'name' => 'Foundation Admin',
         'email' => 'foundation-admin@example.invalid',
         'password' => $password,
@@ -92,6 +92,32 @@ it('limits repeated invalid login attempts', function (): void {
     }
 
     $this->postJson('/api/v1/admin/auth/login', $payload)->assertTooManyRequests();
+});
+
+it('rejects a non-administrator login with a generic response', function (): void {
+    User::factory()->create([
+        'email' => 'regular-user@example.invalid',
+        'password' => 'correct-password',
+    ]);
+
+    $this->postJson('/api/v1/admin/auth/login', [
+        'email' => 'regular-user@example.invalid',
+        'password' => 'correct-password',
+    ])->assertStatus(422)
+        ->assertJsonPath('message', 'Las credenciales proporcionadas no son correctas.')
+        ->assertJsonPath('errors.email.0', 'Las credenciales proporcionadas no son correctas.');
+});
+
+it('forbids a non-administrator from reaching admin endpoints', function (): void {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->getJson('/api/v1/admin/agenda/context')
+        ->assertForbidden();
+
+    $this->actingAs($user)
+        ->getJson('/api/v1/admin/catalog/services')
+        ->assertForbidden();
 });
 
 it('does not expose password hashes through the user model response', function (): void {
