@@ -17,7 +17,7 @@ import { publicSite } from '../../data/publicSite';
                 </p>
             </header>
 
-            <div class="grid gap-5 sm:gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <div class="grid gap-5 sm:gap-6 md:grid-cols-2">
                 <!-- Card 1: Protección de tu información -->
                 <UiCard class="group relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 !border-border-default !bg-surface-elevated !text-text-primary !shadow-sm">
                     <div class="p-6 space-y-4">
