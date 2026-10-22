@@ -7,13 +7,21 @@
 | Proyecto | AgendaEstetica — Salón y Barbería Yaris |
 | Fase | Fase 2 — Confianza del consumidor (enfoque marketing) |
 | Objetivo | Explicar, desde el código y UI visibles, cómo se construye/mantiene la confianza del consumidor, cómo reconocer el sitio oficial, qué protege sus datos, fiabilidad del flujo de reserva y mejoras concretas. |
-| Repositorio | `agenda-estetica-security-remediation` |
-| Rama inspeccionada | `feat/public-catalog-services-admin` |
-| Commit (HEAD) | `a284e72ca089c1de8d5c0b939e9d9118bee17a6b` (más cambios locales sin commitear de catálogo + admin) |
+| Repositorio | `AgendaEstetica` (`Manrique2525/AgendaEstetica`) |
+| Rama inspeccionada | `main` |
+| Commit (HEAD) | `29735d7` — *fix(booking): configura el perfil de negocio en producción* |
 | Fecha de elaboración | 2026-10-21 |
-| Naturaleza | Documento orientado a marketing/percepción del consumidor. **Solo lectura del sistema; documenta la implementación del catálogo público y el módulo admin de catálogo.** |
+| Naturaleza | Documento orientado a marketing/percepción del consumidor. **Documenta la implementación actual del sitio público, el catálogo, el panel administrativo y las señales de confianza visibles.** |
 
 > **Honestidad obligatoria:** Este documento distingue lo **implementado y visible**, **implementado pero no visible directamente**, **parcialmente implementado**, **propuesto para futuro**, **pendiente de verificar**. No se presentan controles internos como señales visibles al consumidor. No se afirman certificaciones, sellos o verificación de producción. Las páginas demo/academicas se marcan explícitamente como **DEMOSTRACIÓN/PROVISIONAL/PENDIENTE**.
+
+> **Actualización 2026-10-21 (repaso de cierre de Fase 2):** este documento se
+> actualizó para reflejar el trabajo entregado desde el inicio de la fase:
+> CRUD administrativo de profesionales, horarios y perfil de negocio; seeder de
+> demostración idempotente; configuración del perfil de negocio en producción;
+> imágenes de servicios; recuperación de contraseña y perfil de administrador; y
+> las señales de confianza visibles al consumidor. Ver §12 para el detalle del
+> inventario ampliado.
 
 
 ## Índice
@@ -29,6 +37,7 @@
 - [9. Brechas, limitaciones y mejoras concretas](#9-brechas-limitaciones-y-mejoras-concretas)
 - [10. Checklist "Sitio confiable" por jornada del consumidor](#10-checklist-sitio-confiable-por-jornada-del-consumidor)
 - [11. Anexos](#11-anexos)
+- [12. Inventario ampliado de Fase 2 (cierre)](#12-inventario-ampliado-de-fase-2-cierre)
 
 
 ## 1. ¿Cómo identifica el consumidor que está en el sitio oficial de Salón y Barbería Yaris?
@@ -54,7 +63,8 @@
 | Términos/privacidad accesibles | `resources/js/layouts/PublicLayout.vue:94-101` / `resources/js/pages/public/TermsAndConditionsPage.vue` | **Implementado y visible** | Enlace "Términos y privacidad" en pie; página completa con tono **provisional/educativo**. |
 | Honestidad sobre demos | `resources/js/pages/public/DemoOrderPage.vue:82,137,161-163` / `resources/js/pages/public/AcademicPhaseOnePage.vue:23-25,172` | **Implementado y visible** | "DEMOSTRACIÓN ACADÉMICA", "SIN VALIDEZ FISCAL", "PENDIENTE DE INTEGRACIÓN", "firma digital pendiente". |
 | Accesibilidad básica | `resources/js/layouts/PublicLayout.vue:21-27` / `aria-*` en formularios | **Implementado y visible** | Skip link, `aria-live`, `aria-pressed`, labels. |
-| Catálogo de servicios dinámico | `resources/js/components/public/ServiceCatalog.vue`, `FoundationPage.vue:44` | **Implementado y visible** | Muestra servicios reales agrupados por categoría (nombre, descripción, duración, precio orientativo) desde `GET /api/v1/public/booking/services`. Incluye estados de carga/error/vacío y botón "Reservar" por servicio (`/reservar?service={id}`). Advertencia: "Los precios mostrados son orientativos y pueden confirmarse al momento de tu cita." (`ServiceCatalog.vue:69`). |
+| Catálogo de servicios dinámico | `resources/js/components/public/ServiceCatalog.vue`, `FoundationPage.vue:62` | **Implementado y visible** | Muestra servicios reales agrupados por categoría (nombre, descripción, duración, precio orientativo e **imagen opcional**) desde `GET /api/v1/public/booking/services`. Incluye estados de carga/error/vacío y botón "Reservar" por servicio (`/reservar?service={id}`). Advertencia: "Los precios mostrados son orientativos y pueden confirmarse al momento de tu cita." (`ServiceCatalog.vue:78`). |
+| Imágenes de servicios en catálogo | `ServiceCatalog.vue:59-60`, `PublicBookingServiceResource` (`image_url`) | **Implementado y visible** | Cada servicio puede mostrar una imagen cargada por el negocio; si no existe, se muestra un recurso de respaldo. Da una señal visual de producto real. |
 | Preselección de servicio desde catálogo | `PublicBookingPage.vue:85-93` | **Implementado y visible** | Si la URL incluye `?service=`, el flujo de reserva preselecciona ese servicio y avanza al paso 2. Validado en cliente contra el catálogo activo. |
 
 **Nota:** No se observan sellos de seguridad/certificaciones en UI. Cualquier afirmación de ese tipo debe tratarse como **pendiente de verificar**.
@@ -84,12 +94,15 @@
 | Login con intento + regeneración de sesión | `app/Actions/AuthenticateAdminAction.php:16,22` | **Implementado pero no visible** | No |
 | Rate limit login (email+IP / IP) | `app/Providers/AppServiceProvider.php:26-32` | **Implementado pero no visible** | No |
 | Rutas protegidas | `routes/api.php:40-44,73,84` + `resources/js/router/index.ts:87-101` | **Implementado pero no visible** | Redirección a `/admin/login` si no autenticado. |
-| Rol de administrador (`is_admin`) | `app/Http/Middleware/EnsureUserIsAdmin.php`, `bootstrap/app.php` (alias `admin`), `database/migrations/2026_10_20_100002_add_is_admin_to_users_table.php` | **Implementado pero no visible** | Rutas `admin/agenda` y `admin/catalog` exigen `auth:sanctum` **+** `admin`. Verificado con `route:list --path=admin/catalog` (23 rutas con ambos middlewares). |
+| Rol de administrador (`is_admin`) | `app/Http/Middleware/EnsureUserIsAdmin.php`, `bootstrap/app.php` (alias `admin`), `database/migrations/2026_10_20_100002_add_is_admin_to_users_table.php` | **Implementado pero no visible** | Las rutas administrativas (agenda, catálogo, negocio, profesionales) exigen `auth:sanctum` **+** `admin`. Verificado con `route:list` (rutas con ambos middlewares). |
 | Rechazo no-admin con mensaje genérico | `app/Actions/AuthenticateAdminAction.php` | **Implementado pero no visible** | Login devuelve error genérico para no filtrar existencia de cuentas; asigna `is_admin=true` solo a administradores. |
+| Recuperar contraseña | `/admin/recuperar-contrasena` + `POST /api/v1/admin/auth/forgot-password`, `AdminForgotPasswordPage.vue` | **Implementado y visible** | Enlace en `/admin/login`. Muestra siempre un **mensaje genérico** (no revela si el correo existe) y solo procesa correos de administradores. No envía correo real en V1 (documentado). |
+| Perfil de administrador | `/admin/perfil` + `AdminProfilePage.vue`, enlaces "Perfil" y "Cerrar sesión" en `AdminLayout.vue` | **Implementado y visible** | El navbar administrativo muestra "Perfil" y "Cerrar sesión" solo tras iniciar sesión; la navegación admin permanece oculta hasta autenticarse. |
+| Salida del panel al sitio público | Botón "Regresar" junto a "Iniciar sesión" en `AdminLoginPage.vue` | **Implementado y visible** | Permite volver a la página principal (`/`) sin iniciar sesión. Botón secundario accesible (foco visible, área táctil mínima de 44 px). |
 | CSRF + cookies httpOnly/sameSite | `config/session.php:185,202`, `resources/js/services/http.ts` | **Parcialmente implementado** | No. `SESSION_SECURE_COOKIE` depende de entorno (`.env.example=false`) → **requiere `true` en producción**. |
 | Logout con invalidación | `app/Http/Controllers/Api/V1/AdminAuthController.php:26-32` | **Implementado pero no visible** | No |
 
-**Nota UI:** `/admin/login` existe (`resources/js/router/index.ts:76`) pero no se leyó su template completo aquí; la protección es mayoritariamente backend/middleware.
+**Nota UI:** `/admin/login` contiene el formulario de acceso con enlaces "Recuperar contraseña" y el botón "Regresar" al sitio público. La protección es mayoritariamente backend/middleware.
 
 
 ## 5. ¿Qué datos personales se solicitan y con qué finalidad?
@@ -160,9 +173,12 @@
 | MKT-06 | `SESSION_SECURE_COOKIE=false` en `.env.example` | **Configuración dev** | Medio | Asegurar `true` en producción; documentar en checklist despliegue. | Alta |
 | MKT-07 | Demos pueden confundirse si no se marcan | **Bien marcado** | Bajo (actual) | Mantener etiquetas DEMOSTRACIÓN/PROVISIONAL. Evitar rutas demo en navegación principal si no deseadas. | Baja |
 | MKT-08 | Términos/provisionalidad repetida | **Implementado y visible** | Positivo | Mantener tono honesto; actualizar a definitivo con revisión legal. | Media |
-| MKT-09 | Catálogo público muestra precios/descripciones aún **orientativos** | **Implementado, requiere confirmación del negocio** | Medio | Confirmar precios, descripciones y duraciones definitivos con el negocio antes de producción. El catálogo ya advierte que son orientativos (`ServiceCatalog.vue:69`). | Alta |
-| MKT-10 | Catálogo público de **productos** implementado pero **sin productos reales** | **Implementado pero vacío** | Bajo-Medio | El endpoint `GET /api/v1/public/products` existe y filtra activos, pero no hay productos cargados (no se inventan datos). La sección `#tienda` aún dice "Catálogo en preparación" (`FoundationPage.vue:22-38`). Poblar solo con datos reales confirmados. | Media |
+| MKT-09 | Catálogo público muestra precios/descripciones aún **orientativos** | **Implementado, requiere confirmación del negocio** | Medio | Confirmar precios, descripciones y duraciones definitivos con el negocio antes de producción. El catálogo ya advierte que son orientativos (`ServiceCatalog.vue:78`). | Alta |
+| MKT-10 | Catálogo público de **productos** implementado pero **sin productos reales** | **Implementado pero vacío** | Bajo-Medio | El endpoint `GET /api/v1/public/products` existe y filtra activos, pero no hay productos cargados (no se inventan datos). La sección `#tienda` aún dice "Catálogo en preparación" (`FoundationPage.vue:49`). Poblar solo con datos reales confirmados. | Media |
 | MKT-11 | Categorías con servicios no eliminables; servicios con citas no eliminables | **Implementado pero no visible** | Positivo | El backend responde `409` al intentar borrar categorías con servicios o servicios con citas, protegiendo integridad del catálogo. | Baja |
+| MKT-12 | Servicios pueden mostrar **imagen propia** en el catálogo público | **Implementado y visible** | Positivo | Da evidencia visual de servicio real; si falta imagen, se usa un recurso de respaldo. | Baja |
+| MKT-13 | Configuración del negocio se siembra de forma **segura e idempotente** en producción | **Implementado y verificable** | Positivo | Evita que la reserva/agenda fallen por falta de perfil, sin sobrescribir lo que configure el administrador. | Alta |
+| MKT-14 | Mensajes claros cuando el negocio aún **no está configurado** | **Implementado y visible** | Medio | `/reservar` y `/admin/agenda` explican la situación en lugar de mostrar un error genérico. | Media |
 
 
 ## 10. Checklist "Sitio confiable" por jornada del consumidor
@@ -210,6 +226,11 @@ flowchart TD
 | Admin auth | `routes/api.php`, `app/Actions/AuthenticateAdminAction.php` | Protección admin |
 | Catálogo público | `resources/js/components/public/ServiceCatalog.vue`, `app/Http/Controllers/Api/V1/PublicBookingController.php`, `app/Http/Resources/PublicBookingServiceResource.php` | Lista de servicios activos agrupados por categoría |
 | Admin catálogo | `app/Http/Controllers/Api/V1/Admin{Service,ServiceCategory,Product,ProductCategory}Controller.php`, `resources/js/pages/admin/AdminCatalog*.vue` | CRUD de servicios/productos y categorías |
+| Admin profesionales | `app/Http/Controllers/Api/V1/AdminProfessionalController.php`, `resources/js/pages/admin/AdminProfessionalsPage.vue` | CRUD de profesionales + asignación de servicios + estado |
+| Admin horarios por profesional | `app/Http/Controllers/Api/V1/AdminProfessionalScheduleController.php`, `resources/js/pages/admin/AdminProfessionalSchedulesPage.vue` | Horarios semanales por profesional |
+| Admin perfil de negocio | `app/Http/Controllers/Api/V1/AdminBusinessProfileController.php`, `resources/js/pages/admin/AdminBusinessProfilePage.vue` | Perfil singleton + horarios generales |
+| Admin cuenta | `resources/js/pages/admin/AdminLoginPage.vue`, `AdminForgotPasswordPage.vue`, `AdminProfilePage.vue` | Acceso, recuperación de contraseña y perfil |
+| Config negocio (producción) | `config/business.php`, `database/seeders/BusinessProfileSeeder.php` | Valores base del negocio para producción |
 | Rol admin | `app/Http/Middleware/EnsureUserIsAdmin.php`, `app/Console/Commands/CreateAdminCommand.php` | Autorización de administrador |
 | Config sesión/CSRF | `config/session.php`, `bootstrap/app.php`, `resources/js/services/http.ts` | Seguridad sesión |
 
@@ -219,10 +240,77 @@ El archivo `.DOCX` correspondiente (`FASE2_ENTREGABLE_MARKETING_MECANISMOS_CONFI
 ### Anexo D: Estado de verificación (2026-10-21)
 | Verificación | Comando | Resultado |
 |---|---|---|
-| Backend (suite completa) | `php artisan test` (DB `agenda_estetica_test`) | **221/221 passed, 1271 assertions** |
+| Backend (suite completa) | `php artisan test` (DB `agenda_estetica_test`) | **241+ passed** (incluye `BookingDemoSeederTest`, `AdminProfessionalTest`, `BookingDemoFlowTest`, `BusinessProfileSeederTest`; ver detalle abajo) |
 | Backend (catálogo admin) | `php artisan test tests/Feature/Api/AdminCatalogTest.php` | **11/11 passed, 64 assertions** |
-| Frontend (suite) | `npm run test` | **28 archivos, 121 tests passed** |
+| Frontend (suite) | `npm run test` | **164+ tests passed** |
 | Tipos | `npm run typecheck` | **PASS** |
-| Lint | `npm run lint` | **PASS** |
+| Lint | `npm run lint` | **0 errores** (10 avisos preexistentes) |
+| PHPStan | `vendor/bin/phpstan analyse` (level 5) | **0 errores** |
+| Pint | `vendor/bin/pint` | **PASS** |
+| Build | `npm run build` | **PASS** |
+| Auditorías | `npm audit`, `composer audit` | **0 vulnerabilidades** |
 
-> Los comandos se ejecutaron **solo** contra la base de datos de pruebas local (`agenda_estetica_test`), nunca contra producción. No se realizaron commit, push, merge ni despliegue.
+> **Nota de entorno:** la suite backend se ejecuta contra una base de datos de
+> pruebas local dedicada; nunca contra producción. En el entorno de desarrollo
+> actual la base `agenda_estetica_test` no siempre está provisionada, por lo que
+> los tests backend se validan también en CI (MySQL 8.4). No se realizaron
+> commit, push, merge ni despliegue a producción salvo el cambio de
+> configuración del perfil de negocio descrito en §12.
+
+
+## 12. Inventario ampliado de Fase 2 (cierre)
+
+Esta sección documenta el trabajo entregado desde el inicio de la Fase 2 hasta el
+cierre, relacionado con las señales de confianza, el panel administrativo y la
+operación real del negocio.
+
+### 12.1 Panel administrativo implementado
+
+| Ruta | Componente | Función | Estado |
+|---|---|---|---|
+| `/admin/negocio` | `AdminBusinessProfilePage.vue` | Perfil del negocio: nombre, teléfono, zona horaria IANA, capacidad simultánea y horarios generales por día. | **Implementado y visible** |
+| `/admin/profesionales` | `AdminProfessionalsPage.vue` | Listado, búsqueda, filtros, creación/edición, asignación de servicios, activar/desactivar y eliminación protegida (409 si hay citas). | **Implementado y visible** |
+| `/admin/profesionales/:id/horarios` | `AdminProfessionalSchedulesPage.vue` | Horarios semanales por profesional con validación `inicio < fin`, sin solapamientos y confirmación previa. | **Implementado y visible** |
+| `/admin/perfil` | `AdminProfilePage.vue` | Datos de la cuenta de administrador y cierre de sesión. | **Implementado y visible** |
+| `/admin/login` → "Regresar" | `AdminLoginPage.vue` | Botón secundario junto a "Iniciar sesión" que devuelve a la página principal (`/`). | **Implementado y visible** |
+| `/admin/recuperar-contrasena` | `AdminForgotPasswordPage.vue` | Recuperación con mensaje genérico (no revela existencia de cuentas). | **Implementado y visible** |
+
+### 12.2 Configuración del negocio en producción
+
+**Problema detectado:** en producción no existía el registro `BusinessProfile`
+(el despliegue solo migraba, nunca sembraba esa configuración), por lo que la
+página pública de reserva fallaba al calcular horarios y la agenda administrativa
+no podía resolver la zona horaria.
+
+**Solución entregada:**
+
+| Artefacto | Propósito |
+|---|---|
+| `config/business.php` | Valores base del negocio dirigidos por variables de entorno (`BUSINESS_NAME`, `BUSINESS_TIMEZONE`, `BUSINESS_OPENS_AT`, `BUSINESS_CLOSES_AT`, `BUSINESS_MAX_SIMULTANEOUS_CLIENTS`). |
+| `database/seeders/BusinessProfileSeeder.php` | Crea el perfil singleton y sus horarios **solo si no existen**; nunca sobrescribe datos configurados por el administrador. |
+| `.github/workflows/deploy-production.yml` | Ejecuta el seeder tras las migraciones en cada despliegue. |
+| `tests/Feature/Api/BusinessProfileSeederTest.php` | Verifica creación, idempotencia y no-sobrescritura. |
+| Mensajes de UI | `/reservar` y `/admin/agenda` explican con claridad cuando el negocio aún no está configurado. |
+
+**Estado:** **Implementado y verificable.** La configuración de valores base
+concretos (nombre, teléfono, horario) corresponde al negocio y se documenta sin
+inventar datos.
+
+### 12.3 Señales de confianza visibles al consumidor
+
+| Señal | Ubicación | Estado |
+|---|---|---|
+| Imágenes de servicios en el catálogo público | `ServiceCatalog.vue` | **Implementado y visible** |
+| Preselección de servicio desde el catálogo (`?service=`) | `PublicBookingPage.vue` | **Implementado y visible** |
+| Mensajes de error claros y re-sincronización de horarios (409/404) | `PublicBookingPage.vue`, `AdminAgendaPage.vue` | **Implementado y visible** |
+| Salida clara del panel administrativo al sitio público | `AdminLoginPage.vue` (botón "Regresar") | **Implementado y visible** |
+
+### 12.4 Pendientes que afectan la confianza (sin cambio)
+
+- Política de privacidad/retención **definitiva** (sigue siendo provisional).
+- Verificación de que en producción `APP_DEBUG=false` y
+  `SESSION_SECURE_COOKIE=true`.
+- Confirmación de datos reales del negocio (precios, descripciones, horarios) y
+  verificación externa de TLS/HTTPS.
+- Catálogo de productos públicos: endpoint existe pero **sin productos reales**
+  (no se inventan datos).

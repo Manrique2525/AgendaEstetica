@@ -66,9 +66,17 @@ async function submit(): Promise<void> {
                     </template>
                 </UiFormField>
                 <p v-if="error" class="break-words font-body text-sm text-state-error" role="alert">{{ error }}</p>
-                <UiButton type="submit" :loading="isSubmitting">
-                    {{ isSubmitting ? 'Validando...' : 'Iniciar sesión' }}
-                </UiButton>
+                <div class="flex flex-col gap-3 sm:flex-row">
+                    <UiButton type="submit" :loading="isSubmitting" class="sm:flex-1">
+                        {{ isSubmitting ? 'Validando...' : 'Iniciar sesión' }}
+                    </UiButton>
+                    <RouterLink
+                        to="/"
+                        class="inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-border-strong bg-action-secondary px-4 py-2 font-ui text-sm font-bold text-action-secondary-foreground hover:bg-action-secondary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 sm:flex-1"
+                    >
+                        Regresar
+                    </RouterLink>
+                </div>
             </form>
             <p class="mt-6 font-body text-sm text-text-secondary">
                 <RouterLink class="font-ui font-semibold text-text-primary underline" to="/admin/recuperar-contrasena">
