@@ -38,13 +38,7 @@ describe('AdminProfessionalsPage', () => {
         api.professionals.update.mockResolvedValue(professionalList[0]);
         api.professionals.setStatus.mockResolvedValue(professionalList[0]);
         api.professionals.remove.mockResolvedValue(undefined);
-        catalog.services.list.mockResolvedValue({
-            data: serviceList,
-            current_page: 1,
-            last_page: 1,
-            per_page: 15,
-            total: serviceList.length,
-        });
+        catalog.services.list.mockResolvedValue(serviceList);
     });
 
     it('lists professionals with their assigned services', async () => {

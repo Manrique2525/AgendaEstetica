@@ -68,7 +68,7 @@ async function load(): Promise<void> {
 async function loadServices(): Promise<void> {
     try {
         const response = await adminCatalogApi.services.list();
-        services.value = response.data.filter((service) => service.active);
+        services.value = response.filter((service) => service.active);
     } catch {
         // The catalog is optional for managing professionals; keep the page usable.
     }

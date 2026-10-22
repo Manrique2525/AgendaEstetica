@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import { ApiError } from '@/services/http';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import CatalogPageHeader from '@/components/admin/CatalogPageHeader.vue';
@@ -35,9 +35,7 @@ const error = ref('');
 
 const pagination = reactive({
     currentPage: 1,
-    lastPage: 1,
     perPage: 15,
-    total: 0,
 });
 
 const filters = reactive({
@@ -49,6 +47,13 @@ const filters = reactive({
 const pendingDelete = ref<AdminService | null>(null);
 const deleting = ref(false);
 
+const lastPage = computed(() => Math.max(1, Math.ceil(services.value.length / pagination.perPage)));
+const total = computed(() => services.value.length);
+const pagedServices = computed(() => {
+    const start = (pagination.currentPage - 1) * pagination.perPage;
+    return services.value.slice(start, start + pagination.perPage);
+});
+
 function toRow(service: AdminService): ServiceRow {
     return { ...service, categoryName: service.category?.name ?? '—' };
 }
@@ -58,10 +63,7 @@ async function load(): Promise<void> {
     error.value = '';
 
     try {
-        const params: Record<string, string | number | boolean> = {
-            page: pagination.currentPage,
-            per_page: pagination.perPage,
-        };
+        const params: Record<string, string | number | boolean> = {};
 
         if (filters.q.trim()) params.q = filters.q.trim();
         if (filters.active !== '') params.active = filters.active === 'true';
@@ -72,11 +74,9 @@ async function load(): Promise<void> {
             adminCatalogApi.serviceCategories.list({ active: true }),
         ]);
 
-        services.value = servicesResponse.data.map(toRow);
-        categories.value = categoriesResponse.data;
-        pagination.currentPage = servicesResponse.current_page;
-        pagination.lastPage = servicesResponse.last_page;
-        pagination.total = servicesResponse.total;
+        services.value = servicesResponse.map(toRow);
+        categories.value = categoriesResponse;
+        pagination.currentPage = 1;
     } catch {
         error.value = 'No pudimos cargar los servicios.';
     } finally {
@@ -109,13 +109,11 @@ async function confirmDelete(): Promise<void> {
 }
 
 async function handleSearch(): Promise<void> {
-    pagination.currentPage = 1;
     await load();
 }
 
-async function handlePageChange(page: number): Promise<void> {
+function handlePageChange(page: number): void {
     pagination.currentPage = page;
-    await load();
 }
 
 function editService(row: Record<string, unknown>): void {
@@ -131,7 +129,7 @@ onMounted(load);
         <CatalogPageHeader
             title="Servicios"
             description="Catálogo de servicios que se ofrecen a los clientes."
-            :count="pagination.total"
+            :count="total"
             create-route="/admin/catalogo/servicios/nuevo"
             create-label="Nuevo servicio"
         />
@@ -154,7 +152,7 @@ onMounted(load);
 
         <CatalogTable
             :columns="columns"
-            :rows="services"
+            :rows="pagedServices"
             :loading="loading"
             empty-message="Sin servicios registrados."
             row-key="id"
@@ -165,9 +163,9 @@ onMounted(load);
 
         <CatalogPagination
             :current-page="pagination.currentPage"
-            :last-page="pagination.lastPage"
+            :last-page="lastPage"
             :per-page="pagination.perPage"
-            :total="pagination.total"
+            :total="total"
             class="mt-6"
             @update:current-page="handlePageChange"
         />

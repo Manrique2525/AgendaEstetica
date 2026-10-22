@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import { ApiError } from '@/services/http';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import CatalogPageHeader from '@/components/admin/CatalogPageHeader.vue';
@@ -24,9 +24,7 @@ const error = ref('');
 
 const pagination = reactive({
     currentPage: 1,
-    lastPage: 1,
     perPage: 15,
-    total: 0,
 });
 
 const filters = reactive({
@@ -37,6 +35,13 @@ const filters = reactive({
 const pendingDelete = ref<AdminProductCategory | null>(null);
 const deleting = ref(false);
 
+const lastPage = computed(() => Math.max(1, Math.ceil(categories.value.length / pagination.perPage)));
+const total = computed(() => categories.value.length);
+const pagedCategories = computed(() => {
+    const start = (pagination.currentPage - 1) * pagination.perPage;
+    return categories.value.slice(start, start + pagination.perPage);
+});
+
 function toRow(category: AdminProductCategory): CategoryRow {
     return { ...category, products_count: category.products_count ?? 0 };
 }
@@ -46,19 +51,14 @@ async function load(): Promise<void> {
     error.value = '';
 
     try {
-        const params: Record<string, string | number | boolean> = {
-            page: pagination.currentPage,
-            per_page: pagination.perPage,
-        };
+        const params: Record<string, string | boolean> = {};
 
         if (filters.q.trim()) params.q = filters.q.trim();
         if (filters.active !== '') params.active = filters.active === 'true';
 
         const response = await adminCatalogApi.productCategories.list(params);
-        categories.value = response.data.map(toRow);
-        pagination.currentPage = response.current_page;
-        pagination.lastPage = response.last_page;
-        pagination.total = response.total;
+        categories.value = response.map(toRow);
+        pagination.currentPage = 1;
     } catch {
         error.value = 'No pudimos cargar las categorías.';
     } finally {
@@ -91,13 +91,11 @@ async function confirmDelete(): Promise<void> {
 }
 
 async function handleSearch(): Promise<void> {
-    pagination.currentPage = 1;
     await load();
 }
 
-async function handlePageChange(page: number): Promise<void> {
+function handlePageChange(page: number): void {
     pagination.currentPage = page;
-    await load();
 }
 
 function editCategory(row: Record<string, unknown>): void {
@@ -113,7 +111,7 @@ onMounted(load);
         <CatalogPageHeader
             title="Categorías de productos"
             description="Agrupan los productos del catálogo."
-            :count="pagination.total"
+            :count="total"
             create-route="/admin/catalogo/categorias-producto/nueva"
             create-label="Nueva categoría"
         />
@@ -132,7 +130,7 @@ onMounted(load);
 
         <CatalogTable
             :columns="columns"
-            :rows="categories"
+            :rows="pagedCategories"
             :loading="loading"
             empty-message="Sin categorías registradas."
             row-key="id"
@@ -143,9 +141,9 @@ onMounted(load);
 
         <CatalogPagination
             :current-page="pagination.currentPage"
-            :last-page="pagination.lastPage"
+            :last-page="lastPage"
             :per-page="pagination.perPage"
-            :total="pagination.total"
+            :total="total"
             class="mt-6"
             @update:current-page="handlePageChange"
         />

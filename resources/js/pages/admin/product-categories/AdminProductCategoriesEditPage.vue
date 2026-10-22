@@ -31,7 +31,7 @@ async function loadCategory(): Promise<void> {
 
     try {
         const response = await adminCatalogApi.productCategories.list()
-        const categories = Array.isArray(response) ? response : (response.data ?? response)
+        const categories = response
         const category = categories.find(c => c.id === categoryId.value)
         
         if (category) {

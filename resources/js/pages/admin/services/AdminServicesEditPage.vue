@@ -50,7 +50,7 @@ async function loadService(): Promise<void> {
         form.pricing_type = service.pricing_type;
         form.price = service.price ?? '';
         form.active = service.active;
-        categories.value = categoriesResponse.data;
+        categories.value = categoriesResponse;
 
         if (!form.service_category_id && categories.value.length > 0) {
             form.service_category_id = categories.value[0].id;

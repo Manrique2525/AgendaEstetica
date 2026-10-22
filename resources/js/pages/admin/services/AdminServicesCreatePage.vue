@@ -32,7 +32,7 @@ const form = reactive({
 async function loadCategories(): Promise<void> {
     try {
         const response = await adminCatalogApi.serviceCategories.list({ active: true });
-        categories.value = response.data;
+        categories.value = response;
         if (!form.service_category_id && categories.value.length > 0) {
             form.service_category_id = categories.value[0].id;
         }

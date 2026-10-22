@@ -33,7 +33,7 @@ async function loadCategory(): Promise<void> {
 
     try {
         const response = await adminCatalogApi.serviceCategories.list({ active: true })
-        const category = response.data.find(c => c.id === categoryId.value)
+        const category = response.find(c => c.id === categoryId.value)
 
         if (category) {
             form.name = category.name

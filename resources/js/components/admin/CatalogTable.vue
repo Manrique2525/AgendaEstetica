@@ -41,14 +41,17 @@ const emit = defineEmits<{
 }>();
 
 function handleEdit(row: Record<string, unknown>): void {
+    props.onEdit?.(row);
     emit('edit', row);
 }
 
 function handleToggle(row: Record<string, unknown>): void {
+    props.onToggle?.(row);
     emit('toggle', row);
 }
 
 function handleDelete(row: Record<string, unknown>): void {
+    props.onDelete?.(row);
     emit('delete', row);
 }
 

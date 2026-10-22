@@ -28,7 +28,7 @@ const form = reactive({
 async function loadCategories(): Promise<void> {
     try {
         const response = await adminCatalogApi.productCategories.list({ active: true })
-        categories.value = Array.isArray(response) ? response : (response.data ?? response)
+        categories.value = response
     } catch {
         // Keep empty categories on error
     }

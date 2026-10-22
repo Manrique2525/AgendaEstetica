@@ -38,8 +38,8 @@ async function loadProduct(): Promise<void> {
             adminCatalogApi.productCategories.list({ active: true }),
         ])
 
-        const products = productsResponse.data
-        const categoriesData = categoriesResponse.data
+        const products = productsResponse
+        const categoriesData = categoriesResponse
 
         categories.value = categoriesData
 
