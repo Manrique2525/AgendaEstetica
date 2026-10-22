@@ -22,6 +22,9 @@ class BusinessProfile extends Model
         ];
     }
 
+    /**
+     * @return HasMany<BusinessHour, $this>
+     */
     public function hours(): HasMany
     {
         return $this->hasMany(BusinessHour::class);

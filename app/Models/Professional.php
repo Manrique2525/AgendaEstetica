@@ -20,6 +20,9 @@ class Professional extends Model
         return ['active' => 'boolean'];
     }
 
+    /**
+     * @return BelongsToMany<Service, $this>
+     */
     public function services(): BelongsToMany
     {
         return $this->belongsToMany(Service::class);
