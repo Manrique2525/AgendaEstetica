@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ServiceCategorySeeder::class,
             ServiceCatalogSeeder::class,
+            BusinessProfileSeeder::class,
         ]);
 
         if (! app()->environment('production')) {

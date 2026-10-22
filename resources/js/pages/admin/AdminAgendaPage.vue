@@ -68,6 +68,10 @@ function apiErrorMessage(value: unknown): string {
         return 'La sesión administrativa ya no es válida.';
     }
 
+    if (value instanceof ApiError && value.status === 404) {
+        return 'Configura primero el negocio en "Negocio" para habilitar la agenda.';
+    }
+
     return 'No fue posible cargar la agenda. Intenta nuevamente.';
 }
 

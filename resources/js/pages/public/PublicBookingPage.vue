@@ -55,7 +55,7 @@ async function loadAvailability(): Promise<void> {
     try {
         const result = await publicBookingApi.getAvailability(selectedServiceId.value, selectedProfessionalId.value, date.value);
         if (request === availabilityRequest) availability.value = result;
-    } catch (exception) { if (request === availabilityRequest) error.value = exception instanceof ApiError && exception.status === 429 ? 'Has hecho muchas consultas. Espera un momento e inténtalo de nuevo.' : 'No pudimos cargar los horarios.'; }
+    } catch (exception) { if (request === availabilityRequest) error.value = exception instanceof ApiError && exception.status === 429 ? 'Has hecho muchas consultas. Espera un momento e inténtalo de nuevo.' : exception instanceof ApiError && exception.status === 404 ? 'La agenda aún no está configurada. Intenta más tarde o contáctanos por WhatsApp.' : 'No pudimos cargar los horarios.'; }
     finally { if (request === availabilityRequest) loading.value = false; }
 }
 function chooseSlot(value: PublicBookingSlot): void { slot.value = value; resetKey(); clearBookingError(); }
