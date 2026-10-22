@@ -11,8 +11,9 @@ class DatabaseSeeder extends Seeder
      *
      * Services and their categories are safe to seed idempotently. No product
      * records are created because the business has not confirmed real products
-     * or inventory. Administrator accounts are created exclusively through the
-     * `admin:create` command, never through a seeder.
+     * or inventory. Real administrator accounts are created through the
+     * `admin:create` command; the default demo administrator is seeded only
+     * outside production for local and demo environments.
      */
     public function run(): void
     {
@@ -22,6 +23,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         if (! app()->environment('production')) {
+            $this->call(AdminUserSeeder::class);
             $this->call(BookingDemoSeeder::class);
         }
     }
