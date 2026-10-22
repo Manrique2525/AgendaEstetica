@@ -2,7 +2,6 @@
 import { ref, computed, onMounted, reactive } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import AdminLayout from '@/layouts/AdminLayout.vue';
-import UiButton from '@/components/ui/UiButton.vue';
 import UiCard from '@/components/ui/UiCard.vue';
 import UiFormField from '@/components/ui/UiFormField.vue';
 import UiInput from '@/components/ui/UiInput.vue';
@@ -27,7 +26,7 @@ const form = reactive({
     service_category_id: 0,
     name: '',
     description: '',
-    duration_minutes: 60,
+    duration_minutes: '60',
     pricing_type: 'fixed' as 'fixed' | 'starting_from' | 'variable',
     price: '',
     active: true,
@@ -43,15 +42,15 @@ async function loadService(): Promise<void> {
             adminCatalogApi.serviceCategories.list({ active: true }),
         ]);
 
-        const service = serviceResponse.data ?? serviceResponse;
+        const service = serviceResponse;
         form.service_category_id = service.category?.id ?? 0;
         form.name = service.name;
         form.description = service.description ?? '';
-        form.duration_minutes = service.duration_minutes;
+        form.duration_minutes = String(service.duration_minutes);
         form.pricing_type = service.pricing_type;
         form.price = service.price ?? '';
         form.active = service.active;
-        categories.value = categoriesResponse.data ?? categoriesResponse;
+        categories.value = categoriesResponse.data;
 
         if (!form.service_category_id && categories.value.length > 0) {
             form.service_category_id = categories.value[0].id;
@@ -89,7 +88,7 @@ async function save(): Promise<void> {
         await adminCatalogApi.services.update(serviceId.value, payload);
         message.value = 'Servicio actualizado.';
         await router.push({ name: 'admin.catalog.services' });
-    } catch (exception: any) {
+    } catch (exception: unknown) {
         error.value = exception instanceof ApiError ? exception.message : 'No pudimos actualizar el servicio.';
     } finally {
         saving.value = false;
@@ -159,7 +158,7 @@ onMounted(loadService);
                         <template #default="{ inputId, describedBy, invalid }">
                             <UiInput
                                 :id="inputId"
-                                v-model.number="form.duration_minutes"
+                                v-model="form.duration_minutes"
                                 type="number"
                                 min="1"
                                 max="600"
@@ -216,7 +215,7 @@ onMounted(loadService);
                         </svg>
                         <span>{{ saving ? 'Guardando...' : 'Guardar cambios' }}</span>
                     </button>
-                    <button type="button" @click="cancel" class="inline-flex min-h-11 items-center justify-center rounded-md border border-border-default px-6 py-2 font-ui text-sm font-bold text-text-secondary hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2">Cancelar</button>
+                    <button type="button" class="inline-flex min-h-11 items-center justify-center rounded-md border border-border-default px-6 py-2 font-ui text-sm font-bold text-text-secondary hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2" @click="cancel">Cancelar</button>
                 </div>
             </form>
         </UiCard>

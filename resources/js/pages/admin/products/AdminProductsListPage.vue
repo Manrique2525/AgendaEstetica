@@ -1,128 +1,119 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
-import AdminLayout from '@/layouts/AdminLayout.vue'
-import CatalogPageHeader from '@/components/admin/CatalogPageHeader.vue'
-import CatalogTable from '@/components/admin/CatalogTable.vue'
-import CatalogFilters from '@/components/admin/CatalogFilters.vue'
-import CatalogPagination from '@/components/admin/CatalogPagination.vue'
-import CatalogEmptyState from '@/components/admin/CatalogEmptyState.vue'
-import UiConfirmDialog from '@/components/ui/UiConfirmDialog.vue'
-import { adminCatalogApi, type AdminProduct, type AdminProductCategory } from '@/services/api/adminCatalog'
-import { useRouter } from 'vue-router'
+import { onMounted, reactive, ref } from 'vue';
+import { ApiError } from '@/services/http';
+import AdminLayout from '@/layouts/AdminLayout.vue';
+import CatalogPageHeader from '@/components/admin/CatalogPageHeader.vue';
+import CatalogTable from '@/components/admin/CatalogTable.vue';
+import CatalogFilters from '@/components/admin/CatalogFilters.vue';
+import CatalogPagination from '@/components/admin/CatalogPagination.vue';
+import UiConfirmDialog from '@/components/ui/UiConfirmDialog.vue';
+import { adminCatalogApi, type AdminProduct, type AdminProductCategory } from '@/services/api/adminCatalog';
 
-interface ProductRow {
-    id: number
-    name: string
-    category: string
-    price: string
-    active: boolean
-}
+type ProductRow = AdminProduct & { categoryName: string };
 
-const columns = [
-    { key: 'name', label: 'Nombre', render: (row: any) => row.name },
-    { key: 'category', label: 'Categoría', render: (row: any) => row.category },
-    { key: 'price', label: 'Precio', render: (row: any) => `$${row.price}` },
-    { key: 'active', label: 'Estado', render: (row: any) => row.active ? 'Activo' : 'Inactivo' },
-]
+const columns: { key: string; label: string; render?: (row: Record<string, unknown>) => string | number | null }[] = [
+    { key: 'name', label: 'Nombre' },
+    { key: 'categoryName', label: 'Categoría' },
+    { key: 'price', label: 'Precio', render: (row) => `$${row.price as string}` },
+    { key: 'active', label: 'Estado', render: (row) => row.active ? 'Activo' : 'Inactivo' },
+];
 
-const products = ref<any[]>([])
-const categories = ref<any[]>([])
-const loading = ref(true)
-const error = ref('')
-const message = ref('')
+const products = ref<ProductRow[]>([]);
+const categories = ref<AdminProductCategory[]>([]);
+const loading = ref(true);
+const error = ref('');
 
 const pagination = reactive({
     currentPage: 1,
     lastPage: 1,
     perPage: 15,
     total: 0,
-})
+});
 
 const filters = reactive({
     q: '',
     active: '' as '' | 'true' | 'false',
     product_category_id: '' as '' | number,
-})
+});
 
-const pendingDelete = ref<any | null>(null)
-const deleting = ref(false)
-const router = useRouter()
+const pendingDelete = ref<AdminProduct | null>(null);
+const deleting = ref(false);
+
+function toRow(product: AdminProduct): ProductRow {
+    return { ...product, categoryName: product.category?.name ?? '—' };
+}
 
 async function load(): Promise<void> {
-    loading.value = true
-    error.value = ''
+    loading.value = true;
+    error.value = '';
 
     try {
         const params: Record<string, string | number | boolean> = {
             page: pagination.currentPage,
             per_page: pagination.perPage,
-        }
+        };
 
-        if (filters.q.trim()) params.q = filters.q.trim()
-        if (filters.active !== '') params.active = filters.active === 'true'
-        if (filters.product_category_id !== '') params.product_category_id = Number(filters.product_category_id)
+        if (filters.q.trim()) params.q = filters.q.trim();
+        if (filters.active !== '') params.active = filters.active === 'true';
+        if (filters.product_category_id !== '') params.product_category_id = Number(filters.product_category_id);
 
         const [productsResponse, categoriesResponse] = await Promise.all([
             adminCatalogApi.products.list(params),
             adminCatalogApi.productCategories.list({ active: true }),
-        ])
+        ]);
 
-        // The API returns arrays directly
-        const productsData = Array.isArray(productsResponse) ? productsResponse : []
-        const categoriesData = Array.isArray(categoriesResponse) ? categoriesResponse : []
-
-        products.value = productsData
-        categories.value = categoriesData
-
-        // For pagination, we'll use the full data length since the API returns all items
-        pagination.currentPage = 1
-        pagination.lastPage = 1
-        pagination.total = productsData.length
+        products.value = productsResponse.data.map(toRow);
+        categories.value = categoriesResponse.data;
+        pagination.currentPage = productsResponse.current_page;
+        pagination.lastPage = productsResponse.last_page;
+        pagination.total = productsResponse.total;
     } catch {
-        error.value = 'No pudimos cargar los productos.'
+        error.value = 'No pudimos cargar los productos.';
     } finally {
-        loading.value = false
+        loading.value = false;
     }
 }
 
-async function toggle(product: any): Promise<void> {
+async function toggle(row: Record<string, unknown>): Promise<void> {
+    const product = row as unknown as AdminProduct;
     try {
-        await adminCatalogApi.products.setStatus(product.id, !product.active)
-        await load()
+        await adminCatalogApi.products.setStatus(product.id, !product.active);
+        await load();
     } catch {
-        error.value = 'No pudimos cambiar el estado.'
+        error.value = 'No pudimos cambiar el estado.';
     }
 }
 
 async function confirmDelete(): Promise<void> {
-    if (!pendingDelete.value || deleting.value) return
-    deleting.value = true
+    if (!pendingDelete.value || deleting.value) return;
+    deleting.value = true;
     try {
-        await adminCatalogApi.products.remove(pendingDelete.value.id)
-        pendingDelete.value = null
-        await load()
-    } catch (exception: any) {
-        error.value = exception instanceof Error ? exception.message : 'No pudimos eliminar el producto.'
+        await adminCatalogApi.products.remove(pendingDelete.value.id);
+        pendingDelete.value = null;
+        await load();
+    } catch (exception: unknown) {
+        error.value = exception instanceof ApiError ? exception.message : 'No pudimos eliminar el producto.';
     } finally {
-        deleting.value = false
+        deleting.value = false;
     }
 }
 
 async function handleSearch(): Promise<void> {
-    pagination.currentPage = 1
-    await load()
+    pagination.currentPage = 1;
+    await load();
 }
 
 async function handlePageChange(page: number): Promise<void> {
-    pagination.currentPage = page
-    await load()
+    pagination.currentPage = page;
+    await load();
 }
 
-function editProduct(product: any): void {
-    window.location.href = `/admin/catalogo/productos/${product.id}/editar`
+function editProduct(row: Record<string, unknown>): void {
+    const product = row as unknown as AdminProduct;
+    window.location.href = `/admin/catalogo/productos/${product.id}/editar`;
 }
 
-onMounted(load)
+onMounted(load);
 </script>
 
 <template>
@@ -131,11 +122,13 @@ onMounted(load)
             title="Productos"
             description="Catálogo de productos disponibles para la venta."
             :count="pagination.total"
-            createRoute="/admin/catalogo/productos/nuevo"
-            createLabel="Nuevo producto"
+            create-route="/admin/catalogo/productos/nuevo"
+            create-label="Nuevo producto"
         />
 
-        <CatalogFilters v-model:search="filters.q" @search="handleSearch" @clear="load">
+        <p v-if="error" role="alert" class="mb-6 rounded-md border border-state-error bg-red-50 p-3 font-body text-sm text-state-error">{{ error }}</p>
+
+        <CatalogFilters :search="filters.q" @search="(value) => { filters.q = value; handleSearch(); }" @clear="handleSearch">
             <template #filters>
                 <select v-model="filters.active" class="min-h-11 rounded-md border border-border-default px-3 py-2 font-body text-sm">
                     <option value="">Todos los estados</option>
@@ -153,19 +146,20 @@ onMounted(load)
             :columns="columns"
             :rows="products"
             :loading="loading"
-            :emptyMessage="'Sin productos registrados.'"
-            rowKey="id"
-            @edit="editProduct"
-            @toggle="toggle"
-            @delete="confirmDelete"
+            empty-message="Sin productos registrados."
+            row-key="id"
+            :on-edit="editProduct"
+            :on-toggle="toggle"
+            :on-delete="(row) => { pendingDelete = row as unknown as AdminProduct; }"
         />
 
         <CatalogPagination
-            v-model:currentPage="pagination.currentPage"
-            :lastPage="pagination.lastPage"
-            :perPage="pagination.perPage"
+            :current-page="pagination.currentPage"
+            :last-page="pagination.lastPage"
+            :per-page="pagination.perPage"
             :total="pagination.total"
-            @update:currentPage="handlePageChange"
+            class="mt-6"
+            @update:current-page="handlePageChange"
         />
 
         <UiConfirmDialog

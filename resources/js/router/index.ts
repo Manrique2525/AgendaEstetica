@@ -3,16 +3,16 @@ import AdminLoginPage from '../pages/admin/AdminLoginPage.vue';
 import AdminPage from '../pages/admin/AdminPage.vue';
 import AdminAgendaPage from '../pages/admin/AdminAgendaPage.vue';
 import AdminAgendaDetailPage from '../pages/admin/AdminAgendaDetailPage.vue';
-import AdminCatalogServicesPage from '../pages/admin/AdminCatalogServicesPage.vue';
-import AdminCatalogServiceCategoriesPage from '../pages/admin/AdminCatalogServiceCategoriesPage.vue';
-import AdminCatalogProductsPage from '../pages/admin/AdminCatalogProductsPage.vue';
-import AdminCatalogProductCategoriesPage from '../pages/admin/AdminCatalogProductCategoriesPage.vue';
+import AdminServicesListPage from '../pages/admin/services/AdminServicesListPage.vue';
 import AdminServicesCreatePage from '../pages/admin/services/AdminServicesCreatePage.vue';
 import AdminServicesEditPage from '../pages/admin/services/AdminServicesEditPage.vue';
+import AdminServiceCategoriesListPage from '../pages/admin/service-categories/AdminServiceCategoriesListPage.vue';
 import AdminServiceCategoriesCreatePage from '../pages/admin/service-categories/AdminServiceCategoriesCreatePage.vue';
 import AdminServiceCategoriesEditPage from '../pages/admin/service-categories/AdminServiceCategoriesEditPage.vue';
+import AdminProductsListPage from '../pages/admin/products/AdminProductsListPage.vue';
 import AdminProductsCreatePage from '../pages/admin/products/AdminProductsCreatePage.vue';
 import AdminProductsEditPage from '../pages/admin/products/AdminProductsEditPage.vue';
+import AdminProductCategoriesListPage from '../pages/admin/product-categories/AdminProductCategoriesListPage.vue';
 import AdminProductCategoriesCreatePage from '../pages/admin/product-categories/AdminProductCategoriesCreatePage.vue';
 import AdminProductCategoriesEditPage from '../pages/admin/product-categories/AdminProductCategoriesEditPage.vue';
 import AdminBusinessProfilePage from '../pages/admin/AdminBusinessProfilePage.vue';
@@ -88,7 +88,7 @@ const router = createRouter({
         },
         {
             path: '/admin/catalogo/servicios',
-            component: AdminCatalogServicesPage,
+            component: AdminServicesListPage,
             name: 'admin.catalog.services',
             meta: { requiresAuth: true, title: 'Servicios | Administración' },
         },
@@ -106,7 +106,7 @@ const router = createRouter({
         },
         {
             path: '/admin/catalogo/categorias',
-            component: AdminCatalogServiceCategoriesPage,
+            component: AdminServiceCategoriesListPage,
             name: 'admin.catalog.service-categories',
             meta: { requiresAuth: true, title: 'Categorías de servicios | Administración' },
         },
@@ -124,7 +124,7 @@ const router = createRouter({
         },
         {
             path: '/admin/catalogo/productos',
-            component: AdminCatalogProductsPage,
+            component: AdminProductsListPage,
             name: 'admin.catalog.products',
             meta: { requiresAuth: true, title: 'Productos | Administración' },
         },
@@ -142,7 +142,7 @@ const router = createRouter({
         },
         {
             path: '/admin/catalogo/categorias-producto',
-            component: AdminCatalogProductCategoriesPage,
+            component: AdminProductCategoriesListPage,
             name: 'admin.catalog.product-categories',
             meta: { requiresAuth: true, title: 'Categorías de productos | Administración' },
         },

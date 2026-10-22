@@ -109,6 +109,7 @@ export const adminCatalogApi = {
     services: {
         list: (params: { q?: string; service_category_id?: number; active?: boolean } = {}) =>
             http.get<PaginatedResponse<AdminService>>(`/admin/catalog/services${query(params)}`),
+        show: (id: number) => http.get<AdminService>(`/admin/catalog/services/${id}`),
         create: (payload: ServicePayload) => http.post<AdminService>('/admin/catalog/services', payload),
         update: (id: number, payload: ServicePayload) => http.put<AdminService>(`/admin/catalog/services/${id}`, payload),
         setStatus: (id: number, active: boolean) => http.patch<AdminService>(`/admin/catalog/services/${id}/status`, { active }),

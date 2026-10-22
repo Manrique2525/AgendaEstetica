@@ -1,17 +1,15 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 import AdminLayout from '@/layouts/AdminLayout.vue';
-import UiButton from '@/components/ui/UiButton.vue';
 import UiCard from '@/components/ui/UiCard.vue';
 import UiFormField from '@/components/ui/UiFormField.vue'
 import UiInput from '@/components/ui/UiInput.vue'
 import UiTextarea from '@/components/ui/UiTextarea.vue'
-import { ApiError } from '../../../services/http'
+import { ApiError } from '@/services/http'
 import { adminCatalogApi } from '@/services/api/adminCatalog'
 
 const router = useRouter()
-const route = useRoute()
 
 const saving = ref(false)
 const error = ref('')
@@ -47,10 +45,7 @@ async function save(): Promise<void> {
         await adminCatalogApi.serviceCategories.create(payload)
         message.value = 'Categoría creada.'
         await router.push({ name: 'admin.catalog.service-categories' })
-    } catch (exception: any) {
-        if (exception instanceof ApiError && exception.errors) {
-            // Handle validation errors
-        }
+    } catch (exception: unknown) {
         error.value = exception instanceof ApiError ? exception.message : 'No pudimos crear la categoría.'
     } finally {
         saving.value = false
@@ -123,7 +118,7 @@ async function cancel(): Promise<void> {
                         </svg>
                         <span>{{ saving ? 'Guardando...' : 'Crear categoría' }}</span>
                     </button>
-                    <button type="button" @click="cancel" class="inline-flex min-h-11 items-center justify-center rounded-md border border-border-default px-6 py-2 font-ui text-sm font-bold text-text-secondary hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2">Cancelar</button>
+                    <button type="button" class="inline-flex min-h-11 items-center justify-center rounded-md border border-border-default px-6 py-2 font-ui text-sm font-bold text-text-secondary hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2" @click="cancel">Cancelar</button>
                 </div>
             </form>
         </UiCard>

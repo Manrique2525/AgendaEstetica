@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, reactive } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 import AdminLayout from '@/layouts/AdminLayout.vue';
-import UiButton from '@/components/ui/UiButton.vue';
 import UiCard from '@/components/ui/UiCard.vue';
 import UiFormField from '@/components/ui/UiFormField.vue';
 import UiInput from '@/components/ui/UiInput.vue';
@@ -11,10 +10,8 @@ import { ApiError } from '@/services/http';
 import { adminCatalogApi, type AdminServiceCategory } from '@/services/api/adminCatalog';
 
 const router = useRouter();
-const route = useRoute();
 
 const categories = ref<AdminServiceCategory[]>([]);
-const loading = ref(false);
 const saving = ref(false);
 const error = ref('');
 const message = ref('');
@@ -26,7 +23,7 @@ const form = reactive({
     service_category_id: 0,
     name: '',
     description: '',
-    duration_minutes: 60,
+    duration_minutes: '60',
     pricing_type: 'fixed' as 'fixed' | 'starting_from' | 'variable',
     price: '',
     active: true,
@@ -75,7 +72,7 @@ async function save(): Promise<void> {
         await adminCatalogApi.services.create(payload);
         message.value = 'Servicio creado.';
         await router.push({ name: 'admin.catalog.services' });
-    } catch (exception: any) {
+    } catch (exception: unknown) {
         if (exception instanceof ApiError && exception.errors) {
             Object.entries(exception.errors).forEach(([key, messages]) => {
                 serverErrors[key] = messages[0] ?? 'Revisa este campo.';
@@ -150,7 +147,7 @@ onMounted(loadCategories);
                         <template #default="{ inputId, describedBy, invalid }">
                             <UiInput
                                 :id="inputId"
-                                v-model.number="form.duration_minutes"
+                                v-model="form.duration_minutes"
                                 type="number"
                                 min="1"
                                 max="600"
@@ -207,7 +204,7 @@ onMounted(loadCategories);
                         </svg>
                         <span>{{ saving ? 'Guardando...' : 'Crear servicio' }}</span>
                     </button>
-                    <button type="button" @click="cancel" class="inline-flex min-h-11 items-center justify-center rounded-md border border-border-default px-6 py-2 font-ui text-sm font-bold text-text-secondary hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2">Cancelar</button>
+                    <button type="button" class="inline-flex min-h-11 items-center justify-center rounded-md border border-border-default px-6 py-2 font-ui text-sm font-bold text-text-secondary hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2" @click="cancel">Cancelar</button>
                 </div>
             </form>
         </UiCard>

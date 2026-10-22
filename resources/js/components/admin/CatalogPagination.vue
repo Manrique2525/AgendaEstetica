@@ -53,9 +53,9 @@ function changePage(page: number | string): void {
         <button
             type="button"
             class="inline-flex min-h-10 items-center justify-center rounded-md border border-border-default px-3 font-body text-sm font-semibold text-text-secondary hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring disabled:opacity-50 disabled:cursor-not-allowed"
-            @click="changePage(currentPage - 1)"
             :disabled="currentPage === 1"
             aria-label="Página anterior"
+            @click="changePage(currentPage - 1)"
         >
             <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19l-7-7 7-7" />
@@ -75,10 +75,10 @@ function changePage(page: number | string): void {
                             ? 'bg-action-primary text-action-primary-foreground'
                             : 'border border-border-default text-text-secondary hover:bg-surface-subtle'
                     ]"
-                    @click="changePage(page)"
                     :disabled="page === currentPage"
                     :aria-current="page === currentPage ? 'page' : undefined"
                     :aria-label="`Página ${page}`"
+                    @click="changePage(page)"
                 >
                     {{ page }}
                 </button>
@@ -88,9 +88,9 @@ function changePage(page: number | string): void {
         <button
             type="button"
             class="inline-flex min-h-10 items-center justify-center rounded-md border border-border-default px-3 font-body text-sm font-semibold text-text-secondary hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring disabled:opacity-50 disabled:cursor-not-allowed"
-            @click="changePage(currentPage + 1)"
             :disabled="currentPage === lastPage"
             aria-label="Página siguiente"
+            @click="changePage(currentPage + 1)"
         >
             <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7" />

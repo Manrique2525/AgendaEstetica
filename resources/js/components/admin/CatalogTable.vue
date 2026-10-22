@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import UiButton from '../ui/UiButton.vue';
 import UiConfirmDialog from '../ui/UiConfirmDialog.vue';
-import { RouterLink } from 'vue-router';
 
 interface Column {
     key: string;

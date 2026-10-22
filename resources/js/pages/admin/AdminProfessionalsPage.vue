@@ -57,7 +57,7 @@ async function load(): Promise<void> {
         if (filters.service_id !== '') params.service_id = Number(filters.service_id);
 
         const response = await adminOperationsApi.professionals.list(params);
-        professionals.value = response.data;
+        professionals.value = response;
     } catch {
         error.value = 'No pudimos cargar los profesionales.';
     } finally {

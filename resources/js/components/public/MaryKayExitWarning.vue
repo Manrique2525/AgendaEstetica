@@ -53,11 +53,11 @@ onBeforeUnmount(() => {
             v-if="open"
             ref="overlayRef"
             class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 sm:items-center"
-            @click="handleOverlayClick"
             role="dialog"
             aria-modal="true"
             aria-labelledby="exit-warning-title"
             aria-describedby="exit-warning-message"
+            @click="handleOverlayClick"
         >
             <section
                 ref="dialogRef"
@@ -93,14 +93,14 @@ onBeforeUnmount(() => {
                 <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                     <UiButton
                         variant="secondary"
-                        @click="emit('close')"
                         class="w-full sm:w-auto"
+                        @click="emit('close')"
                     >
                         Cancelar
                     </UiButton>
                     <UiButton
-                        @click="emit('confirm')"
                         class="w-full sm:w-auto"
+                        @click="emit('confirm')"
                     >
                         Continuar a {{ destinationLabel }}
                     </UiButton>

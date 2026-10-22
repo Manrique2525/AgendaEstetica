@@ -2,7 +2,6 @@
 import { ref, computed, onMounted, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import AdminLayout from '@/layouts/AdminLayout.vue'
-import UiButton from '@/components/ui/UiButton.vue'
 import UiCard from '@/components/ui/UiCard.vue'
 import UiFormField from '@/components/ui/UiFormField.vue'
 import UiInput from '@/components/ui/UiInput.vue'
@@ -79,7 +78,7 @@ async function save(): Promise<void> {
         await adminCatalogApi.serviceCategories.update(categoryId.value, payload)
         message.value = 'Categoría actualizada.'
         await router.push({ name: 'admin.catalog.service-categories' })
-    } catch (exception: any) {
+    } catch (exception: unknown) {
         if (exception instanceof ApiError && exception.errors) {
             Object.entries(exception.errors).forEach(([key, messages]) => {
                 serverErrors[key] = messages[0] ?? 'Revisa este campo.'
@@ -159,7 +158,7 @@ onMounted(loadCategory)
                         </svg>
                         <span>{{ saving ? 'Guardando...' : 'Guardar cambios' }}</span>
                     </button>
-                    <button type="button" @click="cancel" class="inline-flex min-h-11 items-center justify-center rounded-md border border-border-default px-6 py-2 font-ui text-sm font-bold text-text-secondary hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2">Cancelar</button>
+                    <button type="button" class="inline-flex min-h-11 items-center justify-center rounded-md border border-border-default px-6 py-2 font-ui text-sm font-bold text-text-secondary hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2" @click="cancel">Cancelar</button>
                 </div>
             </form>
         </UiCard>
