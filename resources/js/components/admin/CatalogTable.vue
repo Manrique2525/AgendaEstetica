@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import UiButton from '../ui/UiButton.vue';
-import UiConfirmDialog from '../ui/UiConfirmDialog.vue';
 
 interface Column {
     key: string;
@@ -20,8 +19,6 @@ interface Props {
     onEdit?: (row: Record<string, unknown>) => void;
     onToggle?: (row: Record<string, unknown>) => void;
     onDelete?: (row: Record<string, unknown>) => void;
-    pendingDelete?: Record<string, unknown> | null;
-    deleting?: boolean;
     toggleLabel?: (row: Record<string, unknown>) => string;
 }
 
@@ -36,8 +33,6 @@ const emit = defineEmits<{
     edit: [Record<string, unknown>];
     toggle: [Record<string, unknown>];
     delete: [Record<string, unknown>];
-    confirmDelete: [];
-    cancelDelete: [];
 }>();
 
 function handleEdit(row: Record<string, unknown>): void {
@@ -53,14 +48,6 @@ function handleToggle(row: Record<string, unknown>): void {
 function handleDelete(row: Record<string, unknown>): void {
     props.onDelete?.(row);
     emit('delete', row);
-}
-
-function handleConfirmDelete(): void {
-    emit('confirmDelete');
-}
-
-function handleCancelDelete(): void {
-    emit('cancelDelete');
 }
 
 function getCellValue(row: Record<string, unknown>, column: Column): string {
@@ -133,14 +120,4 @@ function getCellValue(row: Record<string, unknown>, column: Column): string {
             </tbody>
         </table>
     </div>
-
-    <UiConfirmDialog
-        :open="pendingDelete !== null"
-        title="Eliminar registro"
-        :message="`¿Confirmas eliminar ${pendingDelete?.name ?? ''}? Esta acción no se puede deshacer.`"
-        confirm-label="Eliminar"
-        :pending="deleting"
-        @cancel="handleCancelDelete"
-        @confirm="handleConfirmDelete"
-    />
 </template>

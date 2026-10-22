@@ -55,6 +55,29 @@ describe('AdminServiceCategoriesListPage', () => {
         expect(wrapper.text()).toContain('No pudimos cargar las categorías.');
     });
 
+    it('does not show the delete dialog until a row is deleted', async () => {
+        const wrapper = mount(AdminServiceCategoriesListPage, { global });
+        await flushPromises();
+
+        expect(wrapper.find('[role="dialog"]').exists()).toBe(false);
+    });
+
+    it('opens and cancels the delete dialog', async () => {
+        const wrapper = mount(AdminServiceCategoriesListPage, { global });
+        await flushPromises();
+
+        const remove = wrapper.findAll('button').find((button) => button.text().includes('Eliminar'));
+        await remove!.trigger('click');
+
+        const dialog = wrapper.find('[role="dialog"]');
+        expect(dialog.exists()).toBe(true);
+
+        const cancel = wrapper.findAll('button').find((button) => button.text().includes('Cerrar'));
+        await cancel!.trigger('click');
+
+        expect(wrapper.find('[role="dialog"]').exists()).toBe(false);
+    });
+
     it('toggles the status of a category', async () => {
         catalog.serviceCategories.setStatus.mockResolvedValue(categoryList[0]);
 
