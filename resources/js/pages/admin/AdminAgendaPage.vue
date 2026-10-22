@@ -25,7 +25,7 @@ const appointments = ref<AgendaAppointment[]>([]);
 const professionals = ref<AgendaLookupProfessional[]>([]);
 const services = ref<AgendaLookupService[]>([]);
 const customers = ref<AgendaLookupCustomer[]>([]);
-const view = ref(route.query.view === 'list' ? 'list' : 'day');
+const view = ref(route.query.view === 'day' ? 'day' : 'list');
 const selectedDate = ref(typeof route.query.from === 'string' ? route.query.from : '');
 const rangeFrom = ref(selectedDate.value);
 const rangeTo = ref(typeof route.query.to === 'string' ? route.query.to : '');
@@ -268,7 +268,7 @@ onMounted(async () => {
             selectedDate.value = businessDateToday(context.value.timezone);
         }
         if (!rangeFrom.value) rangeFrom.value = selectedDate.value;
-        if (!rangeTo.value) rangeTo.value = addCalendarDays(rangeFrom.value, 7);
+        if (!rangeTo.value) rangeTo.value = addCalendarDays(rangeFrom.value, 30);
         await loadLookups();
         await loadCreateProfessionals();
         await loadAppointments();
@@ -401,7 +401,7 @@ watch([professionalId, serviceId, status, customerId], () => {
 
             <p v-if="loading" role="status" aria-live="polite" class="font-body text-text-secondary">Cargando agenda...</p>
             <div v-else-if="error" role="alert" class="rounded-md border border-state-error p-4 font-body text-state-error">{{ error }}</div>
-            <div v-else-if="!appointments.length" class="rounded-md border border-border-default p-8 text-center font-body text-text-secondary">No hay citas para este periodo.</div>
+            <div v-else-if="!appointments.length" class="rounded-md border border-border-default p-8 text-center font-body text-text-secondary">No hay citas para este periodo. Prueba con la vista Día o amplía el rango de fechas.</div>
             <div v-else class="space-y-4">
                 <section v-for="appointment in appointments" :key="appointment.id" class="rounded-xl border border-border-default bg-surface-elevated p-5 shadow-sm">
                     <RouterLink :to="{ name: 'admin.agenda.detail', params: { id: appointment.id }, query: route.query }" class="block rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring">

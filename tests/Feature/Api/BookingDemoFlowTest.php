@@ -3,6 +3,7 @@
 use App\Models\Appointment;
 use App\Models\Professional;
 use App\Models\Service;
+use App\Models\User;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Database\Seeders\BookingDemoSeeder;
@@ -91,4 +92,33 @@ it('excludes inactive demo professionals from the public list', function (): voi
     $this->getJson('/api/v1/public/booking/professionals?service_id='.$peinado->id)
         ->assertOk()
         ->assertJsonCount(0, 'data');
+});
+
+it('shows a publicly booked appointment in the administrative agenda for its business date', function (): void {
+    $peinado = Service::query()->where('slug', 'peinado')->firstOrFail();
+    $professional = $peinado->professionals()->where('active', true)->firstOrFail();
+
+    $slot = $this->getJson(
+        '/api/v1/public/booking/availability?service_id='.$peinado->id
+        .'&professional_id='.$professional->id
+        .'&date=2026-01-05',
+    )->assertOk()->json('data.slots.0');
+
+    $this->withHeaders(['Idempotency-Key' => '33333333-3333-4333-8333-333333333333'])
+        ->postJson('/api/v1/public/booking/appointments', [
+            'service_id' => $peinado->id,
+            'professional_id' => $professional->id,
+            'starts_at' => $slot['starts_at'],
+            'name' => 'Cliente Agenda',
+            'phone' => '993 100 3000',
+        ])->assertCreated();
+
+    $appointment = Appointment::query()->firstOrFail();
+
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin)
+        ->getJson('/api/v1/admin/agenda/appointments?from=2026-01-05&to=2026-01-06')
+        ->assertOk()
+        ->assertJsonPath('data.0.id', $appointment->id);
 });
