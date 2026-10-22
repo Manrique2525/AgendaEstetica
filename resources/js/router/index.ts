@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import AdminLoginPage from '../pages/admin/AdminLoginPage.vue';
+import AdminForgotPasswordPage from '../pages/admin/AdminForgotPasswordPage.vue';
+import AdminProfilePage from '../pages/admin/AdminProfilePage.vue';
 import AdminPage from '../pages/admin/AdminPage.vue';
 import AdminAgendaPage from '../pages/admin/AdminAgendaPage.vue';
 import AdminAgendaDetailPage from '../pages/admin/AdminAgendaDetailPage.vue';
@@ -171,6 +173,12 @@ const router = createRouter({
             meta: { requiresAuth: true, title: 'Profesionales | Administración' },
         },
         {
+            path: '/admin/perfil',
+            component: AdminProfilePage,
+            name: 'admin.profile',
+            meta: { requiresAuth: true, title: 'Perfil | Administración' },
+        },
+        {
             path: '/admin/profesionales/:id/horarios',
             component: AdminProfessionalSchedulesPage,
             name: 'admin.professionals.schedules',
@@ -181,6 +189,12 @@ const router = createRouter({
             component: AdminLoginPage,
             name: 'admin.login',
             meta: { surface: 'admin', guestOnly: true },
+        },
+        {
+            path: '/admin/recuperar-contrasena',
+            component: AdminForgotPasswordPage,
+            name: 'admin.forgot-password',
+            meta: { surface: 'admin', guestOnly: true, title: 'Recuperar contraseña | Administración' },
         },
         {
             path: '/:pathMatch(.*)*',

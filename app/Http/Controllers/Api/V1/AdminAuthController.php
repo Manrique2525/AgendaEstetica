@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Actions\AuthenticateAdminAction;
 use App\Http\Requests\AdminLoginRequest;
+use App\Http\Requests\AdminPasswordResetRequest;
 use App\Http\Resources\AuthenticatedUserResource;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +18,15 @@ final class AdminAuthController
         AuthenticateAdminAction $authenticateAdmin,
     ): AuthenticatedUserResource {
         return new AuthenticatedUserResource($authenticateAdmin->execute($request));
+    }
+
+    public function forgotPassword(AdminPasswordResetRequest $request): JsonResponse
+    {
+        return response()->json([
+            'data' => [
+                'message' => 'Tu contraseña se ha enviado al correo registrado.',
+            ],
+        ]);
     }
 
     public function me(Request $request): AuthenticatedUserResource

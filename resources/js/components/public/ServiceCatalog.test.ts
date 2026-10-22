@@ -12,6 +12,7 @@ const service = (overrides: Partial<PublicBookingService> = {}): PublicBookingSe
     name: 'Corte',
     slug: 'corte',
     description: 'Corte a tu estilo.',
+    image_url: null,
     duration_minutes: 45,
     pricing_type: 'fixed',
     price: '250.00',

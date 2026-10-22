@@ -9,6 +9,7 @@ use App\Models\Service;
 use App\Models\ServiceCategory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 final class PublicBookingServiceResource extends JsonResource
 {
@@ -26,6 +27,7 @@ final class PublicBookingServiceResource extends JsonResource
             'name' => $service->name,
             'slug' => $service->slug,
             'description' => $service->description,
+            'image_url' => $service->image_path === null ? null : Storage::disk('public')->url($service->image_path),
             'duration_minutes' => $service->duration_minutes,
             'pricing_type' => $pricingType,
             'price' => $service->price,

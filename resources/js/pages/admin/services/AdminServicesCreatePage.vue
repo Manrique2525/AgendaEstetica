@@ -15,6 +15,8 @@ const categories = ref<AdminServiceCategory[]>([]);
 const saving = ref(false);
 const error = ref('');
 const message = ref('');
+const imageFile = ref<File | null>(null);
+const imagePreview = ref('');
 const serverErrors = reactive<Record<string, string>>({});
 
 const isVariable = computed(() => form.pricing_type === 'variable');
@@ -28,6 +30,13 @@ const form = reactive({
     price: '',
     active: true,
 });
+
+function onImageChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
+    imageFile.value = file;
+    imagePreview.value = file ? URL.createObjectURL(file) : '';
+}
 
 async function loadCategories(): Promise<void> {
     try {
@@ -59,17 +68,32 @@ async function save(): Promise<void> {
     clearServerErrors();
 
     const payload = {
-        service_category_id: form.service_category_id,
+        service_category_id: String(form.service_category_id),
         name: form.name.trim(),
-        description: form.description || null,
-        duration_minutes: Number(form.duration_minutes),
+        description: form.description,
+        duration_minutes: String(Number(form.duration_minutes)),
         pricing_type: form.pricing_type,
-        price: form.pricing_type === 'variable' ? null : String(form.price),
-        active: form.active,
+        price: form.pricing_type === 'variable' ? '' : String(form.price),
+        active: form.active ? '1' : '0',
     };
 
     try {
-        await adminCatalogApi.services.create(payload);
+        if (imageFile.value) {
+            const formData = new FormData();
+            Object.entries(payload).forEach(([key, value]) => formData.append(key, value));
+            formData.append('image', imageFile.value);
+            await adminCatalogApi.services.createForm(formData);
+        } else {
+            await adminCatalogApi.services.create({
+                service_category_id: form.service_category_id,
+                name: form.name.trim(),
+                description: form.description || null,
+                duration_minutes: Number(form.duration_minutes),
+                pricing_type: form.pricing_type,
+                price: form.pricing_type === 'variable' ? null : String(form.price),
+                active: form.active,
+            });
+        }
         message.value = 'Servicio creado.';
         await router.push({ name: 'admin.catalog.services' });
     } catch (exception: unknown) {
@@ -190,6 +214,21 @@ onMounted(loadCategories);
                         </template>
                     </UiFormField>
                 </div>
+
+                <UiFormField label="Imagen (opcional)" :error="serverErrors.image">
+                    <template #default="{ inputId, describedBy, invalid }">
+                        <input
+                            :id="inputId"
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp"
+                            :aria-describedby="describedBy"
+                            :aria-invalid="invalid"
+                            class="mt-1 block w-full font-body text-sm"
+                            @change="onImageChange"
+                        >
+                        <img v-if="imagePreview" :src="imagePreview" alt="Vista previa de la imagen" class="mt-3 h-32 w-auto rounded-md border border-border-default object-cover">
+                    </template>
+                </UiFormField>
 
                 <label class="flex items-center gap-2 font-ui text-sm font-semibold">
                     <input v-model="form.active" type="checkbox" class="rounded border-border-default text-action-primary focus:ring-2 focus:ring-focus-ring">

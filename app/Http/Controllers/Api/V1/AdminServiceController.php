@@ -10,6 +10,7 @@ use App\Models\Service;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 final class AdminServiceController
@@ -39,11 +40,18 @@ final class AdminServiceController
     public function store(AdminServiceRequest $request): JsonResponse
     {
         $data = $request->validated();
+        $image = $data['image'] ?? null;
+        unset($data['image']);
+
         $data['slug'] = $this->uniqueSlug((string) ($data['slug'] ?? $data['name']), null);
         $data['active'] = $data['active'] ?? true;
 
         if (($data['pricing_type'] ?? null) === 'variable') {
             $data['price'] = null;
+        }
+
+        if ($image !== null) {
+            $data['image_path'] = $image->store('services', 'public');
         }
 
         $service = Service::query()->create($data);
@@ -61,6 +69,9 @@ final class AdminServiceController
     public function update(AdminServiceRequest $request, Service $service): AdminServiceResource
     {
         $data = $request->validated();
+        $image = $data['image'] ?? null;
+        unset($data['image']);
+
         $data['slug'] = $this->uniqueSlug((string) ($data['slug'] ?? $data['name']), $service->id);
 
         if (($data['pricing_type'] ?? null) === 'variable') {
@@ -69,6 +80,11 @@ final class AdminServiceController
 
         if (! array_key_exists('active', $data)) {
             unset($data['active']);
+        }
+
+        if ($image !== null) {
+            $this->deleteImage($service);
+            $data['image_path'] = $image->store('services', 'public');
         }
 
         $service->update($data);
@@ -95,9 +111,17 @@ final class AdminServiceController
         }
 
         $service->professionals()->detach();
+        $this->deleteImage($service);
         $service->delete();
 
         return response()->json(status: 204);
+    }
+
+    private function deleteImage(Service $service): void
+    {
+        if ($service->image_path !== null) {
+            Storage::disk('public')->delete($service->image_path);
+        }
     }
 
     private function load(Service $service): Service

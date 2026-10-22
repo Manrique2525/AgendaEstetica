@@ -9,6 +9,8 @@ use App\Models\ServiceCategory;
 use App\Models\User;
 use Database\Seeders\ServiceCatalogSeeder;
 use Database\Seeders\ServiceCategorySeeder;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 it('seeds the confirmed catalogue idempotently', function (): void {
     $this->seed(ServiceCategorySeeder::class);
@@ -117,6 +119,46 @@ it('creates and updates a service with slug and pricing', function (): void {
         ->assertJsonPath('data.name', 'Servicio actualizado')
         ->assertJsonPath('data.slug', 'servicio-actualizado')
         ->assertJsonPath('data.price', '650.00');
+});
+
+it('uploads a service image and exposes its public URL', function (): void {
+    Storage::fake('public');
+    $admin = User::factory()->admin()->create();
+    $category = ServiceCategory::factory()->create();
+
+    $created = $this->actingAs($admin)
+        ->post('/api/v1/admin/catalog/services', [
+            'service_category_id' => $category->id,
+            'name' => 'Servicio con imagen',
+            'duration_minutes' => 30,
+            'pricing_type' => 'fixed',
+            'price' => '300.00',
+            'image' => UploadedFile::fake()->image('servicio.jpg', 600, 400),
+        ])
+        ->assertCreated()
+        ->json('data');
+
+    expect($created['image_url'])->not->toBeNull();
+
+    Storage::disk('public')->assertExists(str_replace('/storage/', '', $created['image_url']));
+});
+
+it('rejects a service image with an invalid mime type', function (): void {
+    Storage::fake('public');
+    $admin = User::factory()->admin()->create();
+    $category = ServiceCategory::factory()->create();
+
+    $this->actingAs($admin)
+        ->post('/api/v1/admin/catalog/services', [
+            'service_category_id' => $category->id,
+            'name' => 'Servicio con archivo inválido',
+            'duration_minutes' => 30,
+            'pricing_type' => 'fixed',
+            'price' => '300.00',
+            'image' => UploadedFile::fake()->create('documento.pdf', 100, 'application/pdf'),
+        ])
+        ->assertStatus(422)
+        ->assertJsonValidationErrors(['image']);
 });
 
 it('toggles active status without deleting records', function (): void {

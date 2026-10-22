@@ -19,6 +19,9 @@ const loading = ref(false);
 const saving = ref(false);
 const error = ref('');
 const message = ref('');
+const imageFile = ref<File | null>(null);
+const currentImageUrl = ref<string | null>(null);
+const imagePreview = ref('');
 
 const isVariable = computed(() => form.pricing_type === 'variable');
 
@@ -31,6 +34,13 @@ const form = reactive({
     price: '',
     active: true,
 });
+
+function onImageChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
+    imageFile.value = file;
+    imagePreview.value = file ? URL.createObjectURL(file) : '';
+}
 
 async function loadService(): Promise<void> {
     loading.value = true;
@@ -50,6 +60,7 @@ async function loadService(): Promise<void> {
         form.pricing_type = service.pricing_type;
         form.price = service.price ?? '';
         form.active = service.active;
+        currentImageUrl.value = service.image_url;
         categories.value = categoriesResponse;
 
         if (!form.service_category_id && categories.value.length > 0) {
@@ -75,17 +86,32 @@ async function save(): Promise<void> {
     message.value = '';
 
     const payload = {
-        service_category_id: form.service_category_id,
+        service_category_id: String(form.service_category_id),
         name: form.name.trim(),
-        description: form.description || null,
-        duration_minutes: Number(form.duration_minutes),
+        description: form.description,
+        duration_minutes: String(Number(form.duration_minutes)),
         pricing_type: form.pricing_type,
-        price: form.pricing_type === 'variable' ? null : form.price,
-        active: form.active,
+        price: form.pricing_type === 'variable' ? '' : form.price,
+        active: form.active ? '1' : '0',
     };
 
     try {
-        await adminCatalogApi.services.update(serviceId.value, payload);
+        if (imageFile.value) {
+            const formData = new FormData();
+            Object.entries(payload).forEach(([key, value]) => formData.append(key, value));
+            formData.append('image', imageFile.value);
+            await adminCatalogApi.services.updateForm(serviceId.value, formData);
+        } else {
+            await adminCatalogApi.services.update(serviceId.value, {
+                service_category_id: form.service_category_id,
+                name: form.name.trim(),
+                description: form.description || null,
+                duration_minutes: Number(form.duration_minutes),
+                pricing_type: form.pricing_type,
+                price: form.pricing_type === 'variable' ? null : form.price,
+                active: form.active,
+            });
+        }
         message.value = 'Servicio actualizado.';
         await router.push({ name: 'admin.catalog.services' });
     } catch (exception: unknown) {
@@ -150,6 +176,26 @@ onMounted(loadService);
                             :aria-describedby="describedBy"
                             :invalid="invalid"
                         />
+                    </template>
+                </UiFormField>
+
+                <UiFormField label="Imagen (opcional)">
+                    <template #default="{ inputId, describedBy, invalid }">
+                        <img
+                            v-if="imagePreview || currentImageUrl"
+                            :src="imagePreview || currentImageUrl || ''"
+                            alt="Imagen actual del servicio"
+                            class="mb-3 h-32 w-auto rounded-md border border-border-default object-cover"
+                        >
+                        <input
+                            :id="inputId"
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp"
+                            :aria-describedby="describedBy"
+                            :aria-invalid="invalid"
+                            class="block w-full font-body text-sm"
+                            @change="onImageChange"
+                        >
                     </template>
                 </UiFormField>
 

@@ -54,14 +54,23 @@ onMounted(load);
             <section v-for="group in groups" :key="group.name" :aria-labelledby="anchor(group.name)">
                 <h3 :id="anchor(group.name)" class="font-ui text-sm font-bold uppercase tracking-[0.14em] text-brand-pink">{{ group.name }}</h3>
                 <ul class="mt-4 grid gap-4 sm:grid-cols-2">
-                    <li v-for="service in group.services" :key="service.id" class="flex flex-col rounded-lg border border-white/15 bg-white/5 p-5">
-                        <div class="flex items-start justify-between gap-4">
-                            <h4 class="font-display text-2xl text-text-inverse">{{ service.name }}</h4>
-                            <span class="whitespace-nowrap font-ui text-sm font-bold text-brand-gold">{{ service.pricing_display }}</span>
+                    <li v-for="service in group.services" :key="service.id" class="flex flex-col overflow-hidden rounded-lg border border-white/15 bg-white/5">
+                        <img
+                            v-if="service.image_url"
+                            :src="service.image_url"
+                            :alt="`Imagen de ${service.name}`"
+                            class="h-44 w-full object-cover"
+                            loading="lazy"
+                        >
+                        <div class="flex grow flex-col p-5">
+                            <div class="flex items-start justify-between gap-4">
+                                <h4 class="font-display text-2xl text-text-inverse">{{ service.name }}</h4>
+                                <span class="whitespace-nowrap font-ui text-sm font-bold text-brand-gold">{{ service.pricing_display }}</span>
+                            </div>
+                            <p v-if="service.description" class="mt-3 grow font-body text-sm leading-relaxed text-white/75">{{ service.description }}</p>
+                            <p class="mt-3 font-ui text-xs font-semibold uppercase tracking-[0.12em] text-white/60">{{ service.duration_minutes }} minutos</p>
+                            <a :href="`/reservar?service=${service.id}`" class="mt-4 inline-flex min-h-11 items-center justify-center rounded-md border border-white/40 px-4 py-2 font-ui text-sm font-bold text-text-inverse hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 focus:ring-offset-brand-black">Reservar</a>
                         </div>
-                        <p v-if="service.description" class="mt-3 grow font-body text-sm leading-relaxed text-white/75">{{ service.description }}</p>
-                        <p class="mt-3 font-ui text-xs font-semibold uppercase tracking-[0.12em] text-white/60">{{ service.duration_minutes }} minutos</p>
-                        <a :href="`/reservar?service=${service.id}`" class="mt-4 inline-flex min-h-11 items-center justify-center rounded-md border border-white/40 px-4 py-2 font-ui text-sm font-bold text-text-inverse hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 focus:ring-offset-brand-black">Reservar</a>
                     </li>
                 </ul>
             </section>

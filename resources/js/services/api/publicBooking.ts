@@ -6,6 +6,7 @@ export interface PublicBookingService {
     name: string;
     slug: string | null;
     description: string | null;
+    image_url: string | null;
     duration_minutes: number;
     pricing_type: 'fixed' | 'starting_from' | 'variable';
     price: string | null;

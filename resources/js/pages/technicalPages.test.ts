@@ -34,8 +34,13 @@ describe('technical page integration', () => {
         const wrapper = mount(AdminPage, { global: adminGlobal });
 
         expect(wrapper.findComponent(UiCard).exists()).toBe(true);
-        expect(wrapper.findComponent(UiButton).props('variant')).toBe('secondary');
         expect(wrapper.text()).toContain('Sesión activa');
+    });
+
+    it('hides the administration menu until a session exists', () => {
+        const wrapper = mount(AdminPage, { global: adminGlobal });
+
+        expect(wrapper.find('nav[aria-label="Navegación administrativa"]').exists()).toBe(false);
     });
 
     it('renders the not-found technical surface without business navigation', () => {

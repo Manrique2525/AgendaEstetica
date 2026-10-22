@@ -37,7 +37,7 @@ final class PublicBookingController
             ->orderBy('service_category_id')
             ->orderBy('name')
             ->orderBy('id')
-            ->get(['id', 'service_category_id', 'name', 'slug', 'description', 'duration_minutes', 'pricing_type', 'price']));
+            ->get(['id', 'service_category_id', 'name', 'slug', 'description', 'image_path', 'duration_minutes', 'pricing_type', 'price']));
     }
 
     public function professionals(PublicBookingProfessionalIndexRequest $request): AnonymousResourceCollection

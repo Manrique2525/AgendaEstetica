@@ -130,3 +130,28 @@ it('does not expose password hashes through the user model response', function (
     expect($user->toArray())->not->toHaveKey('password');
     expect($user->toArray())->not->toHaveKey('remember_token');
 });
+
+it('confirms a password reset for a registered administrator', function (): void {
+    User::factory()->admin()->create(['email' => 'reset-admin@example.invalid']);
+
+    $this->postJson('/api/v1/admin/auth/forgot-password', [
+        'email' => 'reset-admin@example.invalid',
+    ])->assertOk()
+        ->assertJsonPath('data.message', 'Tu contraseña se ha enviado al correo registrado.');
+});
+
+it('rejects a password reset for an email that is not registered', function (): void {
+    $this->postJson('/api/v1/admin/auth/forgot-password', [
+        'email' => 'missing@example.invalid',
+    ])->assertStatus(422)
+        ->assertJsonStructure(['errors' => ['email']]);
+});
+
+it('rejects a password reset for a non-administrator email', function (): void {
+    User::factory()->create(['email' => 'regular-reset@example.invalid']);
+
+    $this->postJson('/api/v1/admin/auth/forgot-password', [
+        'email' => 'regular-reset@example.invalid',
+    ])->assertStatus(422)
+        ->assertJsonStructure(['errors' => ['email']]);
+});

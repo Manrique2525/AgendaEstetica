@@ -16,6 +16,7 @@ export interface AdminService {
     name: string;
     slug: string | null;
     description: string | null;
+    image_url: string | null;
     duration_minutes: number;
     pricing_type: PricingType;
     price: string | null;
@@ -104,6 +105,8 @@ export const adminCatalogApi = {
         show: (id: number) => http.get<AdminService>(`/admin/catalog/services/${id}`),
         create: (payload: ServicePayload) => http.post<AdminService>('/admin/catalog/services', payload),
         update: (id: number, payload: ServicePayload) => http.put<AdminService>(`/admin/catalog/services/${id}`, payload),
+        createForm: (payload: FormData) => http.postForm<AdminService>('/admin/catalog/services', payload),
+        updateForm: (id: number, payload: FormData) => http.putForm<AdminService>(`/admin/catalog/services/${id}`, payload),
         setStatus: (id: number, active: boolean) => http.patch<AdminService>(`/admin/catalog/services/${id}/status`, { active }),
         remove: (id: number) => http.delete(`/admin/catalog/services/${id}`),
     },

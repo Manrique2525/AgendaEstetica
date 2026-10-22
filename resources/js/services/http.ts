@@ -46,7 +46,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
 
     headers.set('Accept', 'application/json');
 
-    if (init.body && !headers.has('Content-Type')) {
+    if (init.body && !(init.body instanceof FormData) && !headers.has('Content-Type')) {
         headers.set('Content-Type', 'application/json');
     }
 
@@ -105,6 +105,22 @@ export const http = {
         return request<T>(path, {
             method: 'PUT',
             body: body === undefined ? undefined : JSON.stringify(body),
+        });
+    },
+
+    postForm<T>(path: string, body: FormData): Promise<T> {
+        return request<T>(path, {
+            method: 'POST',
+            body,
+        });
+    },
+
+    putForm<T>(path: string, body: FormData): Promise<T> {
+        body.append('_method', 'PUT');
+
+        return request<T>(path, {
+            method: 'POST',
+            body,
         });
     },
 

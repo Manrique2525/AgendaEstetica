@@ -31,6 +31,7 @@ final class AdminServiceRequest extends FormRequest
             'name' => ['required', 'string', 'max:150'],
             'slug' => ['nullable', 'string', 'max:160', 'alpha_dash', Rule::unique('services', 'slug')->ignore($service?->id)],
             'description' => ['nullable', 'string', 'max:3000'],
+            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'duration_minutes' => ['required', 'integer', 'min:1', 'max:600'],
             'pricing_type' => ['required', Rule::in(array_column(ServicePricingType::cases(), 'value'))],
             'price' => $isVariable

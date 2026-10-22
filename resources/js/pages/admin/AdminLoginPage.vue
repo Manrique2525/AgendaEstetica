@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, RouterLink } from 'vue-router';
 import AdminLayout from '../../layouts/AdminLayout.vue';
 import { useAuth } from '../../composables/useAuth';
 import { ApiError } from '../../services/http';
@@ -70,6 +70,11 @@ async function submit(): Promise<void> {
                     {{ isSubmitting ? 'Validando...' : 'Iniciar sesión' }}
                 </UiButton>
             </form>
+            <p class="mt-6 font-body text-sm text-text-secondary">
+                <RouterLink class="font-ui font-semibold text-text-primary underline" to="/admin/recuperar-contrasena">
+                    Recuperar contraseña
+                </RouterLink>
+            </p>
         </UiCard>
     </AdminLayout>
 </template>

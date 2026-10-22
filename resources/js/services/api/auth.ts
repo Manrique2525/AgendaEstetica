@@ -18,4 +18,8 @@ export const authApi = {
     logout(): Promise<void> {
         return http.post<void>('/admin/auth/logout');
     },
+
+    forgotPassword(email: string): Promise<{ message: string }> {
+        return http.post<{ message: string }>('/admin/auth/forgot-password', { email });
+    },
 };

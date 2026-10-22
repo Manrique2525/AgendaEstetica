@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['service_category_id', 'name', 'slug', 'description', 'duration_minutes', 'pricing_type', 'price', 'active'])]
+#[Fillable(['service_category_id', 'name', 'slug', 'description', 'image_path', 'duration_minutes', 'pricing_type', 'price', 'active'])]
 class Service extends Model
 {
     /** @use HasFactory<ServiceFactory> */

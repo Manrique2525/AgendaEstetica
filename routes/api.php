@@ -43,6 +43,10 @@ Route::prefix('admin/auth')->group(function (): void {
         ->middleware('throttle:admin-login')
         ->name('admin.auth.login');
 
+    Route::post('/forgot-password', [AdminAuthController::class, 'forgotPassword'])
+        ->middleware('throttle:admin-login')
+        ->name('admin.auth.password.forgot');
+
     Route::middleware(['auth:sanctum', 'admin'])->group(function (): void {
         Route::get('/me', [AdminAuthController::class, 'me'])->name('admin.auth.me');
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.auth.logout');
